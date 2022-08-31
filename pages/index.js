@@ -8,6 +8,7 @@ export default function Home() {
         <title>Recipe App</title>
         <meta name='description' />
         <link rel='icon' href='/favicon.ico' />
+        <link rel='stylesheet' href='https://rsms.me/inter/inter.css' />
       </Head>
 
       <main>
