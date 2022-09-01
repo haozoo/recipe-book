@@ -10,6 +10,9 @@ module.exports = {
     fontFamily: {
       lora: ["Lora"],
       nunito: ["nunito"],
+      gochi: ["Gochi Hand"],
+      dekko: ["Dekko"],
+      patrick: ["Patrick Hand"],
     },
     extend: {
       colors: {
@@ -27,5 +30,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/forms")],
 };
