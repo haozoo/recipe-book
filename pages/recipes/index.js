@@ -8,38 +8,26 @@ import {
 } from "@heroicons/react/20/solid";
 import UserLayout from "../../components/layout/UserLayout";
 import RecipeList from "../../components/layout/recipes/RecipeList";
-
-const filters = [
-  {
-    id: "dietry-requirements",
-    name: "Dietry Requirements",
-    options: [
-      { value: "dairy-free", label: "Dairy Free" },
-      { value: "gluten-free", label: "Gluten Free" },
-      { value: "nut-free", label: "Nut Free" },
-      { value: "vegetarian", label: "Vegetarian" },
-      { value: "halal", label: "Halal" },
-      { value: "pregnancy", label: "Pregnancy" },
-    ],
-  },
-  {
-    id: "meal-type",
-    name: "Meal",
-    options: [
-      { value: "breakfast", label: "Breakfast" },
-      { value: "lunch", label: "Lunch" },
-      { value: "dinner", label: "Dinner" },
-      { value: "dessert", label: "Dessert" },
-    ],
-  },
-];
+import { dummyRecipes, dummyFilters } from "../../utils/dummy";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function AllRecipesPage() {
+export default function AllRecipesPage({ recipes, filters }) {
+  const [allRecipes, setAllRecipes] = useState(recipes);
+  const [recipeFilters, setRecipeFilters] = useState(filters);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  const handleFavouriteRecipe = (rId, favourited) => {
+    var newAllRecipes = allRecipes;
+    newAllRecipes[rId].favourited = favourited;
+
+    // Favourite recipe in database
+    // Insert function here:
+
+    setAllRecipes(newAllRecipes);
+  };
 
   return (
     <>
@@ -95,7 +83,7 @@ export default function AllRecipesPage() {
 
                   {/* Filters */}
                   <form className="mt-4">
-                    {filters.map((section) => (
+                    {recipeFilters.map((section) => (
                       <Disclosure
                         as="div"
                         key={section.name}
@@ -187,7 +175,7 @@ export default function AllRecipesPage() {
                       results.
                     </p>
                   </div>
-                  {filters.map((section, sectionIdx) => (
+                  {recipeFilters.map((section, sectionIdx) => (
                     <div key={section.name} className="pt-10">
                       <fieldset>
                         <legend className="block text-md font-lora font-medium text-chestnut">
@@ -224,7 +212,10 @@ export default function AllRecipesPage() {
 
             {/* Product grid */}
             <div className="lg:col-span-3 xl:col-span-4">
-              <RecipeList />
+              <RecipeList
+                recipes={allRecipes}
+                favouriteRecipe={handleFavouriteRecipe}
+              />
             </div>
           </div>
         </main>
@@ -236,3 +227,10 @@ export default function AllRecipesPage() {
 AllRecipesPage.getLayout = (page) => {
   return <UserLayout pageName="Recipes">{page}</UserLayout>;
 };
+
+// NOTE: use this or staticProps?
+export async function getServerSideProps() {
+  const recipes = dummyRecipes;
+  const filters = dummyFilters;
+  return { props: { recipes, filters } };
+}
