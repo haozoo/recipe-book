@@ -17,11 +17,8 @@ export default function UserLayout({ children, pageName }) {
           <div className="flex flex-1 flex-col overflow-y-auto">
             <nav className="flex-1 space-y-12 px-3 py-4">
               {navigationOptions.map((item) => (
-                <Link href={item.href}>
-                  <a
-                    key={item.id}
-                    className="text-white group flex items-center mx-6 text-sm font-medium"
-                  >
+                <Link key={item.id} add href={item.href}>
+                  <a className="text-white group flex items-center mx-6 text-sm font-medium">
                     <item.icon className="text-chestnut flex-shrink-0 h-6 w-6" />
                   </a>
                 </Link>
