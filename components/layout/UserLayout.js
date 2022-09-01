@@ -8,8 +8,8 @@ export default function UserLayout({ children, pageName }) {
 
   return (
     <>
+      {/* Sidebar */}
       <div className="fixed inset-y-0 flex w-14 flex-col">
-        {/* Sidebar */}
         <div className="flex min-h-0 flex-1 flex-col items-center bg-rajah">
           <div className="flex h-16 flex-shrink-0 items-center my-8">
             <img className="h-18 w-18" src="/brown_logo.png" alt="Workflow" />
@@ -39,16 +39,14 @@ export default function UserLayout({ children, pageName }) {
       </div>
 
       {/* Header */}
-      <div className="ml-14 pl-16">
-        <div className="sticky top-0 z-10 flex h-32 flex-shrink-0 bg-white">
+      <div className="ml-14">
+        <div className="sticky top-0 z-10 px-10 sm:px-16 lg:px-16 pt-8 flex h-24 flex-shrink-0 bg-white">
           <div className="flex items-center">
-            <div className="flex-col">
-              <div className="font-lora font-medium text-chestnut tracking-wide text-3xl">
-                {pageName}
-              </div>
+            <div className="font-patrick font-bold text-chestnut tracking-wide text-4xl">
+              REcipes
             </div>
           </div>
-          <div className="flex flex-1 justify-end px-6">
+          <div className="flex flex-1 justify-end">
             <div className="flex items-center">
               <Link href="/profile">
                 <a className="flex max-w-xs items-center rounded-full bg-white text-sm">
@@ -64,10 +62,8 @@ export default function UserLayout({ children, pageName }) {
         </div>
 
         <main className="flex-1">
-          <div className="py-2">
-            <div className="mx-auto max-w-8xl px-4 sm:px-6 md:px-8">
-              <main>{children}</main>
-            </div>
+          <div className="mx-auto max-w-8xl px-10 sm:px-16 lg:px-16 bg-white">
+            <main>{children}</main>
           </div>
         </main>
       </div>
