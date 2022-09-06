@@ -1,5 +1,6 @@
 export function convertTime(time) {
-  const { hr, min } = time;
+  const hr = Math.floor(time / 60);
+  const min = time % 60;
   var timeString = "";
 
   switch (hr) {

@@ -21,7 +21,7 @@ export default function RecipeCard({ recipe, favouriteRecipe }) {
         <a>
           <div className="aspect-w-1 aspect-h-1 h-72 w-full overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3">
             <img
-              src={recipe.imageSrc}
+              src={recipe.imageSrc[0]}
               className="h-full w-full object-cover object-center group-hover:opacity-75"
             />
           </div>
@@ -31,7 +31,7 @@ export default function RecipeCard({ recipe, favouriteRecipe }) {
         <div className="flex items-center">
           <ClockIcon className="text-chestnut flex-shrink-0 h-4 w-4" />
           <p className="ml-2 font-nunito font-bold text-xs text-chestnut">
-            {convertTime(recipe.time)}
+            {convertTime(recipe.prepTime + recipe.cookTime)}
           </p>
         </div>
         <button onClick={handleFavourite}>

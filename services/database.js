@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { auth, db } from "./firebase";
 
 // const user = auth.currentUser;
@@ -7,8 +7,9 @@ const recipesRef = collection(db, "recipes");
 export const addNewRecipe = async (data) => {
   try {
     const docRef = await addDoc(recipesRef, data);
-    const docId = docRef.id;
     await updateDoc(docRef, {
+      id: docRef.id,
+      href: `recipes/${docRef.id}`,
       // createdBy: user.uid,
       createdAt: serverTimestamp()
     });
@@ -29,12 +30,13 @@ export const getOneRecipe = async (docId) => {
 
 export const getAllRecipes = async () => {
   if (true) {
-    const userQuery = query(recipesRef);
-    // where("createdBy", "==", user.uid));
+    const userQuery = query(
+      recipesRef,
+      // where("createdBy", "==", user.uid),
+      orderBy("createdAt", "desc")
+    );
     const snapshot = await getDocs(userQuery);
-    snapshot.forEach((doc) => {
-      console.log(doc.id, ":", doc.data());
-    })
+    return snapshot.docs.map((doc) => doc.data());
   } else {
     console.error("No user is signed in!");
   }

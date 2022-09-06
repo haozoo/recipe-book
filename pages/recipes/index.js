@@ -8,7 +8,8 @@ import {
 } from "@heroicons/react/20/solid";
 import UserLayout from "../../components/layout/UserLayout";
 import RecipeList from "../../components/layout/recipes/RecipeList";
-import { dummyRecipes, dummyFilters } from "../../utils/dummy";
+import { dummyFilters } from "../../utils/dummy";
+import { getAllRecipes } from "../../services/database";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -230,7 +231,7 @@ AllRecipesPage.getLayout = (page) => {
 
 // NOTE: use this or staticProps?
 export async function getServerSideProps() {
-  const recipes = dummyRecipes;
+  const recipes = JSON.parse(JSON.stringify(await getAllRecipes()));
   const filters = dummyFilters;
   return { props: { recipes, filters } };
 }
