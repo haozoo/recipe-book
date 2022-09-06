@@ -8,8 +8,7 @@ import {
 } from "@heroicons/react/20/solid";
 import UserLayout from "../../components/layout/UserLayout";
 import RecipeList from "../../components/layout/recipes/RecipeList";
-import { dummyFilters } from "../../utils/dummy";
-import { getAllRecipes } from "../../services/database";
+import { getAllDefaultTags, getAllRecipes, getAllUserAddedTags } from "../../services/database";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -110,23 +109,23 @@ export default function AllRecipesPage({ recipes, filters }) {
                             </legend>
                             <Disclosure.Panel className="px-4 pt-4 pb-2">
                               <div className="space-y-6">
-                                {section.options.map((option, optionIdx) => (
+                                {section.options.map((option) => (
                                   <div
-                                    key={option.value}
+                                    key={option}
                                     className="flex items-center ml-2"
                                   >
                                     <input
-                                      id={`${section.id}-${optionIdx}`}
+                                      id={`${section.id}-${option}`}
                                       name={`${section.id}[]`}
-                                      defaultValue={option.value}
+                                      defaultValue={option}
                                       type="checkbox"
                                       className="h-4 w-4 rounded border-chestnut text-dirt focus:ring-dirt"
                                     />
                                     <label
-                                      htmlFor={`${section.id}-${optionIdx}`}
+                                      htmlFor={`${section.id}-${option}`}
                                       className="ml-3 font-nunito text-sm text-chestnut"
                                     >
-                                      {option.label}
+                                      {option}
                                     </label>
                                   </div>
                                 ))}
@@ -183,23 +182,23 @@ export default function AllRecipesPage({ recipes, filters }) {
                           {section.name}
                         </legend>
                         <div className="space-y-3 pt-4">
-                          {section.options.map((option, optionIdx) => (
+                          {section.options.map((option) => (
                             <div
-                              key={option.value}
+                              key={option}
                               className="flex items-center"
                             >
                               <input
-                                id={`${section.id}-${optionIdx}`}
+                                id={`${section.id}-${option}`}
                                 name={`${section.id}[]`}
-                                defaultValue={option.value}
+                                defaultValue={option}
                                 type="checkbox"
                                 className="h-4 w-4 rounded border-chestnut text-dirt focus:ring-dirt"
                               />
                               <label
-                                htmlFor={`${section.id}-${optionIdx}`}
+                                htmlFor={`${section.id}-${option}`}
                                 className="ml-3 font-nunito text-sm text-chestnut"
                               >
-                                {option.label}
+                                {option}
                               </label>
                             </div>
                           ))}
@@ -232,6 +231,12 @@ AllRecipesPage.getLayout = (page) => {
 // NOTE: use this or staticProps?
 export async function getServerSideProps() {
   const recipes = JSON.parse(JSON.stringify(await getAllRecipes()));
-  const filters = dummyFilters;
+  const filters = JSON.parse(JSON.stringify(await getAllDefaultTags()));
+  const myTags = JSON.parse(JSON.stringify(await getAllUserAddedTags()));
+  filters.push({
+    id: "my-tags",
+    name: "My Tags",
+    options: myTags
+  });
   return { props: { recipes, filters } };
 }

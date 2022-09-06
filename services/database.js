@@ -22,7 +22,7 @@ export const getOneRecipe = async (docId) => {
   const docRef = doc(recipesRef, docId);
   const snapshot = await getDoc(docRef);
   if (snapshot.exists()) {
-    console.log(docId, ":",snapshot.data());
+    return snapshot.data();
   } else {
     console.error("No such document!");
   }
@@ -39,5 +39,34 @@ export const getAllRecipes = async () => {
     return snapshot.docs.map((doc) => doc.data());
   } else {
     console.error("No user is signed in!");
+  }
+}
+
+const defaultTagsRef = collection(db, "defaultTags");
+
+export const getAllDefaultTags = async () => {
+  const snapshot = await getDocs(defaultTagsRef);
+  return snapshot.docs.map((doc) => doc.data());
+}
+
+const userAddedTagsRef = collection(db, "userAddedTags");
+
+export const getAllUserAddedTags = async () => {
+  const userQuery = query(
+    userAddedTagsRef,
+    // where("createdBy", "==", user.uid)
+  );
+  const snapshot = await getDocs(userQuery);
+  return snapshot.docs.map((doc) => doc.data().name);
+}
+
+export const addNewTag = async (tag) => {
+  try {
+    await addDoc(userAddedTagsRef, {
+      name: tag,
+      // createdBy: user.uid,
+    });
+  } catch (error) {
+    console.error(error);
   }
 }
