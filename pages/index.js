@@ -1,33 +1,31 @@
 import Head from 'next/head';
-import { handleGoogleLogin, createAccount, handleEmailLogin } from '../services/auth';
-import styles from "../styles/Home.module.css";
+import {
+  handleGoogleLogin,
+  createAccount,
+  handleEmailLogin,
+} from "../services/auth";
 
 export default function Home() {
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
         <title>Recipe App</title>
-        <meta name='description' />
-        <link rel='icon' href='/favicon.ico' />
-        <link rel='stylesheet' href='https://rsms.me/inter/inter.css' />
+        <meta name="description" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <label for="txtEmail"> Email</label>
-        <input type="email" id="txtEmail" name="txtEmail" />
+      <main>
+        <h1 className="text-3xl font-bold underline">Landing Page</h1>
 
-        <label for="txtPassword"> Password</label>
-        <input type="password" id="txtPassword" name="txtPassword" />
-
-        <button onClick={createAccount}>Sign Up With Email</button>
-        <button onClick={handleEmailLogin}>Sign In With Email</button>
-        <button onClick={handleGoogleLogin}>Sign In With Google</button>
-
-        <div id="divLoginError" class="group">
-          <div id="lblLoginErrorMessage" class="errorlabel">Error message</div>
+        <div className="flex flex-col w-40">
+          <label for="txtEmail"> Email</label>
+          <input type="email" id="txtEmail" name="txtEmail" />
+          <label for="txtPassword"> Password</label>
+          <input type="password" id="txtPassword" name="txtPassword" />
+          <button onClick={createAccount}>Sign Up With Email</button>
+          <button onClick={handleEmailLogin}>Sign In With Email</button>
+          <button onClick={handleGoogleLogin}>Sign In With Google</button>
         </div>
-
-        <h1 className='text-3xl font-bold underline'>Hello world!</h1>
       </main>
     </div>
   );
