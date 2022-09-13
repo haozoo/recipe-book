@@ -1,5 +1,6 @@
 import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { auth, db } from "./firebase";
+import _ from "lodash";
 
 // const user = auth.currentUser;
 const recipesRef = collection(db, "recipes");
@@ -36,35 +37,52 @@ export const getAllRecipes = async () => {
       orderBy("createdAt", "desc")
     );
     const snapshot = await getDocs(userQuery);
-    return snapshot.docs.map((doc) => doc.data());
+    const data = snapshot.docs.map((doc) => doc.data());
+    const recipes = JSON.parse(JSON.stringify(data));
+    return recipes;
   } else {
     console.error("No user is signed in!");
   }
 }
 
 const defaultTagsRef = collection(db, "defaultTags");
-
-export const getAllDefaultTags = async () => {
-  const snapshot = await getDocs(defaultTagsRef);
-  return snapshot.docs.map((doc) => doc.data());
-}
-
 const userAddedTagsRef = collection(db, "userAddedTags");
 
-export const getAllUserAddedTags = async () => {
+export const getAllFilters = async () => {
+  // get default tags
+  const defaultQuery = query(
+    defaultTagsRef,
+    orderBy("order", "asc")
+  )
+  const defaultSnapshot = await getDocs(defaultQuery);
+  const defaultData = defaultSnapshot.docs.map((doc) => doc.data());
+  const defaultTags = JSON.parse(JSON.stringify(defaultData));
+
+  // get user-added tags
   const userQuery = query(
     userAddedTagsRef,
-    // where("createdBy", "==", user.uid)
+    // where("createdBy", "==", auth.currentUser.uid),
+    orderBy("createdAt", "desc")
   );
-  const snapshot = await getDocs(userQuery);
-  return snapshot.docs.map((doc) => doc.data().name);
+  const userSnapsot = await getDocs(userQuery);
+  const userData = userSnapsot.docs.map((doc) => doc.data());
+  const userTags = JSON.parse(JSON.stringify(userData));
+
+  // group tags by section
+  const allTags = defaultTags.concat(userTags);
+  const filters = _.groupBy(allTags, tag => tag.section);
+  
+  return filters;
 }
 
-export const addNewTag = async (tag) => {
+export const addNewTag = async (tagId, tagName) => {
   try {
     await addDoc(userAddedTagsRef, {
-      name: tag,
+      id: `user-added/${tagId}`,
+      name: tagName,
+      section: "My Tags",
       // createdBy: user.uid,
+      createdAt: serverTimestamp()
     });
   } catch (error) {
     console.error(error);

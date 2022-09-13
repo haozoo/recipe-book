@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/20/solid";
 import UserLayout from "../../components/layout/UserLayout";
 import RecipeList from "../../components/layout/recipes/RecipeList";
-import { getAllDefaultTags, getAllRecipes, getAllUserAddedTags } from "../../services/database";
+import { getAllRecipes, getAllFilters } from "../../services/database";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -230,13 +230,9 @@ AllRecipesPage.getLayout = (page) => {
 
 // NOTE: use this or staticProps?
 export async function getServerSideProps() {
-  const recipes = JSON.parse(JSON.stringify(await getAllRecipes()));
-  const filters = JSON.parse(JSON.stringify(await getAllDefaultTags()));
-  const myTags = JSON.parse(JSON.stringify(await getAllUserAddedTags()));
-  filters.push({
-    id: "my-tags",
-    name: "My Tags",
-    options: myTags
-  });
+  const recipes = await getAllRecipes();
+  const filters = await getAllFilters();
+  console.log(recipes);
+  console.log(filters);
   return { props: { recipes, filters } };
 }
