@@ -7,7 +7,7 @@ import {
   PlusIcon,
 } from "@heroicons/react/20/solid";
 import UserLayout from "../../components/layout/UserLayout";
-import RecipeList from "../../components/layout/recipes/RecipeList";
+import RecipeList from "../../components/recipes/RecipeList";
 import { getAllDefaultTags, getAllRecipes, getAllUserAddedTags } from "../../services/database";
 
 function classNames(...classes) {

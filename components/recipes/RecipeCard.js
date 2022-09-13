@@ -5,7 +5,7 @@ import {
 import { HeartIcon as FullHeartIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useState } from "react";
-import { convertTime } from "../../../utils/helpers";
+import { convertTime } from "../../utils/helpers";
 
 export default function RecipeCard({ recipe, favouriteRecipe }) {
   const [favourited, setFavourited] = useState(recipe.favourited);
