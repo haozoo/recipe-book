@@ -211,7 +211,7 @@ export default function AllRecipesPage({ recipes, filters }) {
             </aside>
 
             {/* Product grid */}
-            <div className="lg:col-span-3 xl:col-span-4">
+            <div className="lg:col-span-3 xl:col-span-4 mb-32">
               <RecipeList
                 recipes={allRecipes}
                 favouriteRecipe={handleFavouriteRecipe}
