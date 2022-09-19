@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, deleteDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { auth, db } from "./firebase";
 
 // const user = auth.currentUser;
@@ -44,7 +44,7 @@ export const getAllRecipes = async () => {
 
 const defaultTagsRef = collection(db, "defaultTags");
 
-export const getAllDefaultTags = async () => {
+export const getOldDefaultTags = async () => {
   const snapshot = await getDocs(defaultTagsRef);
   return snapshot.docs.map((doc) => doc.data());
 }
@@ -66,6 +66,24 @@ export const addNewTag = async (tag) => {
       name: tag,
       // createdBy: user.uid,
     });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const deleteRecipe = async (recipe) => {
+  try {
+    const recipeRef = doc(db, "recipes", recipe.id);
+    await deletcDoc(recipeRef);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const deleteTag = async (tag) => {
+  try {
+    const tagRef = doc(db, "userAddedTags", tag.id);
+    await deleteDoc(tagRef);
   } catch (error) {
     console.error(error);
   }
