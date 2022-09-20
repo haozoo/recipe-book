@@ -13,6 +13,7 @@ module.exports = {
       gochi: ["Gochi Hand"],
       dekko: ["Dekko"],
       patrick: ["Patrick Hand"],
+      architectsDaughter: ["Architects Daughter"],
     },
     extend: {
       colors: {
