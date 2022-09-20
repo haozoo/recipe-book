@@ -26,6 +26,9 @@ export default function Home() {
           <button onClick={handleEmailLogin}>Sign In With Email</button>
           <button onClick={handleGoogleLogin}>Sign In With Google</button>
         </div>
+        <div id="divLoginError" class="group">
+            <div id="lblLoginErrorMessage" class="errorlabel">Error message</div>
+        </div>
       </main>
     </div>
   );
