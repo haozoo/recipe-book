@@ -17,43 +17,39 @@ export default function SingleRecipePage({ recipe }) {
 
     return (
       <div className="single-recipe pt-10">
-        <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 md:space-x-24">
+        <div className="flex flex-row justify-between space-x-24">
+          <div className="flex w-full flex-col">
             <div>
               <h1 className="font-architectsDaughter font-bold text-chestnut tracking-wide text-4xl">
                 {recipe.title}
               </h1>
               <div className="flex flex-row my-6 space-x-4">
                 <div className="flex flex-col">
-                  <p>Prep time</p>
+                  <p className="text-xs">Prep time</p>
                   {recipe.prepTime} mins
                 </div>
                 <div className="flex flex-col">
-                  <p>Cook time</p>
+                  <p className="text-xs">Cook time</p>
                   {recipe.cookTime} mins
                 </div>
                 <div className="flex flex-col">
-                  <p>Total time</p>
+                  <p className="text-xs">Total time</p>
                   {convertTime(recipe.prepTime + recipe.cookTime)}
                 </div>
               </div>
               
-              <div className="border-y border-solid border-chestnut">
-                <p className="pt-2">Tags</p>
-                <ul style={{ listStyleType: 'disc' }}>
+              <div className="py-2 border-y border-solid border-chestnut">
+                <p className="text-xs mb-2">Tags</p>
+                <div className="flex flex-row space-x-4 text-sm">
                   {tags.map((tag, i) => (
-                    <li key={i}>{tag}</li>
+                    <button key={i} className="odd:bg-chrome-yellow even:bg-dirt hover:bg-yellow text-white px-4 py-2 rounded-full">{tag}</button>
                   ))}
-                </ul>
+                </div>
               </div>
             </div>
-            <div className="aspect-[4/3] h-72 flex items-center justify-center overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3 bg-blanched-almond">
-              <img src={recipe.imageSrc[0]} alt="" className="h-full"/>
-            </div>
-          </div>
-          <div>
+
             <div>
-              <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl">Ingredients:</p>
+              <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Ingredients</p>
               <ol style={{ listStyleType: 'disc' }}>
                 {ingredients.map((ingredient, i) => (
                   <li key={i}>{ingredient}</li>
@@ -61,14 +57,22 @@ export default function SingleRecipePage({ recipe }) {
               </ol>
             </div>
             <div>
-              <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl">Instructions:</p>
+              <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Instructions</p>
               <ol style={{ listStyleType: 'decimal' }}>
                 {instructions.map((instruction, i) => (
                   <li key={i}>{instruction}</li>
                 ))}
               </ol>
             </div>
-            
+
+          </div>
+          <div className="flex w-full flex-col">
+            <div className="aspect-square h-72 flex items-center justify-center overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3 bg-blanched-almond">
+              <img src={recipe.imageSrc[0]} alt="" className="h-full"/>
+            </div>
+            <div>
+              <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Gallery</p>
+            </div>
           </div>
         </div>
       </div>
