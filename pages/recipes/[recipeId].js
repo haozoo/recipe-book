@@ -21,6 +21,8 @@ export default function SingleRecipePage({ recipe }) {
     setFavourited(!favourited);
   };
 
+  const [count, setCount] = useState(1);
+
   return (
     <div className="single-recipe pt-10">
       <div className="flex flex-row justify-between space-x-24">
@@ -38,33 +40,42 @@ export default function SingleRecipePage({ recipe }) {
                 )}
               </button>
             </div>
-            <div className="flex flex-row my-6 space-x-4">
-              <div className="flex flex-col">
-                <p className="text-xs">Prep time</p>
-                {recipe.prepTime} mins
+            <div className="flex flex-row justify-between my-6">
+              <div className="flex flex-row space-x-4">
+                <div className="flex flex-col">
+                  <p className="text-xs">Prep time</p>
+                  {recipe.prepTime} mins
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-xs">Cook time</p>
+                  {recipe.cookTime} mins
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-xs">Total time</p>
+                  {convertTime(recipe.prepTime + recipe.cookTime)}
+                </div>
               </div>
-              <div className="flex flex-col">
-                <p className="text-xs">Cook time</p>
-                {recipe.cookTime} mins
-              </div>
-              <div className="flex flex-col">
-                <p className="text-xs">Total time</p>
-                {convertTime(recipe.prepTime + recipe.cookTime)}
-              </div>
+              <button id="editRecipeBtn" className="bg-atomic-tangerine hover:opacity-75 text-white text-sm px-4 rounded-2xl">Edit Recipe</button>
             </div>
             
             <div className="py-2 border-y border-solid border-chestnut">
               <p className="text-xs mb-2">Tags</p>
-              <div className="flex flex-row space-x-4 text-sm">
+              <div className="flex flex-row flex-wrap space-x-4 space-y-2 text-sm">
                 {tags.map((tag, i) => (
-                  <button key={i} className="odd:bg-chrome-yellow even:bg-dirt hover:bg-yellow text-white px-4 py-2 rounded-full">{tag}</button>
+                  <button key={i} className="odd:bg-chrome-yellow even:bg-dirt hover:opacity-75 text-white px-4 py-2 rounded-full">{tag}</button>
                 ))}
               </div>
             </div>
           </div>
-
           <div>
             <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Ingredients</p>
+            <div className="flex space-x-2 align-middle">
+              <p className="text-sm">Servings</p>
+              <button disabled={count==1 ? true : false} onClick={() => setCount(count - 1)}
+              className="bg-atomic-tangerine disabled:bg-platinum font-nunito rounded-full h-6 w-6 cursor-pointer">-</button>
+              <p>{count}</p>
+              <button onClick={() => setCount(count + 1)} className="border-black bg-atomic-tangerine font-nunito rounded-full h-6 w-6 cursor-pointer">+</button>
+            </div>
             <ol style={{ listStyleType: 'disc' }} className="pl-6 font-nunito">
               {ingredients.map((ingredient, i) => (
                 <li key={i} className="pl-2">{ingredient}</li>
