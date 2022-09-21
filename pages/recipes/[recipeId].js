@@ -12,7 +12,7 @@ import { convertTime } from "../../utils/helpers";
 
 export default function SingleRecipePage({ recipe }) {
   const tags = recipe.tags;
-  const ingredients = recipe.ingredients;
+  const ingredients = recipe.ingredients2;
   const instructions = recipe.instructions;
 
   const [favourited, setFavourited] = useState(recipe.favourited);
@@ -21,7 +21,7 @@ export default function SingleRecipePage({ recipe }) {
     setFavourited(!favourited);
   };
 
-  const [count, setCount] = useState(1);
+  const [serving, setServing] = useState(1);
 
   return (
     <div className="single-recipe pt-10">
@@ -69,18 +69,21 @@ export default function SingleRecipePage({ recipe }) {
           </div>
           <div>
             <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Ingredients</p>
-            <div className="flex space-x-2 align-middle">
+            <div className="flex space-x-2 py-2 align-middle">
               <p className="text-sm">Servings</p>
-              <button disabled={count==1 ? true : false} onClick={() => setCount(count - 1)}
-              className="bg-atomic-tangerine disabled:bg-platinum font-nunito rounded-full h-6 w-6 cursor-pointer">-</button>
-              <p>{count}</p>
-              <button onClick={() => setCount(count + 1)} className="border-black bg-atomic-tangerine font-nunito rounded-full h-6 w-6 cursor-pointer">+</button>
+              <button disabled={serving==1 ? true : false} onClick={() => setServing(serving - 1)}
+              className="bg-atomic-tangerine disabled:bg-platinum font-nunito rounded-full h-6 w-6 cursor-pointer disabled:cursor-default">-</button>
+              <p>{serving}</p>
+              <button onClick={() => setServing(serving + 1)} className="border-black bg-atomic-tangerine font-nunito rounded-full h-6 w-6 cursor-pointer">+</button>
             </div>
-            <ol style={{ listStyleType: 'disc' }} className="pl-6 font-nunito">
+            <div className="font-nunito">
               {ingredients.map((ingredient, i) => (
-                <li key={i} className="pl-2">{ingredient}</li>
+                <div class="flex items-center">
+                  <input id={i} type="checkbox" value="" class="w-4 h-4 bg-gray-100 rounded-full border-chestnut focus:ring-0 focus:ring-offset-0 text-atomic-tangerine"/>
+                  <label for={i} class="ml-4 w-full">{ingredient.quantity*serving}{ingredient.unit} {ingredient.item}</label>
+                </div>
               ))}
-            </ol>
+            </div>
           </div>
           <div>
             <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Instructions</p>
@@ -110,7 +113,6 @@ SingleRecipePage.getLayout = (page) => {
 };
 
 export async function getServerSideProps(context) {
-    console.log(context.params)
     const { recipeId } = context.params;
     const recipe = JSON.parse(JSON.stringify(await getOneRecipe(recipeId)));
     return { props: { recipe } };
