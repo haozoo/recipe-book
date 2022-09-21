@@ -42,9 +42,9 @@ export const getAllRecipes = async () => {
   }
 }
 
-const defaultTagsRef = collection(db, "defaultTags");
+const defaultTagsRef = collection(db, "OldDefaultTags");
 
-export const getOldDefaultTags = async () => {
+export const getAllDefaultTags = async () => {
   const snapshot = await getDocs(defaultTagsRef);
   return snapshot.docs.map((doc) => doc.data());
 }
@@ -71,20 +71,33 @@ export const addNewTag = async (tag) => {
   }
 }
 
-export const deleteRecipe = async (recipe) => {
+export const deleteRecipe = async (recipeId) => {
   try {
-    const recipeRef = doc(db, "recipes", recipe.id);
+    const recipeRef = doc(db, "recipes", recipeId);
     await deletcDoc(recipeRef);
   } catch (error) {
     console.error(error);
   }
 }
 
-export const deleteTag = async (tag) => {
+export const deleteTag = async (tagId) => {
   try {
-    const tagRef = doc(db, "userAddedTags", tag.id);
+    const tagRef = doc(db, "userAddedTags", tagId);
     await deleteDoc(tagRef);
   } catch (error) {
     console.error(error);
+  }
+}
+
+export const clickHeart = async (recipeId) => {
+  try {
+    const recipeRef = doc(db, "recipes", recipeId);
+    const docSnap = await getDoc(recipeRef)
+
+    await updateDoc(recipeRef, { 
+      favourited : !docSnap.data().favourited
+    })
+  } catch (error) {
+    console.error(error)
   }
 }
