@@ -2,8 +2,7 @@ import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimesta
 import { auth, db } from "./firebase";
 import _ from "lodash";
 
-// const user = auth.currentUser;
-const recipesRef = collection(db, "recipes");
+const recipesRef = collection(db, "newRecipes");
 
 export const addNewRecipe = async (data) => {
   try {
@@ -23,7 +22,16 @@ export const getOneRecipe = async (docId) => {
   const docRef = doc(recipesRef, docId);
   const snapshot = await getDoc(docRef);
   if (snapshot.exists()) {
-    return snapshot.data();
+    const data = JSON.parse(JSON.stringify(snapshot.data()));
+    console.log(data.defaultTags);
+    console.log(data.userAddedTags);
+    data.defaultTags = await Promise.all(data.defaultTags.map(async (tagId) => {
+      return await getOneDefaultTag(tagId);
+    }));
+    data.userAddedTags = await Promise.all(data.userAddedTags.map(async (tagId) => {
+      return await getOneUserAddedTag(tagId);
+    }));
+    return data;
   } else {
     console.error("No such document!");
   }
@@ -45,46 +53,78 @@ export const getAllRecipes = async () => {
   }
 }
 
-const defaultTagsRef = collection(db, "defaultTags");
-const userAddedTagsRef = collection(db, "userAddedTags");
+const defaultTagsRef = collection(db, "newDefaultTags");
+const userAddedTagsRef = collection(db, "newUserAddedTags");
 
-export const getAllFilters = async () => {
-  // get default tags
-  const defaultQuery = query(
-    defaultTagsRef,
-    orderBy("order", "asc")
-  )
-  const defaultSnapshot = await getDocs(defaultQuery);
-  const defaultData = defaultSnapshot.docs.map((doc) => doc.data());
-  const defaultTags = JSON.parse(JSON.stringify(defaultData));
-
-  // get user-added tags
-  const userQuery = query(
-    userAddedTagsRef,
-    // where("createdBy", "==", auth.currentUser.uid),
-    orderBy("createdAt", "desc")
-  );
-  const userSnapsot = await getDocs(userQuery);
-  const userData = userSnapsot.docs.map((doc) => doc.data());
-  const userTags = JSON.parse(JSON.stringify(userData));
-
-  // group tags by section
-  const allTags = defaultTags.concat(userTags);
-  const filters = _.groupBy(allTags, tag => tag.section);
-  
-  return filters;
-}
-
-export const addNewTag = async (tagId, tagName) => {
+export const addNewUserAddedTag = async (name) => {
   try {
     await addDoc(userAddedTagsRef, {
-      id: `user-added/${tagId}`,
-      name: tagName,
-      section: "My Tags",
+      name: name,
       // createdBy: user.uid,
       createdAt: serverTimestamp()
     });
   } catch (error) {
     console.error(error);
   }
+}
+
+export const getOneDefaultTag = async (docId) => {
+  const docRef = doc(defaultTagsRef, docId);
+  const snapshot = await getDoc(docRef);
+  if (snapshot.exists()) {
+    const data = snapshot.data();
+    return { id: docId, name: data.name, type: data.type };
+  } else {
+    console.error("No such document!");
+  }
+}
+
+export const getOneUserAddedTag = async (docId) => {
+  const docRef = doc(userAddedTagsRef, docId);
+  const snapshot = await getDoc(docRef);
+  if (snapshot.exists()) {
+    const data = snapshot.data();
+    return { id: docId, name: data.name, type: "My Tags" };
+  } else {
+    console.error("No such document!");
+  }
+}
+
+const getAllDefaultTags = async () => {
+  const defaultQuery = query(
+    defaultTagsRef,
+    orderBy("order", "asc")
+  );
+  const snapshot = await getDocs(defaultQuery);
+  const tags = snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return { id: doc.id, name: data.name, type: data.type };
+  });
+  return tags;
+}
+
+const getAllUserAddedTags = async () => {
+  const userQuery = query(
+    userAddedTagsRef,
+    // where("createdBy", "==", user.uid),
+    orderBy("createdAt", "asc")
+  );
+  const snapshot = await getDocs(userQuery);
+  const tags = snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return { id: doc.id, name: data.name, type: "My Tags" };
+  });
+  return tags;
+}
+
+export const getAllFilters = async () => {
+  const defaultTags = await getAllDefaultTags();
+  const userAddedTags = await getAllUserAddedTags();
+  // group tags by their type
+  const allTags = defaultTags.concat(userAddedTags);
+  var filters = _.groupBy(allTags, tag => tag.type);
+  filters = Object.keys(filters).map((key) =>
+    ({ name: key, options: filters[key] })
+  );
+  return filters;
 }
