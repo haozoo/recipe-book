@@ -1,21 +1,70 @@
-import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
+import { deleteRecipeImage, uploadRecipeImage } from "./storage";
 import { auth, db } from "./firebase";
 import _ from "lodash";
 
 const recipesRef = collection(db, "newRecipes");
 
-export const addNewRecipe = async (data) => {
+export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages) => {
+  // step1: generate a new doc ref
+  const recipeRef = doc(recipesRef);
+  const recipeId = recipeRef.id;
+
+  // step2: upload cover image to storage
+  let coverImageData;
   try {
-    const docRef = await addDoc(recipesRef, data);
-    await updateDoc(docRef, {
-      id: docRef.id,
-      href: `recipes/${docRef.id}`,
-      // createdBy: user.uid,
-      createdAt: serverTimestamp()
-    });
+    coverImageData = await uploadRecipeImage(recipeId, coverImage);
   } catch (error) {
+    alert("cover image upload failed!");
     console.error(error);
+    return;
   }
+
+  // step3: upload other images to storage
+  let otherImagesData = [];
+  try {
+    await Promise.all(otherImages.map(async (image) => {
+      const otherImageData = await uploadRecipeImage(recipeId, image);
+      otherImagesData.push(otherImageData);
+    }));
+    alert("all image uploaded!");
+  } catch (error) {
+    // delete uploaded images from storage
+    const uploadedImages = [coverImageData].concat(otherImagesData);
+    await deleteUploadedImages(uploadedImages);
+    alert("other image upload failed!");
+    console.error(error);
+    return;
+  }
+  
+  try {
+    // step4: combine recipe data with additional data
+    const additionalData = {
+      id: recipeId,
+      href: `recipes/${recipeId}`,
+      coverImage: coverImageData,
+      otherImages: otherImagesData,
+      createdBy: auth.currentUser.uid,
+      createdAt: serverTimestamp()
+    };
+    const allData = Object.assign({}, recipeData, additionalData);
+    // step5: add data to the doc
+    await setDoc(recipeRef, allData);
+    alert("recipe uploaded!");
+  } catch (error) {
+    // delete uploaded images from storage
+    const uploadedImages = [coverImageData].concat(otherImagesData);
+    await deleteUploadedImages(uploadedImages);
+    alert("recipe upload failed!");
+    console.error(error);
+    return;
+  }
+}
+
+const deleteUploadedImages = async (images) => {
+  await Promise.all(images.map(async (imageData) => {
+    await deleteRecipeImage(imageData.path);
+  }));
 }
 
 export const getOneRecipe = async (docId) => {
@@ -41,7 +90,7 @@ export const getAllRecipes = async () => {
   if (true) {
     const userQuery = query(
       recipesRef,
-      // where("createdBy", "==", user.uid),
+      // where("createdBy", "in", ),
       orderBy("createdAt", "desc")
     );
     const snapshot = await getDocs(userQuery);
