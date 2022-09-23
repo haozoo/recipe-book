@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
+import { addDoc, deleteDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
 import { deleteRecipeImage, uploadRecipeImage } from "./storage";
 import { auth, db } from "./firebase";
 import _ from "lodash";
@@ -176,4 +176,35 @@ export const getAllFilters = async () => {
     ({ name: key, options: filters[key] })
   );
   return filters;
+}
+
+export const deleteRecipe = async (recipeId) => {
+  try {
+    const recipeRef = doc(db, "recipes", recipeId);
+    await deletcDoc(recipeRef);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const deleteTag = async (tagId) => {
+  try {
+    const tagRef = doc(db, "userAddedTags", tagId);
+    await deleteDoc(tagRef);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const clickHeart = async (recipeId) => {
+  try {
+    const recipeRef = doc(db, "recipes", recipeId);
+    const docSnap = await getDoc(recipeRef)
+
+    await updateDoc(recipeRef, { 
+      favourited : !docSnap.data().favourited
+    })
+  } catch (error) {
+    console.error(error)
+  }
 }

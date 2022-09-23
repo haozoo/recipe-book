@@ -13,6 +13,7 @@ module.exports = {
       gochi: ["Gochi Hand"],
       dekko: ["Dekko"],
       patrick: ["Patrick Hand"],
+      architectsDaughter: ["Architects Daughter"],
     },
     extend: {
       colors: {
@@ -27,6 +28,7 @@ module.exports = {
         "chrome-yellow": "#FFAC00",
         "floral-white": "#FFFAF0",
         "pale-silver": "#C3C0B9",
+        "atomic-tangerine": "#FC8E57",
       },
     },
   },
