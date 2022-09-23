@@ -68,13 +68,13 @@ export default function SingleRecipePage({ recipe }) {
             </div>
           </div>
           <div>
-            <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Ingredients</p>
-            <div className="flex space-x-2 py-2 align-middle">
+            <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4 pb-2">Ingredients</p>
+            <div className="flex space-x-2 pb-2 align-middle">
               <p className="text-sm">Servings</p>
               <button disabled={serving==1 ? true : false} onClick={() => setServing(serving - 1)}
-              className="bg-atomic-tangerine disabled:bg-platinum font-nunito rounded-full h-6 w-6 cursor-pointer disabled:cursor-default">-</button>
+              className="outline outline-2 outline-black bg-atomic-tangerine disabled:bg-platinum font-nunito rounded-full h-6 w-6 cursor-pointer disabled:cursor-default">-</button>
               <p>{serving}</p>
-              <button onClick={() => setServing(serving + 1)} className="border-black bg-atomic-tangerine font-nunito rounded-full h-6 w-6 cursor-pointer">+</button>
+              <button onClick={() => setServing(serving + 1)} className="outline outline-2 outline-chestnut bg-atomic-tangerine font-nunito rounded-full h-6 w-6 cursor-pointer">+</button>
             </div>
             <div className="font-nunito">
               {ingredients.map((ingredient, i) => (
@@ -86,7 +86,7 @@ export default function SingleRecipePage({ recipe }) {
             </div>
           </div>
           <div>
-            <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Instructions</p>
+            <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4 pb-2">Instructions</p>
             <ol style={{ listStyleType: 'decimal' }} className="pl-6">
               {instructions.map((instruction, i) => (
                 <li key={i} className="pl-2 font-nunito">{instruction}</li>
