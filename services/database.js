@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, deleteDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { auth, db } from "./firebase";
 
 // const user = auth.currentUser;
@@ -68,5 +68,36 @@ export const addNewTag = async (tag) => {
     });
   } catch (error) {
     console.error(error);
+  }
+}
+
+export const deleteRecipe = async (recipeId) => {
+  try {
+    const recipeRef = doc(db, "recipes", recipeId);
+    await deletcDoc(recipeRef);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const deleteTag = async (tagId) => {
+  try {
+    const tagRef = doc(db, "userAddedTags", tagId);
+    await deleteDoc(tagRef);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const clickHeart = async (recipeId) => {
+  try {
+    const recipeRef = doc(db, "recipes", recipeId);
+    const docSnap = await getDoc(recipeRef)
+
+    await updateDoc(recipeRef, { 
+      favourited : !docSnap.data().favourited
+    })
+  } catch (error) {
+    console.error(error)
   }
 }
