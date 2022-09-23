@@ -42,7 +42,7 @@ export const getAllRecipes = async () => {
   }
 }
 
-const defaultTagsRef = collection(db, "OldDefaultTags");
+const defaultTagsRef = collection(db, "oldDefaultTags");
 
 export const getAllDefaultTags = async () => {
   const snapshot = await getDocs(defaultTagsRef);
