@@ -1,9 +1,10 @@
 import { addDoc, deleteDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
-import { deleteRecipeImage, uploadRecipeImage } from "./storage";
+import { deleteRecipeImage, uploadRecipeImage} from "./storage";
 import { auth, db } from "./firebase";
+import { ref } from "firebase/storage";
 import _ from "lodash";
 
-const recipesRef = collection(db, "newRecipes");
+const recipesRef = collection(db, "LamRecipes");
 
 export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages) => {
   // step1: generate a new doc ref
@@ -104,16 +105,28 @@ export const getAllRecipes = async () => {
 
 const defaultTagsRef = collection(db, "newDefaultTags");
 const userAddedTagsRef = collection(db, "newUserAddedTags");
+const lamAddedTags = collection(db, "LamUserAddedTags");
 
-export const addNewUserAddedTag = async (name) => {
-  try {
-    await addDoc(userAddedTagsRef, {
-      name: name,
-      // createdBy: user.uid,
-      createdAt: serverTimestamp()
+export const addNewUserAddedTag = async (tagsName) => {
+  for(var tagname in tagsName){
+    var exists = false;
+    const querySnapshot = await getDocs(lamAddedTags);
+    querySnapshot.forEach((doc) => {
+      if(doc.data().name == tagsName[tagname]){
+        exists = true;
+      }
     });
-  } catch (error) {
-    console.error(error);
+    if(!exists){
+      try {
+        await addDoc(lamAddedTags, {
+         name: tagsName[tagname],
+         createdBy: auth.currentUser.uid,
+         createdAt: serverTimestamp()
+       });
+     } catch (error) {
+        console.error(error);
+     }
+   } 
   }
 }
 
@@ -141,7 +154,7 @@ export const getOneUserAddedTag = async (docId) => {
 
 const getAllDefaultTags = async () => {
   const defaultQuery = query(
-    defaultTagsRef,
+    lamAddedTags,
     orderBy("order", "asc")
   );
   const snapshot = await getDocs(defaultQuery);
