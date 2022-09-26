@@ -67,8 +67,7 @@ onAuthStateChanged(auth, (userStatus) => {
 });
 
 // Delete User Account registered with email/password
-export const deleteUserAccount = async () => {
-  const password = passwordDetail.value
+export const deleteUserAccount = async (password) => {
   try {
     const check = await checkPassword(password)
     await deleteUser(check.user)
@@ -80,10 +79,7 @@ export const deleteUserAccount = async () => {
 }
 
 // Change password
-export const changePassword = async () => {
-  const password = currentPasswordData.value
-  const newPassword = newPasswordData.value
-  const confirmPassword = confirmPasswordData.value
+export const changePassword = async (password, newPassword, confirmPassword) => {
 
   if (newPassword == confirmPassword) {
     try {
@@ -102,10 +98,7 @@ export const changePassword = async () => {
 }
 
 // Change email address
-export const changeEmailAddress = async () => {
-  const newEmail = newEmailData.value
-  const password = passwordData.value;
-
+export const changeEmailAddress = async (newEmail, password) => {
   try {
     const check = await checkPassword(password)
     await updateEmail(check.user, newEmail)
