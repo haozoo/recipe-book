@@ -1,4 +1,4 @@
-import { signInWithPopup, signOut, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { AuthErrorCodes, deleteUser, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider, updateEmail, updatePassword } from "firebase/auth";
 import { auth, provider } from "./firebase";
 import { showLoginError } from "../utils/constants";
 import Router from "next/router";
@@ -50,6 +50,7 @@ export const createAccount = async () => {
   } 
 }
 
+
 // Automatically signout for now
 signOut(auth)
   .then(() => {
@@ -59,3 +60,76 @@ signOut(auth)
   .catch((error) => {
     console.log(error);
   });
+
+
+onAuthStateChanged(auth, (userStatus) => {
+  console.log("user status changed:", userStatus)
+});
+
+// Delete User Account registered with email/password
+export const deleteUserAccount = async () => {
+  const password = passwordDetail.value
+  try {
+    const check = await checkPassword(password)
+    await deleteUser(check.user)
+    console.log("Account deleted successfully")
+  } catch (error) {
+    console.log(error.code);
+    console.log(error.message);
+  }
+}
+
+// Change password
+export const changePassword = async () => {
+  const password = currentPasswordData.value
+  const newPassword = newPasswordData.value
+  const confirmPassword = confirmPasswordData.value
+
+  if (newPassword == confirmPassword) {
+    try {
+      const check = await checkPassword(password)
+      await updatePassword(check.user, newPassword)
+      console.log("Password updated")
+
+    } catch (error) {
+      console.log(error.code);
+      console.log(error.message);
+    }
+  } else {
+    console.log("Password and confirmation password must match")
+  }
+
+}
+
+// Change email address
+export const changeEmailAddress = async () => {
+  const newEmail = newEmailData.value
+  const password = passwordData.value;
+
+  try {
+    const check = await checkPassword(password)
+    await updateEmail(check.user, newEmail)
+    console.log("Email Updated")
+
+  } catch (error) {
+    console.log(error.code);
+    console.log(error.message);
+  }
+
+}
+
+// Reauthentication
+const checkPassword = async (password) => {
+    const user = auth.currentUser
+    const credential = EmailAuthProvider.credential(user.email, password)
+    const check = await reauthenticateWithCredential(user, credential)
+    console.log("Reauthentication completed")
+    return check
+}
+
+// Delete google user account - no reauthentication
+export const deleteGoogleUserAccount = async () => {
+  const user = await auth.currentUser
+  await deleteUser(user)
+  console.log("Account deleted successfully")
+}
