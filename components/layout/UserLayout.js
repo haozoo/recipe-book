@@ -3,7 +3,7 @@ import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { navigationOptions } from '../../utils/constants';
 import Link from 'next/link';
 
-export default function UserLayout({ children, pageName }) {
+export default function UserLayout({ children, activePageTitle }) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
 
   return (
@@ -12,7 +12,7 @@ export default function UserLayout({ children, pageName }) {
       <div className="fixed inset-y-0 flex w-14 flex-col">
         <div className="flex min-h-0 flex-1 flex-col items-center bg-rajah">
           <div className="flex h-16 flex-shrink-0 items-center mt-4 mb-12">
-            <img className="h-18 w-18" src="/brown_logo.png" alt="Workflow" />
+            <img className="h-18 w-18" src="/recipe_logo.png" alt="Workflow" />
           </div>
           <div className="flex flex-1 flex-col overflow-y-auto">
             <nav className="flex-1 space-y-12 px-3 py-4">
@@ -38,9 +38,9 @@ export default function UserLayout({ children, pageName }) {
       {/* Header */}
       <div className="ml-14">
         <div className="sticky top-0 z-10 px-10 sm:px-16 lg:px-16 flex h-24 flex-shrink-0 bg-white border-b-2">
-          <div className="flex items-center">
-            <div className="font-patrick font-bold text-chestnut tracking-wide text-4xl">
-              REcipes
+          <div className="flex items-center pt-2">
+            <div className="font-patrick font-bold text-chestnut tracking-wide text-3xl">
+              {activePageTitle}
             </div>
           </div>
           <div className="flex flex-1 justify-end">
