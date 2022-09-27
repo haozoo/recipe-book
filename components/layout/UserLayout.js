@@ -12,7 +12,15 @@ export default function UserLayout({ children, activePageTitle }) {
       <div className="fixed inset-y-0 flex w-14 flex-col">
         <div className="flex min-h-0 flex-1 flex-col items-center bg-rajah">
           <div className="flex h-16 flex-shrink-0 items-center mt-4 mb-12">
-            <img className="h-18 w-18" src="/recipe_logo.png" alt="Workflow" />
+            <Link href={navigationOptions[0].href}>
+              <a>
+                <img
+                  className="h-18 w-18"
+                  src="/recipe_logo.png"
+                  alt="Workflow"
+                />
+              </a>
+            </Link>
           </div>
           <div className="flex flex-1 flex-col overflow-y-auto">
             <nav className="flex-1 space-y-12 px-3 py-4">
