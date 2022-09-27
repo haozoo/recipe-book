@@ -57,9 +57,9 @@ export default function UserLayout({ children, activePageTitle }) {
           <div className="flex flex-1 justify-end">
             <div className="flex items-center">
               <Link href="/profile">
-                <a className="flex max-w-xs items-center rounded-full bg-white text-sm">
+                <a className="flex max-w-xs pt-2 items-center rounded-full bg-white text-sm">
                   <img
-                    className="h-12 w-12 rounded-full"
+                    className="h-8 w-8 sm:h-12 sm:w-12 rounded-full"
                     src="https://images.unsplash.com/photo-1525351484163-7529414344d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80"
                     alt=""
                   />

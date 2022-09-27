@@ -360,16 +360,20 @@ export default function AddRecipePage({ allTags }) {
       <form className="">
         <div className="pt-12 max-w-6xl lg:grid lg:grid-cols-2 lg:gap-x-8">
           <div className="max-w-lg space-y-8 divide-y divide-gray-200">
-            <div className="space-y-8">
+            <div className="">
               <h2 className="text-xl font-patrick font-extrabold text-chestnut">
                 Recipe Info
               </h2>
-              <IndentedTextInput label="Title" placeholder="Yummy Cookies!" />
-
-              <span className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-x-4">
+              <div className="space-y-6 pt-6 grid grid-cols-2 gap-x-4 sm:space-y-0 sm:grid-cols-3">
+                <div className="col-span-2 sm:col-span-3 sm:pb-6">
+                  <IndentedTextInput
+                    label="Title"
+                    placeholder="Yummy Cookies!"
+                  />
+                </div>
                 <IndentedTextInput label="Prep. Time" placeholder="10 mins" />
                 <IndentedTextInput label="Cooking Time" placeholder="5 mins" />
-              </span>
+              </div>
             </div>
             <div className="pt-8">
               <SectionTitle
