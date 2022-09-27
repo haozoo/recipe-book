@@ -1,8 +1,12 @@
 import { PencilIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import UserLayout from "../../../components/layout/UserLayout";
-import { getAllRecipes, getAllFilters } from "../../../services/database";
+import {
+  getAllRecipes,
+  getAllFilters,
+  addNewRecipeAndImages,
+} from "../../../services/database";
 import { Combobox } from "@headlessui/react";
 import Tag from "../../../components/recipes/Tag";
 
@@ -51,7 +55,7 @@ const IndentedTextInput = ({ label, placeholder, value, handleEdit }) => {
         type="text"
         id="name"
         value={value}
-        onChange={handleEdit}
+        onChange={(e) => handleEdit(e.target.value)}
         placeholder={placeholder}
       />
     </div>
@@ -260,6 +264,10 @@ const DeleteButton = ({ onDelete }) => {
 };
 
 export default function AddRecipePage({ allTags }) {
+  const [title, setTitle] = useState("");
+  const [prepTime, setPrepTime] = useState(20);
+  const [cookTime, setCookTime] = useState(10);
+
   const [selectedTags, setSelectedTags] = useState([]);
   const [filteredTags, setFilteredTags] = useState(allTags);
   const [isEditingSelectedTags, setIsEditingSelectedTags] = useState(false);
@@ -274,7 +282,7 @@ export default function AddRecipePage({ allTags }) {
   const [newIngredientQuantity, setNewIngredientQuantity] = useState("");
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
 
-  const [coverPhoto, setCoverPhoto] = useState();
+  const [coverPhotoFile, setCoverPhotoFile] = useState();
 
   const addIngredientRef = useRef(null);
 
@@ -356,14 +364,46 @@ export default function AddRecipePage({ allTags }) {
 
   const handleCoverChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      setCoverPhoto(e.target.files[0]);
-      console.log(coverPhoto);
+      setCoverPhotoFile(e.target.files[0]);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // prevent refresh
+
+    const defaultTags = selectedTags
+      .filter((t) => t.type !== "My Tags")
+      .map((t) => t.id);
+    const userAddedTags = selectedTags
+      .filter((t) => t.type === "My Tags")
+      .map((t) => t.id);
+
+    const recipeJSON = JSON.stringify({
+      title,
+      cookTime,
+      prepTime,
+      ingredients,
+      instructions: instructions.map((instruction) => instruction.text),
+      defaultTags,
+      userAddedTags,
+    });
+    const recipeData = new FormData();
+    recipeData.append("recipeCoverPhoto", coverPhotoFile);
+    recipeData.append("recipeInfo", recipeJSON);
+
+    const endpoint = "/api/recipe";
+    const options = {
+      method: "POST",
+      body: recipeData,
+    };
+
+    const response = await fetch(endpoint, options);
+    alert("Form successfully posted!");
   };
 
   return (
     <main className="mx-auto">
-      <form className="">
+      <form>
         <div className="pt-12 max-w-6xl lg:grid lg:grid-cols-2 lg:gap-x-8 space-y-8 divide-y divide-gray-200 lg:space-y-0 lg:divide-y-0">
           <div className="max-w-lg space-y-8 divide-y divide-gray-200">
             <div className="">
@@ -375,10 +415,22 @@ export default function AddRecipePage({ allTags }) {
                   <IndentedTextInput
                     label="Title"
                     placeholder="Yummy Cookies!"
+                    value={title}
+                    handleEdit={setTitle}
                   />
                 </div>
-                <IndentedTextInput label="Prep. Time" placeholder="10 mins" />
-                <IndentedTextInput label="Cooking Time" placeholder="5 mins" />
+                <IndentedTextInput
+                  label="Prep. Time"
+                  placeholder="10 mins"
+                  value={prepTime}
+                  handleEdit={setPrepTime}
+                />
+                <IndentedTextInput
+                  label="Cooking Time"
+                  placeholder="5 mins"
+                  value={cookTime}
+                  handleEdit={setCookTime}
+                />
               </div>
             </div>
             <div className="pt-12">
@@ -517,15 +569,20 @@ export default function AddRecipePage({ allTags }) {
                 )}
               </div>
             </div>
+            <div>
+              <button type="button" onClick={handleSubmit}>
+                Submit
+              </button>
+            </div>
           </div>
           <div className="max-w-lg border-0 border-t-1 border-gray-200 lg:col-span-1">
             <div className="pt-12 lg:pt-0">
               <SectionTitle title="Images" />
-              {coverPhoto ? (
+              {coverPhotoFile ? (
                 <div className="aspect-w-3 aspect-h-2">
                   <img
                     className="rounded-lg object-cover shadow-lg"
-                    src={URL.createObjectURL(coverPhoto)}
+                    src={URL.createObjectURL(coverPhotoFile)}
                     alt="Your cover photo."
                   />
                 </div>
