@@ -1,17 +1,19 @@
-import {
-  PencilIcon,
-  PencilSquareIcon,
-  PlusIcon,
-  TrashIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/outline";
+import { PencilIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import React, { useRef, useState } from "react";
 import UserLayout from "../../../components/layout/UserLayout";
+import { getAllRecipes, getAllFilters } from "../../../services/database";
+import { Combobox } from "@headlessui/react";
+import Tag from "../../../components/recipes/Tag";
+
+const classNames = (...classes) => {
+  return classes.filter(Boolean).join(" ");
+};
 
 const SectionTitle = ({ title, isEditing, handleEdit }) => {
   return (
     <div className="pb-1 flex justify-between">
-      <h2 className="text-xl font-patrick font-extrabold text-chestnut tracking wider">
+      <h2 className="text-xl font-patrick font-extrabold text-chestnut">
         {title}
       </h2>
       <button
@@ -31,7 +33,7 @@ const SectionTitle = ({ title, isEditing, handleEdit }) => {
 
 const IndentedTextInput = ({ label, placeholder, value, handleEdit }) => {
   return (
-    <div className="relative rounded-md border border-gray-300 px-4 py-1 focus-within:border-sajah focus-within:ring-1 focus-within:ring-sajah">
+    <div className="relative rounded-md border border-gray-300 px-4 py-1 input-focus">
       <label
         className="absolute -top-3 left-1 -mt-px inline-block bg-white px-1 text-sm font-patrick font-extrabold text-chestnut"
         htmlFor="name"
@@ -39,13 +41,90 @@ const IndentedTextInput = ({ label, placeholder, value, handleEdit }) => {
         {label}
       </label>
       <input
-        className="block w-full border-0 p-0 text-md text-hazelnut font-patrick font-medium tracking-wider truncate placeholder-gray-400 focus:ring-0"
+        className="block w-full border-0 p-0 input-font focus:ring-0"
         type="text"
         id="name"
         value={value}
+        onChange={handleEdit}
         placeholder={placeholder}
       />
     </div>
+  );
+};
+
+const TagComboBox = ({ allTags, selectedTags, handleSelect }) => {
+  const [tagQuery, setTagQuery] = useState("");
+
+  const filteredTags =
+    tagQuery === ""
+      ? allTags
+      : allTags.filter((tag) => {
+          return tag.name.toLowerCase().includes(tagQuery.toLowerCase());
+        });
+
+  return (
+    <Combobox
+      className="h-8 rounded-md border border-gray-200 bg-gray-100 focus-within:bg-white focus-within:border-rajah focus-within:ring-1 focus-within:ring-rajah"
+      as="div"
+      value={selectedTags}
+      onChange={handleSelect}
+      multiple
+    >
+      <div className="relative py-1">
+        <Combobox.Input
+          className="block w-28 border-0 px-4 py-0 bg-transparent input-font focus:ring-0"
+          onChange={(e) => setTagQuery(e.target.value)}
+          placeholder="Add a tag!"
+        />
+        <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+          <ChevronUpDownIcon
+            className="h-5 w-5 text-gray-400"
+            aria-hidden="true"
+          />
+        </Combobox.Button>
+
+        {filteredTags && filteredTags.length > 0 && (
+          <Combobox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-white border border-gray-300  py-1 text-sm shadow-lg">
+            {filteredTags.map((tag) => (
+              <Combobox.Option
+                key={tag.id}
+                value={tag}
+                className={({ active }) =>
+                  classNames(
+                    "relative cursor-default select-none py-1 pl-3 pr-9",
+                    active ? "bg-orange-100 text-hazelnut" : "text-hazelnut"
+                  )
+                }
+              >
+                {({ active, selected }) => (
+                  <>
+                    <span
+                      className={classNames(
+                        "block truncate font-patrick font-medium tracking-wider",
+                        selected && "font-semibold"
+                      )}
+                    >
+                      {tag.name}
+                    </span>
+
+                    {selected && (
+                      <span
+                        className={classNames(
+                          "absolute inset-y-0 right-0 flex items-center pr-2",
+                          active ? "text-rajah" : "text-sajah"
+                        )}
+                      >
+                        <CheckIcon className="h-4 w-4" />
+                      </span>
+                    )}
+                  </>
+                )}
+              </Combobox.Option>
+            ))}
+          </Combobox.Options>
+        )}
+      </div>
+    </Combobox>
   );
 };
 
@@ -67,7 +146,7 @@ const Instruction = ({
       </div>
       <div className="mt-1 w-full flex">
         <input
-          className={`block w-full min-w-0 rounded-md px-2 py-1 ml-3 text-md text-hazelnut font-patrick font-medium tracking-wider placeholder-gray-400 focus-within:border-sajah focus-within:ring-1 focus-within:ring-sajah ${
+          className={`block w-full min-w-0 rounded-md px-2 py-1 ml-3 input-font input-focus ${
             isEditing ? "border-1 border-gray-300" : "border-0"
           }`}
           type="text"
@@ -87,6 +166,7 @@ const Ingredient = ({
   id,
   isEditing,
   handleEditName,
+  handleEditUnit,
   handleEditQuantity,
   handleDelete,
 }) => {
@@ -100,15 +180,23 @@ const Ingredient = ({
         {isEditing ? (
           <>
             <input
-              className="block w-20 min-w-0 rounded-none rounded-l-md px-3 py-1 text-md font-patrick font-medium tracking-wider placeholder-gray-400 text-hazelnut border-1 border-gray-300 focus:border-sajah focus:ring-1 focus:ring-sajah"
+              className="block w-20 min-w-0 rounded-none rounded-l-md px-3 py-1 input-font border-1 border-r-transparent border-gray-300 input-focus"
               type="text"
               id="ingredient-quantity"
               value={ingredient.quantity}
-              placeholder="500ml"
+              placeholder="500"
               onChange={handleEditQuantity(id)}
             />
             <input
-              className="block w-full min-w-0 rounded-none rounded-r-md border border-l-0 px-3 py-1 text-md font-patrick font-medium tracking-wider placeholder-gray-400 text-hazelnut border-1 border-gray-300 focus-within:border-sajah focus-within:ring-1 focus-within:ring-sajah"
+              className="block w-16 min-w-0 rounded-none px-3 py-1 input-font border-1 border-gray-300 input-focus"
+              type="text"
+              id="ingredient-quantity"
+              value={ingredient.quantity}
+              placeholder="ml"
+              onChange={handleEditUnit(id)}
+            />
+            <input
+              className="block w-full min-w-0 rounded-none rounded-r-md border border-l-transparent px-3 py-1 input-font border-1 border-gray-300 input-focus"
               type="text"
               id="ingredient-name"
               value={ingredient.name}
@@ -118,10 +206,10 @@ const Ingredient = ({
           </>
         ) : (
           <>
-            <span className="flex items-center pl-1 text-chestnut text-md font-patrick font-medium tracking-wider">
-              {ingredient.quantity}
+            <span className="flex items-center pl-1 input-font">
+              {`${ingredient.quantity}${ingredient.unit}`}
             </span>
-            <span className="flex items-center pl-2 text-hazelnut text-md font-patrick font-medium tracking-wider">
+            <span className="flex items-center pl-2 input-font">
               {ingredient.name}
             </span>
           </>
@@ -165,19 +253,28 @@ const DeleteButton = ({ onDelete }) => {
   );
 };
 
-export default function AddRecipePage() {
+export default function AddRecipePage({ allTags }) {
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [filteredTags, setFilteredTags] = useState(allTags);
+  const [isEditingSelectedTags, setIsEditingSelectedTags] = useState(false);
+
   const [instructions, setInstructions] = useState([]);
   const [newInstruction, setNewInstruction] = useState("");
   const [isEditingInstructions, setIsEditingInstructions] = useState(false);
 
   const [ingredients, setIngredients] = useState([]);
-  const [newIngredientQuantity, setNewIngredientQuantity] = useState("");
   const [newIngredientName, setNewIngredientName] = useState("");
+  const [newIngredientUnit, setNewIngredientUnit] = useState("");
+  const [newIngredientQuantity, setNewIngredientQuantity] = useState("");
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
+
+  const [coverPhoto, setCoverPhoto] = useState();
 
   const addIngredientRef = useRef(null);
 
-  const [coverPhoto, setCoverPhoto] = useState();
+  const handleDeleteSelectedTag = (id) => {
+    setSelectedTags(selectedTags.filter((i, idx) => id !== idx));
+  };
 
   const handleEditInstruction = (id) => (e) => {
     const newInstructions = instructions.map((instruction, idx) => {
@@ -206,6 +303,13 @@ export default function AddRecipePage() {
     setIngredients(newIngredients);
   };
 
+  const handleEditIngredientUnit = (id) => (e) => {
+    const newIngredients = ingredients.map((ingredient, idx) => {
+      return id !== idx ? ingredient : { ...ingredient, unit: e.target.value };
+    });
+    setIngredients(newIngredients);
+  };
+
   const handleEditIngredientQuantity = (id) => (e) => {
     const newIngredients = ingredients.map((ingredient, idx) => {
       return id !== idx
@@ -219,17 +323,25 @@ export default function AddRecipePage() {
     if (
       newIngredientName &&
       newIngredientName !== "" &&
+      newIngredientUnit &&
+      newIngredientUnit !== "" &&
       newIngredientQuantity &&
       newIngredientQuantity !== ""
     ) {
       console.log(ingredients);
       setIngredients(
         ingredients.concat([
-          { name: newIngredientName, quantity: newIngredientQuantity },
+          {
+            name: newIngredientName,
+            unit: newIngredientUnit,
+            quantity: newIngredientQuantity,
+          },
         ])
       );
-      setNewIngredientQuantity("");
       setNewIngredientName("");
+      setNewIngredientUnit("");
+      setNewIngredientQuantity("");
+
       addIngredientRef.current.focus();
     }
   };
@@ -251,7 +363,7 @@ export default function AddRecipePage() {
         <div className="pt-12 max-w-6xl lg:grid lg:grid-cols-2 lg:gap-x-8">
           <div className="max-w-lg space-y-8 divide-y divide-gray-200">
             <div className="space-y-8">
-              <h2 className="text-xl font-patrick font-extrabold text-chestnut tracking wider">
+              <h2 className="text-xl font-patrick font-extrabold text-chestnut">
                 Recipe Info
               </h2>
               <IndentedTextInput label="Title" placeholder="Yummy Cookies!" />
@@ -262,9 +374,33 @@ export default function AddRecipePage() {
               </span>
             </div>
             <div className="pt-8">
-              <h2 className="text-xl font-patrick font-extrabold text-chestnut tracking wider">
-                Tags
-              </h2>
+              <SectionTitle
+                title={"Tags"}
+                isEditing={isEditingSelectedTags}
+                handleEdit={() =>
+                  setIsEditingSelectedTags(!isEditingSelectedTags)
+                }
+              />
+              <div className="flex flex-wrap py-2">
+                {selectedTags.map((tag, idx) => {
+                  return (
+                    <Tag
+                      tag={tag}
+                      key={idx}
+                      id={idx}
+                      readOnly={!isEditingSelectedTags}
+                      handleDelete={handleDeleteSelectedTag}
+                    />
+                  );
+                })}
+                {!isEditingSelectedTags && (
+                  <TagComboBox
+                    allTags={allTags}
+                    selectedTags={selectedTags}
+                    handleSelect={setSelectedTags}
+                  />
+                )}
+              </div>
             </div>
             <div className="pt-8">
               <SectionTitle
@@ -283,6 +419,7 @@ export default function AddRecipePage() {
                       ingredient={ingredient}
                       isEditing={isEditingIngredients}
                       handleEditName={handleEditIngredientName}
+                      handleEditUnit={handleEditIngredientUnit}
                       handleEditQuantity={handleEditIngredientQuantity}
                       handleDelete={handleDeleteIngredient}
                     />
@@ -294,17 +431,25 @@ export default function AddRecipePage() {
                     <div className="w-full pl-2 mt-1 flex rounded-md">
                       <input
                         ref={addIngredientRef}
-                        className="block w-20 min-w-0 rounded-none rounded-l-md border border-gray-300 px-3 py-1 text-md text-gray-400 font-patrick font-medium tracking-wider placeholder-gray-400 focus-within:border-sajah focus-within:ring-1 focus-within:ring-sajah "
+                        className="block w-20 min-w-0 rounded-none rounded-l-md border border-r-transparent border-gray-300 px-3 py-1 input-font input-focus focus:border-1"
                         type="text"
                         id="ingredient-quantity"
                         value={newIngredientQuantity}
-                        placeholder="500ml"
+                        placeholder="500"
                         onChange={(e) =>
                           setNewIngredientQuantity(e.target.value)
                         }
                       />
                       <input
-                        className="block w-full min-w-0 rounded-none rounded-r-md border border-l-0 border-gray-300 px-3 py-1 text-md text-gray-400 font-patrick font-medium tracking-wider placeholder-gray-400 focus-within:border-sajah focus-within:ring-1 focus-within:ring-sajah "
+                        className="block w-16 min-w-0 rounded-none border border-gray-300 px-3 py-1 input-font input-focus"
+                        type="text"
+                        id="ingredient-quantity"
+                        value={newIngredientUnit}
+                        placeholder="ml"
+                        onChange={(e) => setNewIngredientUnit(e.target.value)}
+                      />
+                      <input
+                        className="block w-full min-w-0 rounded-none rounded-r-md border border-l-transparent border-gray-300 px-3 py-1 input-font input-focus focus:border-l-1"
                         type="text"
                         id="ingredient-name"
                         value={newIngredientName}
@@ -345,7 +490,7 @@ export default function AddRecipePage() {
                     <div className="mt-1 w-full flex rounded-md">
                       <AddButton handleAdd={handleAddInstruction} />
                       <input
-                        className="block w-full min-w-0 rounded-md border-1 border-gray-300 px-2 py-1 ml-3 text-md text-gray-400 font-patrick font-medium tracking-wider placeholder-gray-400 focus-within:border-sajah focus-within:ring-1 focus-within:ring-sajah "
+                        className="block w-full min-w-0 rounded-md border-1 border-gray-300 px-2 py-1 ml-3 input-font input-focus"
                         type="text"
                         id="instruction-input"
                         value={newInstruction}
@@ -422,3 +567,9 @@ export default function AddRecipePage() {
 AddRecipePage.getLayout = function getLayout(page) {
   return <UserLayout activePageTitle="Add a new recipe!">{page}</UserLayout>;
 };
+
+export async function getServerSideProps() {
+  const tagLists = await getAllFilters();
+  const allTags = tagLists.flatMap(({ options }) => options);
+  return { props: { allTags } };
+}

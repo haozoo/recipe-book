@@ -153,10 +153,7 @@ export const getOneUserAddedTag = async (docId) => {
 }
 
 const getAllDefaultTags = async () => {
-  const defaultQuery = query(
-    lamAddedTags,
-    orderBy("order", "asc")
-  );
+  const defaultQuery = query(defaultTagsRef, orderBy("order", "asc"));
   const snapshot = await getDocs(defaultQuery);
   const tags = snapshot.docs.map((doc) => {
     const data = doc.data();
