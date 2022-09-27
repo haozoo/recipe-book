@@ -66,6 +66,21 @@ onAuthStateChanged(auth, (userStatus) => {
   console.log("user status changed:", userStatus)
 });
 
+export const getUserProfile = async () => {
+  const user = auth.currentUser;
+  if (user !== null) {
+    const displayName = user.displayName;
+    const email = user.email;
+    console.log(displayName);
+    console.log(email);
+
+    return { name: displayName, email: email }
+
+  } else {
+    console.error("Please Login!")
+  }
+}
+
 // Delete User Account registered with email/password
 export const deleteUserAccount = async (password) => {
   try {
@@ -85,14 +100,14 @@ export const changePassword = async (password, newPassword, confirmPassword) => 
     try {
       const check = await checkPassword(password)
       await updatePassword(check.user, newPassword)
-      console.log("Password updated")
+      console.log("Password successfully updated")
 
     } catch (error) {
       console.log(error.code);
       console.log(error.message);
     }
   } else {
-    console.log("Password and confirmation password must match")
+    console.log("Your password and confirmation password must match")
   }
 
 }
@@ -102,7 +117,7 @@ export const changeEmailAddress = async (newEmail, password) => {
   try {
     const check = await checkPassword(password)
     await updateEmail(check.user, newEmail)
-    console.log("Email Updated")
+    console.log("Email successfully Updated")
 
   } catch (error) {
     console.log(error.code);
