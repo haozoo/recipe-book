@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
-import { navigationOptions } from '../../utils/constants';
-import Link from 'next/link';
+import {
+  footerNavigationOptions,
+  sidebarNavigationOptions,
+} from "../../utils/constants";
+import Link from "next/link";
 
 export default function UserLayout({ children, activePageTitle }) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
@@ -12,7 +15,7 @@ export default function UserLayout({ children, activePageTitle }) {
       <div className="fixed inset-y-0 flex w-14 flex-col">
         <div className="flex min-h-0 flex-1 flex-col items-center bg-rajah">
           <div className="flex h-16 flex-shrink-0 items-center mt-4 mb-12">
-            <Link href={navigationOptions[0].href}>
+            <Link href={sidebarNavigationOptions[0].href}>
               <a>
                 <img
                   className="h-18 w-18"
@@ -24,7 +27,7 @@ export default function UserLayout({ children, activePageTitle }) {
           </div>
           <div className="flex flex-1 flex-col overflow-y-auto">
             <nav className="flex-1 space-y-12 px-3 py-4">
-              {navigationOptions.map((item) => (
+              {sidebarNavigationOptions.map((item) => (
                 <Link key={item.id} add href={item.href}>
                   <a className="text-white group flex items-center mx-6 text-sm font-medium">
                     <item.icon className="text-chestnut flex-shrink-0 h-6 w-6" />
@@ -67,10 +70,29 @@ export default function UserLayout({ children, activePageTitle }) {
         </div>
 
         <main className="flex-1">
-          <div className="mx-auto max-w-8xl px-10 sm:px-16 lg:px-16 bg-white">
+          <div className="mx-auto max-w-8xl min-h-screen px-10 sm:px-16 lg:px-16 bg-white">
             <main>{children}</main>
           </div>
         </main>
+        <footer className="sticky-bottom border-t border-gray-200 bg-white mt-16 px-10 sm:px-16 lg:px-16">
+          <div className="py-8 flex items-center justify-between">
+            <div className="flex space-x-6 order-2">
+              {footerNavigationOptions.map((item) => (
+                <a
+                  key={item.name}
+                  href="https://github.com/haozoo/recipe-book"
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <span className="sr-only">{item.name}</span>
+                  <item.icon className="h-6 w-6" aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+            <p className="mt-0 text-base text-gray-400 font-patrick font-medium tracking-wide order-1">
+              &copy; 2022 IT Project Group 80.
+            </p>
+          </div>
+        </footer>
       </div>
     </>
   );
