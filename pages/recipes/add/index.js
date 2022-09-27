@@ -10,23 +10,29 @@ const classNames = (...classes) => {
   return classes.filter(Boolean).join(" ");
 };
 
-const SectionTitle = ({ title, isEditing, handleEdit }) => {
+const SectionTitle = ({
+  title,
+  isEditing = undefined,
+  handleEdit = undefined,
+}) => {
   return (
-    <div className="pb-1 flex justify-between">
+    <div className="pb-4 flex justify-between">
       <h2 className="text-xl font-patrick font-extrabold text-chestnut">
         {title}
       </h2>
-      <button
-        className="flex flex-col justify-center"
-        type="button"
-        onClick={handleEdit}
-      >
-        {isEditing ? (
-          <XCircleIcon className="text-gray-400 flex-shrink-0 h-4 w-4" />
-        ) : (
-          <PencilIcon className="text-gray-400 flex-shrink-0 h-4 w-4" />
-        )}
-      </button>
+      {handleEdit && (
+        <button
+          className="flex flex-col justify-center"
+          type="button"
+          onClick={handleEdit}
+        >
+          {isEditing ? (
+            <XCircleIcon className="text-gray-400 flex-shrink-0 h-4 w-4" />
+          ) : (
+            <PencilIcon className="text-gray-400 flex-shrink-0 h-4 w-4" />
+          )}
+        </button>
+      )}
     </div>
   );
 };
@@ -358,7 +364,7 @@ export default function AddRecipePage({ allTags }) {
   return (
     <main className="mx-auto">
       <form className="">
-        <div className="pt-12 max-w-6xl lg:grid lg:grid-cols-2 lg:gap-x-8">
+        <div className="pt-12 max-w-6xl lg:grid lg:grid-cols-2 lg:gap-x-8 space-y-8 divide-y divide-gray-200 lg:space-y-0 lg:divide-y-0">
           <div className="max-w-lg space-y-8 divide-y divide-gray-200">
             <div className="">
               <h2 className="text-xl font-patrick font-extrabold text-chestnut">
@@ -375,7 +381,7 @@ export default function AddRecipePage({ allTags }) {
                 <IndentedTextInput label="Cooking Time" placeholder="5 mins" />
               </div>
             </div>
-            <div className="pt-8">
+            <div className="pt-12">
               <SectionTitle
                 title={"Tags"}
                 isEditing={isEditingSelectedTags}
@@ -383,7 +389,7 @@ export default function AddRecipePage({ allTags }) {
                   setIsEditingSelectedTags(!isEditingSelectedTags)
                 }
               />
-              <div className="flex flex-wrap py-2">
+              <div className="flex flex-wrap">
                 {selectedTags.map((tag, idx) => {
                   return (
                     <Tag
@@ -404,7 +410,7 @@ export default function AddRecipePage({ allTags }) {
                 )}
               </div>
             </div>
-            <div className="pt-8">
+            <div className="pt-12">
               <SectionTitle
                 title="Ingredients"
                 isEditing={isEditingIngredients}
@@ -466,7 +472,7 @@ export default function AddRecipePage({ allTags }) {
                 )}
               </div>
             </div>
-            <div className="pt-8">
+            <div className="pt-12">
               <SectionTitle
                 title="Instructions"
                 isEditing={isEditingInstructions}
@@ -512,53 +518,56 @@ export default function AddRecipePage({ allTags }) {
               </div>
             </div>
           </div>
-          <div className="lg:col-span-1">
-            {coverPhoto ? (
-              <div className="aspect-w-3 aspect-h-2">
-                <img
-                  className="rounded-lg object-cover shadow-lg"
-                  src={URL.createObjectURL(coverPhoto)}
-                  alt="Your cover photo."
-                />
-              </div>
-            ) : (
-              <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-32 pb-36">
-                <div className="space-y-1 text-center">
-                  <svg
-                    className="mx-auto h-12 w-12 text-gray-400"
-                    stroke="currentColor"
-                    fill="none"
-                    viewBox="0 0 48 48"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                      strokeWidth={2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <div className="flex text-sm text-gray-600">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600"
-                    >
-                      <span>Upload a image</span>
-                      <input
-                        className="sr-only"
-                        accept="image/jpeg, image/png"
-                        id="file-upload"
-                        name="file-upload"
-                        type="file"
-                        onChange={handleCoverChange}
-                      />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
+          <div className="max-w-lg border-0 border-t-1 border-gray-200 lg:col-span-1">
+            <div className="pt-12 lg:pt-0">
+              <SectionTitle title="Images" />
+              {coverPhoto ? (
+                <div className="aspect-w-3 aspect-h-2">
+                  <img
+                    className="rounded-lg object-cover shadow-lg"
+                    src={URL.createObjectURL(coverPhoto)}
+                    alt="Your cover photo."
+                  />
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-32 pb-36">
+                  <div className="space-y-1 text-center">
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      stroke="currentColor"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="file-upload"
+                        className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600"
+                      >
+                        <span>Upload a cover image</span>
+                        <input
+                          className="sr-only"
+                          accept="image/jpeg, image/png"
+                          id="file-upload"
+                          name="file-upload"
+                          type="file"
+                          onChange={handleCoverChange}
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </form>
