@@ -191,7 +191,7 @@ const Ingredient = ({
               className="block w-16 min-w-0 rounded-none px-3 py-1 input-font border-1 border-gray-300 input-focus"
               type="text"
               id="ingredient-quantity"
-              value={ingredient.quantity}
+              value={ingredient?.unit}
               placeholder="ml"
               onChange={handleEditUnit(id)}
             />
@@ -323,8 +323,6 @@ export default function AddRecipePage({ allTags }) {
     if (
       newIngredientName &&
       newIngredientName !== "" &&
-      newIngredientUnit &&
-      newIngredientUnit !== "" &&
       newIngredientQuantity &&
       newIngredientQuantity !== ""
     ) {

@@ -222,7 +222,7 @@ export default function AllRecipesPage({ recipes, filters }) {
 }
 
 AllRecipesPage.getLayout = (page) => {
-  return <UserLayout activePageTitle="Your Recipes">{page}</UserLayout>;
+  return <UserLayout activePageTitle="Your recipes">{page}</UserLayout>;
 };
 
 // NOTE: use this or staticProps?
