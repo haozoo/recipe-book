@@ -11,9 +11,12 @@ import { convertTime } from "../../utils/helpers";
 
 
 export default function SingleRecipePage({ recipe }) {
-  const tags = recipe.tags;
-  const ingredients = recipe.ingredients2;
+  const defaultTags = recipe.defaultTags;
+  const userAddedTags = recipe.userAddedTags;
+  const ingredients = recipe.ingredients;
   const instructions = recipe.instructions;
+
+  console.log(recipe);
 
   const [favourited, setFavourited] = useState(recipe.favourited);
 
@@ -61,8 +64,11 @@ export default function SingleRecipePage({ recipe }) {
             <div className="py-2 border-y border-solid border-chestnut">
               <p className="text-xs mb-2">Tags</p>
               <div className="flex flex-row flex-wrap space-x-4 space-y-2 text-sm">
-                {tags.map((tag, i) => (
-                  <button key={i} className="odd:bg-chrome-yellow even:bg-dirt hover:opacity-75 text-white px-4 py-2 rounded-full">{tag}</button>
+                {defaultTags.map((tag, i) => (
+                  <button key={i} className="odd:bg-chrome-yellow even:bg-dirt hover:opacity-75 text-white px-4 py-2 rounded-full">{tag.name}</button>
+                ))}
+                {userAddedTags.map((tag, i) => (
+                  <button key={i} className="odd:bg-chrome-yellow even:bg-dirt hover:opacity-75 text-white px-4 py-2 rounded-full">{tag.name}</button>
                 ))}
               </div>
             </div>
@@ -97,7 +103,7 @@ export default function SingleRecipePage({ recipe }) {
         </div>
         <div className="flex w-full flex-col">
           <div className="aspect-square h-72 flex items-center justify-center overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3 bg-blanched-almond">
-            <img src={recipe.imageSrc[0]} alt="" className="h-full"/>
+            <img src={recipe.coverImage.url} alt="" className="h-full"/>
           </div>
           <div>
             <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Gallery</p>
