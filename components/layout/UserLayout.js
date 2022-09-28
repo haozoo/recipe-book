@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import {
   AUTH_LOGIN_PATH,
@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useUserAuth } from "../../context/UserAuthContext";
 import Router from "next/router";
 import { Menu, Transition } from "@headlessui/react";
+import { RecipeContextProvider } from "../../context/RecipeContext";
 
 const UserIcon = ({ user, handleLogOut }) => {
   return (
@@ -70,12 +71,12 @@ export default function UserLayout({ children, activePageTitle }) {
 
   const { user, logOut } = useUserAuth();
 
-  useState(() => {
+  useEffect(() => {
     if (!user) Router.push(AUTH_LOGIN_PATH);
   }, [user]);
 
   return (
-    <>
+    <RecipeContextProvider>
       {/* Sidebar */}
       <div className="fixed inset-y-0 flex w-14 flex-col">
         <div className="flex min-h-0 flex-1 flex-col items-center bg-rajah">
@@ -151,6 +152,6 @@ export default function UserLayout({ children, activePageTitle }) {
           </div>
         </footer>
       </div>
-    </>
+    </RecipeContextProvider>
   );
 }

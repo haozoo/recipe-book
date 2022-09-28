@@ -57,7 +57,7 @@ export function UserAuthContextProvider({ children }) {
 export function useUserAuth() {
   const context = useContext(userAuthContext);
   if (context === undefined) {
-    throw new Error("useUserAuth must be used within a CountProvider");
+    throw new Error("useUserAuth must be used within a UserContextProvider");
   }
   return context;
 }

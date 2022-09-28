@@ -8,47 +8,50 @@ import {
 } from "@heroicons/react/20/solid";
 import UserLayout from "../../components/layout/UserLayout";
 import RecipeList from "../../components/recipes/RecipeList";
-import { getAllRecipes, getAllFilters } from "../../services/database";
 import { useUserAuth } from "../../context/UserAuthContext";
 import LoadingIcon from "../../components/utility/LoadingIcon";
+import { useRecipes } from "../../context/RecipeContext";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function AllRecipesPage({ filters }) {
-  const [allRecipes, setAllRecipes] = useState([]);
-  const [recipeFilters, setRecipeFilters] = useState(filters);
+export default function AllRecipesPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const [isLoadingFilters, setIsLoadingFilters] = useState(true);
+  const [isLoadingRecipes, setIsLoadingRecipes] = useState(true);
+
   const { user } = useUserAuth();
+  const { recipes, getRecipes, filters, getFilters } = useRecipes();
 
   const handleFavouriteRecipe = (rId, favourited) => {
-    var newAllRecipes = allRecipes;
+    var newAllRecipes = recipes;
     newAllRecipes[rId].favourited = favourited;
-
-    // Favourite recipe in database
-    // Insert function here:
-
     setAllRecipes(newAllRecipes);
   };
 
-  const fetchRecipes = async () => {
-    const newRecipes = await getAllRecipes(user.uid);
-    setAllRecipes(newRecipes);
-  };
-
+  // 1. Set loading on page mount.
   useEffect(() => {
-    setIsLoading(true);
+    setIsLoadingFilters(true);
+    setIsLoadingRecipes(true);
   }, []);
 
+  // 2. Wait until user is defined to fetch recipes w/ uid.
   useEffect(() => {
-    if (user) setTimeout(fetchRecipes, 3000);
+    if (user) {
+      getRecipes(user.uid);
+      getFilters(user.uid);
+    }
   }, [user]);
 
+  // 3. Wait until recipes/filters are defined to stop loading.
   useEffect(() => {
-    if (allRecipes) setIsLoading(false);
-  }, [allRecipes]);
+    if (filters?.length !== 0) setIsLoadingFilters(false);
+  }, [filters]);
+  useEffect(() => {
+    if (recipes?.length !== 0) setIsLoadingRecipes(false);
+  }, [recipes]);
 
   return (
     <>
@@ -104,7 +107,7 @@ export default function AllRecipesPage({ filters }) {
 
                   {/* Filters */}
                   <form className="mt-4">
-                    {recipeFilters.map((section) => (
+                    {filters?.map((section) => (
                       <Disclosure
                         as="div"
                         key={section.name}
@@ -166,19 +169,27 @@ export default function AllRecipesPage({ filters }) {
         <main className="mx-auto">
           <div className="pt-12 lg:grid lg:grid-cols-4 lg:gap-x-8 xl:grid-cols-5">
             <aside className="max-w-xs">
-              <button
-                type="button"
-                className="py-2 px-3 rounded-md bg-platinum bg-opacity-40 inline-flex items-center lg:hidden"
-                onClick={() => setMobileFiltersOpen(true)}
-              >
-                <span className="text-sm font-lora font-bold text-chestnut">
-                  Filters Recipes
-                </span>
-                <PlusIcon
-                  className="ml-1 h-5 w-5 flex-shrink-0 text-chestnut"
-                  aria-hidden="true"
-                />
-              </button>
+              {isLoadingFilters ? (
+                <div className="animate-pulse py-2 px-3 rounded-md bg-platinum bg-opacity-40 inline-flex items-center lg:hidden">
+                  <div className="text-base font-patrick font-bold text-gray-400">
+                    Cooking up your tags...
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="py-2 px-3 rounded-md bg-platinum bg-opacity-40 inline-flex items-center lg:hidden"
+                  onClick={() => setMobileFiltersOpen(true)}
+                >
+                  <span className="text-sm font-lora font-bold text-chestnut">
+                    Filters Recipes
+                  </span>
+                  <PlusIcon
+                    className="ml-1 h-5 w-5 flex-shrink-0 text-chestnut"
+                    aria-hidden="true"
+                  />
+                </button>
+              )}
 
               <div className="hidden lg:block">
                 <form className="space-y-10 divide-y divide-platinum">
@@ -196,47 +207,62 @@ export default function AllRecipesPage({ filters }) {
                       results.
                     </p>
                   </div>
-                  {recipeFilters.map((section, sectionIdx) => (
-                    <div key={section.name} className="pt-10">
-                      <fieldset>
-                        <legend className="block text-md font-lora font-medium text-chestnut">
-                          {section.name}
-                        </legend>
-                        <div className="space-y-3 pt-4">
-                          {section.options.map((option) => (
-                            <div key={option.id} className="flex items-center">
-                              <input
-                                id={`${section.name}-${option.id}`}
-                                name={`${section.name}[]`}
-                                defaultValue={option.name}
-                                type="checkbox"
-                                className="h-4 w-4 rounded border-chestnut text-dirt focus:ring-dirt"
-                              />
-                              <label
-                                htmlFor={`${section.name}-${option.id}`}
-                                className="ml-3 font-nunito text-sm text-chestnut"
-                              >
-                                {option.name}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </fieldset>
+                  {isLoadingFilters ? (
+                    <div className="animate-pulse pt-8 text-base text-gray-400 font-patrick font-medium tracking-wider">
+                      Cooking up your tags...
                     </div>
-                  ))}
+                  ) : (
+                    <div>
+                      {filters?.map((section, sectionIdx) => (
+                        <div key={section.name} className="pt-10">
+                          <fieldset>
+                            <legend className="block text-md font-lora font-medium text-chestnut">
+                              {section.name}
+                            </legend>
+                            <div className="space-y-3 pt-4">
+                              {section.options.map((option) => (
+                                <div
+                                  key={option.id}
+                                  className="flex items-center"
+                                >
+                                  <input
+                                    id={`${section.name}-${option.id}`}
+                                    name={`${section.name}[]`}
+                                    defaultValue={option.name}
+                                    type="checkbox"
+                                    className="h-4 w-4 rounded border-chestnut text-dirt focus:ring-dirt"
+                                  />
+                                  <label
+                                    htmlFor={`${section.name}-${option.id}`}
+                                    className="ml-3 font-nunito text-sm text-chestnut"
+                                  >
+                                    {option.name}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </fieldset>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </form>
               </div>
             </aside>
 
             {/* Product grid */}
             <div className="lg:col-span-3 xl:col-span-4 mb-32">
-              {isLoading ? (
-                <LoadingIcon message="Serving up recipes..." />
+              {isLoadingRecipes ? (
+                <div className="pt-36">
+                  <LoadingIcon message="Serving up recipes..." />
+                </div>
               ) : (
-                <RecipeList
-                  recipes={allRecipes}
-                  favouriteRecipe={handleFavouriteRecipe}
-                />
+                recipes && (
+                  <RecipeList
+                    recipes={recipes}
+                    favouriteRecipe={handleFavouriteRecipe}
+                  />
+                )
               )}
             </div>
           </div>
@@ -249,9 +275,3 @@ export default function AllRecipesPage({ filters }) {
 AllRecipesPage.getLayout = (page) => {
   return <UserLayout activePageTitle="Your recipes">{page}</UserLayout>;
 };
-
-// NOTE: use this or staticProps?
-export async function getServerSideProps() {
-  const filters = await getAllFilters();
-  return { props: { filters } };
-}

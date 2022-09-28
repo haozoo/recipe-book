@@ -9,6 +9,8 @@ import {
 } from "../../../services/database";
 import { Combobox } from "@headlessui/react";
 import Tag from "../../../components/recipes/Tag";
+import { useRecipes } from "../../../context/RecipeContext";
+import { useUserAuth } from "../../../context/UserAuthContext";
 
 const classNames = (...classes) => {
   return classes.filter(Boolean).join(" ");
@@ -263,14 +265,15 @@ const DeleteButton = ({ onDelete }) => {
   );
 };
 
-export default function AddRecipePage({ allTags }) {
+export default function AddRecipePage() {
   const [title, setTitle] = useState("");
   const [prepTime, setPrepTime] = useState("");
   const [cookTime, setCookTime] = useState("");
 
+  const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [filteredTags, setFilteredTags] = useState(allTags);
   const [isEditingSelectedTags, setIsEditingSelectedTags] = useState(false);
+  const [isLoadingTags, setIsLoadingTags] = useState(true);
 
   const [instructions, setInstructions] = useState([]);
   const [newInstruction, setNewInstruction] = useState("");
@@ -284,7 +287,31 @@ export default function AddRecipePage({ allTags }) {
 
   const [coverPhotoFile, setCoverPhotoFile] = useState();
 
+  const { user } = useUserAuth();
+  const { filters, getFilters } = useRecipes();
+
   const addIngredientRef = useRef(null);
+
+  // 1. Set loading on page mount.
+  useEffect(() => {
+    setIsLoadingTags(true);
+  }, []);
+
+  // 2. Wait until user is defined to fetch recipes w/ uid.
+  useEffect(() => {
+    if (user) {
+      getFilters(user.uid);
+    }
+  }, [user]);
+
+  // 3. Wait until recipes/filters are defined to stop loading.
+  useEffect(() => {
+    if (filters?.length !== 0) {
+      const flattenedTags = filters.flatMap(({ options }) => options);
+      setAllTags(flattenedTags);
+      setIsLoadingTags(false);
+    }
+  }, [filters]);
 
   const handleDeleteSelectedTag = (id) => {
     setSelectedTags(selectedTags.filter((i, idx) => id !== idx));
@@ -387,24 +414,8 @@ export default function AddRecipePage({ allTags }) {
       defaultTags,
       userAddedTags,
     };
-    // const recipeJSON = JSON.stringify(recipeData);
-
-    // console.log(recipeData);
-    // console.log(coverPhotoFile);
     addNewRecipeAndImages(recipeData, coverPhotoFile, []);
-    // const recipeData = new FormData();
-    // recipeData.append("recipeCoverPhoto", coverPhotoFile);
-    // recipeData.append("recipeInfo", recipeJSON);
-
-    // const endpoint = "/api/recipe";
-    // const options = {
-    //   method: "POST",
-    //   body: recipeData,
-    // };
-
-    // const response = await fetch(endpoint, options);
-    // alert("Form successfully posted!");
-  };;
+  };
 
   return (
     <main className="mx-auto">
@@ -446,26 +457,32 @@ export default function AddRecipePage({ allTags }) {
                   setIsEditingSelectedTags(!isEditingSelectedTags)
                 }
               />
-              <div className="flex flex-wrap">
-                {selectedTags.map((tag, idx) => {
-                  return (
-                    <Tag
-                      tag={tag}
-                      key={idx}
-                      id={idx}
-                      readOnly={!isEditingSelectedTags}
-                      handleDelete={handleDeleteSelectedTag}
+              {isLoadingTags ? (
+                <div className="animate-pulse text-base text-gray-400 font-patrick font-medium tracking-wider">
+                  Cooking up your tags...
+                </div>
+              ) : (
+                <div className="flex flex-wrap">
+                  {selectedTags.map((tag, idx) => {
+                    return (
+                      <Tag
+                        tag={tag}
+                        key={idx}
+                        id={idx}
+                        readOnly={!isEditingSelectedTags}
+                        handleDelete={handleDeleteSelectedTag}
+                      />
+                    );
+                  })}
+                  {!isEditingSelectedTags && (
+                    <TagComboBox
+                      allTags={allTags}
+                      selectedTags={selectedTags}
+                      handleSelect={setSelectedTags}
                     />
-                  );
-                })}
-                {!isEditingSelectedTags && (
-                  <TagComboBox
-                    allTags={allTags}
-                    selectedTags={selectedTags}
-                    handleSelect={setSelectedTags}
-                  />
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </div>
             <div className="pt-12">
               <SectionTitle
@@ -575,8 +592,12 @@ export default function AddRecipePage({ allTags }) {
               </div>
             </div>
             <div>
-              <button type="button" onClick={handleSubmit}>
-                Submit
+              <button
+                className="mt-8 py-1 px-3 rounded-lg bg-chrome-yellow text-base text-white font-nunito font-bold"
+                type="button"
+                onClick={handleSubmit}
+              >
+                Upload
               </button>
             </div>
           </div>
@@ -640,9 +661,3 @@ export default function AddRecipePage({ allTags }) {
 AddRecipePage.getLayout = function getLayout(page) {
   return <UserLayout activePageTitle="Add a new recipe!">{page}</UserLayout>;
 };
-
-export async function getServerSideProps() {
-  const tagLists = await getAllFilters();
-  const allTags = tagLists.flatMap(({ options }) => options);
-  return { props: { allTags } };
-}

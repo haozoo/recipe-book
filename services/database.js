@@ -160,11 +160,11 @@ const getAllDefaultTags = async () => {
   return tags;
 }
 
-const getAllUserAddedTags = async () => {
+const getAllUserAddedTags = async (uid) => {
   const userQuery = query(
     userAddedTagsRef,
-    // where("createdBy", "==", user.uid),
-    orderBy("createdAt", "asc")
+    where("createdBy", "==", uid),
+    // orderBy("createdAt", "asc")
   );
   const snapshot = await getDocs(userQuery);
   const tags = snapshot.docs.map((doc) => {
@@ -174,9 +174,9 @@ const getAllUserAddedTags = async () => {
   return tags;
 }
 
-export const getAllFilters = async () => {
+export const getAllFilters = async (uid) => {
   const defaultTags = await getAllDefaultTags();
-  const userAddedTags = await getAllUserAddedTags();
+  const userAddedTags = await getAllUserAddedTags(uid);
   // group tags by their type
   const allTags = defaultTags.concat(userAddedTags);
   var filters = _.groupBy(allTags, tag => tag.type);
