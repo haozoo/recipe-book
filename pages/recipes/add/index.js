@@ -386,7 +386,7 @@ export default function AddRecipePage() {
   };
 
   const handleDeleteIngredient = (id) => {
-    setIngredients(instructions.filter((i, idx) => id !== idx));
+    setIngredients(ingredients.filter((i, idx) => id !== idx));
   };
 
   const handleCoverChange = (e) => {
