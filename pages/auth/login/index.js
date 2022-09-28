@@ -49,7 +49,7 @@ const Login = () => {
         </div>
       </div>
       <div className="p-4 box mt-3 text-center">
-        Don't have an account? <Link href={LANDING_PAGE_PATH}>Sign up</Link>
+        Do not have an account? <Link href={LANDING_PAGE_PATH}>Sign up</Link>
       </div>
     </>
   );
