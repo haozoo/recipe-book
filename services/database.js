@@ -86,21 +86,21 @@ export const getOneRecipe = async (docId) => {
   }
 }
 
-export const getAllRecipes = async () => {
-  if (true) {
+export const getAllRecipes = async (uid) => {
+  try {
     const userQuery = query(
       recipesRef,
-      // where("createdBy", "in", ),
-      orderBy("createdAt", "desc")
+      where("createdBy", "==", auth.currentUser.uid)
+      // orderBy("createdAt", "desc")
     );
     const snapshot = await getDocs(userQuery);
     const data = snapshot.docs.map((doc) => doc.data());
     const recipes = JSON.parse(JSON.stringify(data));
     return recipes;
-  } else {
-    console.error("No user is signed in!");
+  } catch (err) {
+    console.error(err);
   }
-}
+};
 
 const defaultTagsRef = collection(db, "newDefaultTags");
 const userAddedTagsRef = collection(db, "newUserAddedTags");
@@ -151,10 +151,7 @@ export const getOneUserAddedTag = async (docId) => {
 }
 
 const getAllDefaultTags = async () => {
-  const defaultQuery = query(
-    defaultTagsRef,
-    orderBy("order", "asc")
-  );
+  const defaultQuery = query(defaultTagsRef, orderBy("order", "asc"));
   const snapshot = await getDocs(defaultQuery);
   const tags = snapshot.docs.map((doc) => {
     const data = doc.data();
@@ -163,11 +160,11 @@ const getAllDefaultTags = async () => {
   return tags;
 }
 
-const getAllUserAddedTags = async () => {
+const getAllUserAddedTags = async (uid) => {
   const userQuery = query(
     userAddedTagsRef,
-    // where("createdBy", "==", user.uid),
-    orderBy("createdAt", "asc")
+    where("createdBy", "==", uid),
+    // orderBy("createdAt", "asc")
   );
   const snapshot = await getDocs(userQuery);
   const tags = snapshot.docs.map((doc) => {
@@ -177,9 +174,9 @@ const getAllUserAddedTags = async () => {
   return tags;
 }
 
-export const getAllFilters = async () => {
+export const getAllFilters = async (uid) => {
   const defaultTags = await getAllDefaultTags();
-  const userAddedTags = await getAllUserAddedTags();
+  const userAddedTags = await getAllUserAddedTags(uid);
   // group tags by their type
   const allTags = defaultTags.concat(userAddedTags);
   var filters = _.groupBy(allTags, tag => tag.type);

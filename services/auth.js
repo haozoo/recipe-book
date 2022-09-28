@@ -51,15 +51,15 @@ export const createAccount = async () => {
 }
 
 
-// Automatically signout for now
-signOut(auth)
-  .then(() => {
-    console.log("logged out");
-    navigate("/");
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+// // Automatically signout for now
+// signOut(auth)
+//   .then(() => {
+//     console.log("logged out");
+//     navigate("/");
+//   })
+//   .catch((error) => {
+//     console.log(error);
+//   });
 
 
 onAuthStateChanged(auth, (userStatus) => {
