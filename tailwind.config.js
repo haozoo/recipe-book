@@ -16,6 +16,9 @@ module.exports = {
       architectsDaughter: ["Architects Daughter"],
     },
     extend: {
+      animation: {
+        "spin-slow": "spin 3s linear infinite",
+      },
       colors: {
         dirt: "#A06A50",
         chestnut: "#292626",

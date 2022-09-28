@@ -86,21 +86,21 @@ export const getOneRecipe = async (docId) => {
   }
 }
 
-export const getAllRecipes = async () => {
-  if (true) {
+export const getAllRecipes = async (uid) => {
+  try {
     const userQuery = query(
       recipesRef,
-      // where("createdBy", "in", ),
-      orderBy("createdAt", "desc")
+      where("createdBy", "==", auth.currentUser.uid)
+      // orderBy("createdAt", "desc")
     );
     const snapshot = await getDocs(userQuery);
     const data = snapshot.docs.map((doc) => doc.data());
     const recipes = JSON.parse(JSON.stringify(data));
     return recipes;
-  } else {
-    console.error("No user is signed in!");
+  } catch (err) {
+    console.error(err);
   }
-}
+};
 
 const defaultTagsRef = collection(db, "newDefaultTags");
 const userAddedTagsRef = collection(db, "newUserAddedTags");

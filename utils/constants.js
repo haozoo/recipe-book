@@ -5,10 +5,25 @@ import {
 } from "@heroicons/react/24/outline";
 import { AuthErrorCodes } from 'firebase/auth';
 
+export const USER_PROFILE_PATH = "/profile";
+export const USER_ALL_RECIPE_PATH = "/recipes";
+export const USER_FAVOURITES_PATH = "/recipes/favourites";
+export const USER_ADD_RECIPE_PATH = "/recipes/add";
+
+export const LANDING_PAGE_PATH = "/";
+
+export const AUTH_LOGIN_PATH = "/auth/login";
+export const AUTH_SIGNUP_PATH = "/auth/signup";
+
 export const sidebarNavigationOptions = [
-  { id: 1, name: "Home", href: "/recipes", icon: HomeIcon },
-  { id: 2, name: "Favourites", href: "/recipes/favourites", icon: HeartIcon },
-  { id: 3, name: "Add Recipe", href: "/recipes/add", icon: PlusCircleIcon },
+  { id: 1, name: "Home", href: USER_ALL_RECIPE_PATH, icon: HomeIcon },
+  { id: 2, name: "Favourites", href: USER_FAVOURITES_PATH, icon: HeartIcon },
+  {
+    id: 3,
+    name: "Add Recipe",
+    href: USER_ADD_RECIPE_PATH,
+    icon: PlusCircleIcon,
+  },
 ];
 
 export const footerNavigationOptions = [

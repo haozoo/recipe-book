@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
@@ -9,15 +9,19 @@ import {
 import UserLayout from "../../components/layout/UserLayout";
 import RecipeList from "../../components/recipes/RecipeList";
 import { getAllRecipes, getAllFilters } from "../../services/database";
+import { useUserAuth } from "../../context/UserAuthContext";
+import LoadingIcon from "../../components/utility/LoadingIcon";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function AllRecipesPage({ recipes, filters }) {
-  const [allRecipes, setAllRecipes] = useState(recipes);
+export default function AllRecipesPage({ filters }) {
+  const [allRecipes, setAllRecipes] = useState([]);
   const [recipeFilters, setRecipeFilters] = useState(filters);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useUserAuth();
 
   const handleFavouriteRecipe = (rId, favourited) => {
     var newAllRecipes = allRecipes;
@@ -28,6 +32,23 @@ export default function AllRecipesPage({ recipes, filters }) {
 
     setAllRecipes(newAllRecipes);
   };
+
+  const fetchRecipes = async () => {
+    const newRecipes = await getAllRecipes(user.uid);
+    setAllRecipes(newRecipes);
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+  }, []);
+
+  useEffect(() => {
+    if (user) setTimeout(fetchRecipes, 3000);
+  }, [user]);
+
+  useEffect(() => {
+    if (allRecipes) setIsLoading(false);
+  }, [allRecipes]);
 
   return (
     <>
@@ -209,10 +230,14 @@ export default function AllRecipesPage({ recipes, filters }) {
 
             {/* Product grid */}
             <div className="lg:col-span-3 xl:col-span-4 mb-32">
-              <RecipeList
-                recipes={allRecipes}
-                favouriteRecipe={handleFavouriteRecipe}
-              />
+              {isLoading ? (
+                <LoadingIcon message="Serving up recipes..." />
+              ) : (
+                <RecipeList
+                  recipes={allRecipes}
+                  favouriteRecipe={handleFavouriteRecipe}
+                />
+              )}
             </div>
           </div>
         </main>
@@ -227,7 +252,6 @@ AllRecipesPage.getLayout = (page) => {
 
 // NOTE: use this or staticProps?
 export async function getServerSideProps() {
-  const recipes = await getAllRecipes();
   const filters = await getAllFilters();
-  return { props: { recipes, filters } };
+  return { props: { filters } };
 }

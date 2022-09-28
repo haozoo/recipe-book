@@ -265,8 +265,8 @@ const DeleteButton = ({ onDelete }) => {
 
 export default function AddRecipePage({ allTags }) {
   const [title, setTitle] = useState("");
-  const [prepTime, setPrepTime] = useState(20);
-  const [cookTime, setCookTime] = useState(10);
+  const [prepTime, setPrepTime] = useState("");
+  const [cookTime, setCookTime] = useState("");
 
   const [selectedTags, setSelectedTags] = useState([]);
   const [filteredTags, setFilteredTags] = useState(allTags);
@@ -378,7 +378,7 @@ export default function AddRecipePage({ allTags }) {
       .filter((t) => t.type === "My Tags")
       .map((t) => t.id);
 
-    const recipeJSON = JSON.stringify({
+    const recipeData = {
       title,
       cookTime,
       prepTime,
@@ -386,20 +386,25 @@ export default function AddRecipePage({ allTags }) {
       instructions: instructions.map((instruction) => instruction.text),
       defaultTags,
       userAddedTags,
-    });
-    const recipeData = new FormData();
-    recipeData.append("recipeCoverPhoto", coverPhotoFile);
-    recipeData.append("recipeInfo", recipeJSON);
-
-    const endpoint = "/api/recipe";
-    const options = {
-      method: "POST",
-      body: recipeData,
     };
+    // const recipeJSON = JSON.stringify(recipeData);
 
-    const response = await fetch(endpoint, options);
-    alert("Form successfully posted!");
-  };
+    // console.log(recipeData);
+    // console.log(coverPhotoFile);
+    addNewRecipeAndImages(recipeData, coverPhotoFile, []);
+    // const recipeData = new FormData();
+    // recipeData.append("recipeCoverPhoto", coverPhotoFile);
+    // recipeData.append("recipeInfo", recipeJSON);
+
+    // const endpoint = "/api/recipe";
+    // const options = {
+    //   method: "POST",
+    //   body: recipeData,
+    // };
+
+    // const response = await fetch(endpoint, options);
+    // alert("Form successfully posted!");
+  };;
 
   return (
     <main className="mx-auto">
