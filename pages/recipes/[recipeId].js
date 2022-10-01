@@ -9,14 +9,11 @@ import UserLayout from "../../components/layout/UserLayout";
 import { getOneRecipe } from "../../services/database";
 import { convertTime } from "../../utils/helpers";
 
-
 export default function SingleRecipePage({ recipe }) {
   const defaultTags = recipe.defaultTags;
   const userAddedTags = recipe.userAddedTags;
   const ingredients = recipe.ingredients;
   const instructions = recipe.instructions;
-
-  console.log(recipe);
 
   const [favourited, setFavourited] = useState(recipe.favourited);
 
@@ -62,7 +59,7 @@ export default function SingleRecipePage({ recipe }) {
             </div>
             
             <div className="py-2 border-y border-solid border-chestnut">
-              <p className="text-xs mb-2">Tags</p>
+              <h2 className="text-xs mb-2">Tags</h2>
               <div className="flex flex-row flex-wrap space-x-4 space-y-2 text-sm">
                 {defaultTags.map((tag, i) => (
                   <button key={i} className="odd:bg-chrome-yellow even:bg-dirt hover:opacity-75 text-white px-4 py-2 rounded-full">{tag.name}</button>
@@ -74,7 +71,7 @@ export default function SingleRecipePage({ recipe }) {
             </div>
           </div>
           <div>
-            <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4 pb-2">Ingredients</p>
+            <h2 className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4 pb-2">Ingredients</h2>
             <div className="flex space-x-2 pb-2 align-middle">
               <p className="text-sm">Servings</p>
               <button disabled={serving==1 ? true : false} onClick={() => setServing(serving - 1)}
@@ -92,7 +89,7 @@ export default function SingleRecipePage({ recipe }) {
             </div>
           </div>
           <div>
-            <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4 pb-2">Instructions</p>
+            <h2 className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4 pb-2">Instructions</h2>
             <ol style={{ listStyleType: 'decimal' }} className="pl-6">
               {instructions.map((instruction, i) => (
                 <li key={i} className="pl-2 font-nunito">{instruction}</li>
@@ -106,7 +103,15 @@ export default function SingleRecipePage({ recipe }) {
             <img src={recipe.coverImage.url} alt="" className="h-full"/>
           </div>
           <div>
-            <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Gallery</p>
+            <h2 className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">Gallery</h2>
+            {recipe.otherImages.length > 0 && 
+              <div className="h-60 w-72 flex items-center justify-center overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3 bg-blanched-almond">
+                {recipe.otherImages.map((image, i) => (<img src={image.url} alt="" className="object-contain"/>))}
+              </div>
+            }
+            {recipe.otherImages.length === 0 &&
+             <p>You have not uploaded any other images!</p>
+            }
           </div>
         </div>
       </div>
