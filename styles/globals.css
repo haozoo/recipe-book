@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.input-font {
+  @apply text-base text-hazelnut font-patrick font-medium tracking-wider truncate placeholder-gray-400;
+}
+
+.input-focus {
+  @apply focus-within:border-rajah focus-within:ring-1 focus-within:ring-rajah;
+}

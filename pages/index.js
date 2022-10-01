@@ -18,16 +18,18 @@ export default function Home() {
         <h1 className="text-3xl font-bold underline">Landing Page</h1>
 
         <div className="flex flex-col w-40">
-          <label for="txtEmail"> Email</label>
+          <label htmlFor="txtEmail"> Email</label>
           <input type="email" id="txtEmail" name="txtEmail" />
-          <label for="txtPassword"> Password</label>
+          <label htmlFor="txtPassword"> Password</label>
           <input type="password" id="txtPassword" name="txtPassword" />
           <button onClick={createAccount}>Sign Up With Email</button>
           <button onClick={handleEmailLogin}>Sign In With Email</button>
           <button onClick={handleGoogleLogin}>Sign In With Google</button>
         </div>
-        <div id="divLoginError" class="group">
-            <div id="lblLoginErrorMessage" class="errorlabel">Error message</div>
+        <div id="divLoginError" className="group">
+          <div id="lblLoginErrorMessage" className="errorlabel">
+            Error message
+          </div>
         </div>
       </main>
     </div>

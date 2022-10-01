@@ -16,13 +16,18 @@ module.exports = {
       architectsDaughter: ["Architects Daughter"],
     },
     extend: {
+      animation: {
+        "spin-slow": "spin 3s linear infinite",
+      },
       colors: {
         dirt: "#A06A50",
-        chestnut: "#55433B",
+        chestnut: "#292626",
+        hazelnut: "#55433B",
         cultured: "#F8F7F5",
         lotion: "#FFFDFA",
         platinum: "#E3E2E1",
         rajah: "#FFAC59",
+        sajah: "#d18b43",
 
         "blanched-almond": "#FFEFCA",
         "chrome-yellow": "#FFAC00",
