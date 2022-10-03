@@ -21,7 +21,7 @@ export default function Home() {
       
         <div className='flex-1 h-full bg-chrome-yellow'>
           <Container>
-            <div className='py-48 inline-block my-auto align-content'>
+            <div className='pt-60 inline-block my-auto align-content'>
               <h2 className='font-semibold italic font-nunito text-5xl text-white tracking-wide leading-14'>
                 Never lose or forget your favourite recipes again.
               </h2>
@@ -46,16 +46,19 @@ export default function Home() {
         </div>
         <div className='flex-1 h-full bg-blanched-almond'>
           <Container>
-            <div className='bg-repeat-y'>
+            <div className='relative w-full h-full'>
               <img 
-                className='-my-3'
+                className='absolute top-0'
                 src="/kitchen-baking-and-cooking-tool.png"
               />
               <img 
-                className=''
+                className='absolute top-[26.5rem]'
                 src="/kitchen-baking-and-cooking-tool.png"
               />
-              
+              <img 
+                className='overflow-hidden absolute z-10 top-[20.5rem] left-[6.9rem] scale-[2] block'
+                src="/desktop-prototype.png"
+              />
             </div>
           </Container>
         </div>
