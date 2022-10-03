@@ -35,6 +35,11 @@ module.exports = {
         "pale-silver": "#C3C0B9",
         "atomic-tangerine": "#FC8E57",
       },
+      lineHeight: {
+        'extra-loose': '2.5',
+        '12': '3rem',
+        '14': '3.5rem',
+      }
     },
   },
   plugins: [require("@tailwindcss/forms")],
