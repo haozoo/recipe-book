@@ -22,13 +22,13 @@ export function Header() {
               <span className="font-patrick text-chestnut tracking-wide text-3xl pr-2">
                 REcipes
               </span>
-              <span className="font-nunito text-chestnut tracking-wide text-lg">
+              <span className="font-nunito text-chestnut tracking-wide text-lg hidden lg:inline-block">
                 | YOUR COOKING COMPANION
               </span>
             </span>
           </div>
-          <div className="flex items-center gap-x-5 md:gap-x-8">
-            <div className="font-nunito text-lg hidden md:block">
+          <div className="flex items-center gap-x-4 md:gap-x-8">
+            <div className="font-nunito text-lg">
               <NavLink href="/auth/login">Sign in</NavLink>
             </div>
             <button href="/register" color="blue" className="bg-chrome-yellow hover:opacity-75 text-white px-4 py-2 rounded-full">

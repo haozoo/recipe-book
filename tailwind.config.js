@@ -39,7 +39,10 @@ module.exports = {
         'extra-loose': '2.5',
         '12': '3rem',
         '14': '3.5rem',
-      }
+      },
+      backgroundImage: {
+        'kitchen-tools': "url('/public/kitchen-baking-and-cooking-tool.png')",
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],
