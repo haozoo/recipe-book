@@ -39,8 +39,10 @@ export default function AllRecipesPage() {
 
   // 2. Wait until user is defined to fetch recipes w/ uid.
   useEffect(() => {
-    if (user) {
+    if (user && recipes?.length === 0) {
       getRecipes(user.uid);
+    }
+    if (user && filters?.length === 0) {
       getFilters(user.uid);
     }
   }, [user]);
