@@ -81,6 +81,16 @@ export const getUserProfile = async () => {
   }
 }
 
+export const updateUserProfile = async(newusername) => {
+  updateProfile(auth.currentUser, {displayName: newusername}).
+    then(()=> {
+      // Profile updated
+    }).catch((error) => {
+      console.log(error.code);
+      console.log(error.message);
+    })
+}
+
 // Delete User Account registered with email/password
 export const deleteUserAccount = async (password) => {
   try {
