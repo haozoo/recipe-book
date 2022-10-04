@@ -118,22 +118,24 @@ export const changeEmailAddress = async (newEmail, password) => {
     const check = await checkPassword(password)
     await updateEmail(check.user, newEmail)
     console.log("Email successfully Updated")
-
   } catch (error) {
     console.log(error.code);
     console.log(error.message);
   }
-
 }
 
 // Reauthentication
 const checkPassword = async (password) => {
-    const user = auth.currentUser
-    const credential = EmailAuthProvider.credential(user.email, password)
-    const check = await reauthenticateWithCredential(user, credential)
-    console.log("Reauthentication completed")
-    return check
-}
+  try {
+    const user = auth.currentUser;
+    const credential = EmailAuthProvider.credential(user.email, password);
+    const check = await reauthenticateWithCredential(user, credential);
+    console.log("Reauthentication completed");
+    return check;
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 // Delete google user account - no reauthentication
 export const deleteGoogleUserAccount = async () => {
