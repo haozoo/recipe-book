@@ -96,7 +96,16 @@ export const getAllRecipes = async (uid) => {
     const snapshot = await getDocs(userQuery);
     const data = snapshot.docs.map((doc) => doc.data());
     const recipes = JSON.parse(JSON.stringify(data));
-    return recipes;
+
+    // flatten tags
+    const flattenedFilterRecipes = recipes.map((recipe) => {
+      const { defaultTags, userAddedTags, ...recipeInfo } = recipe;
+      return {
+        ...recipeInfo,
+        allTags: [].concat(defaultTags).concat(userAddedTags),
+      };
+    });
+    return flattenedFilterRecipes;
   } catch (err) {
     console.error(err);
   }

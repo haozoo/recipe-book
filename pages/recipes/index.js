@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { ReceiptRefundIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   AdjustmentsVerticalIcon,
   ChevronDownIcon,
@@ -11,16 +11,44 @@ import RecipeList from "../../components/recipes/RecipeList";
 import { useUserAuth } from "../../context/UserAuthContext";
 import LoadingIcon from "../../components/utility/LoadingIcon";
 import { useRecipes } from "../../context/RecipeContext";
+import { filter } from "lodash";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
+
+const FilterCheckbox = ({ option, toggleFilter }) => {
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    toggleFilter(checked, option?.id);
+  }, [checked]);
+
+  return (
+    <div className="flex items-center">
+      <input
+        className="h-4 w-4 rounded border-chestnut text-dirt focus:ring-dirt"
+        id={option?.id}
+        name={option?.name}
+        type="checkbox"
+        checked={checked}
+        onChange={() => setChecked(!checked)}
+      />
+      <label className="ml-3 font-nunito text-sm text-chestnut">
+        {option?.name}
+      </label>
+    </div>
+  );
+};
 
 export default function AllRecipesPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const [isLoadingFilters, setIsLoadingFilters] = useState(true);
   const [isLoadingRecipes, setIsLoadingRecipes] = useState(true);
+
+  const [filteredRecipes, setFilteredRecipes] = useState([]);
+  const [activeFilters, setActiveFilters] = useState([]);
 
   const { user } = useUserAuth();
   const { recipes, getRecipes, filters, getFilters } = useRecipes();
@@ -49,11 +77,52 @@ export default function AllRecipesPage() {
 
   // 3. Wait until recipes/filters are defined to stop loading.
   useEffect(() => {
-    if (filters?.length !== 0) setIsLoadingFilters(false);
+    if (filters?.length !== 0) {
+      const newFilters = filters
+        .flatMap((obj) => obj.options)
+        .map((obj) => ({ ...obj, active: false }));
+      setActiveFilters(newFilters);
+      setIsLoadingFilters(false);
+    }
   }, [filters]);
+
   useEffect(() => {
-    if (recipes?.length !== 0) setIsLoadingRecipes(false);
+    if (recipes?.length !== 0) {
+      setFilteredRecipes(recipes);
+      setIsLoadingRecipes(false);
+    }
   }, [recipes]);
+
+  useEffect(() => {
+    const activeTags = activeFilters.reduce(
+      (arr, obj) => (obj?.active ? [...arr, obj?.id] : arr),
+      []
+    );
+
+    if (activeTags.length === 0) {
+      setFilteredRecipes(recipes);
+    } else {
+      const newRecipes = recipes.filter((recipe) => {
+        return (
+          recipe?.allTags.filter((tagId) => activeTags.includes(tagId))
+            ?.length !== 0
+        );
+      });
+      setFilteredRecipes(newRecipes);
+    }
+  }, [activeFilters]);
+
+  useEffect(() => {
+    console.log(filteredRecipes);
+  }, [filteredRecipes]);
+
+  const handleToggleFilter = (isActive, id) => {
+    const newFilters = activeFilters.map((filter) => {
+      return filter.id !== id ? filter : { ...filter, active: isActive };
+    });
+
+    setActiveFilters(newFilters);
+  };
 
   return (
     <>
@@ -136,24 +205,11 @@ export default function AllRecipesPage() {
                             <Disclosure.Panel className="px-4 pt-4 pb-2">
                               <div className="space-y-6">
                                 {section.options.map((option) => (
-                                  <div
-                                    key={option.id}
-                                    className="flex items-center ml-2"
-                                  >
-                                    <input
-                                      id={`${section.name}-${option.id}`}
-                                      name={`${section.name}[]`}
-                                      defaultValue={option.name}
-                                      type="checkbox"
-                                      className="h-4 w-4 rounded border-chestnut text-dirt focus:ring-dirt"
-                                    />
-                                    <label
-                                      htmlFor={`${section.name}-${option.id}`}
-                                      className="ml-3 font-nunito text-sm text-chestnut"
-                                    >
-                                      {option.name}
-                                    </label>
-                                  </div>
+                                  <FilterCheckbox
+                                    key={option?.id}
+                                    option={option}
+                                    toggleFilter={handleToggleFilter}
+                                  />
                                 ))}
                               </div>
                             </Disclosure.Panel>
@@ -223,24 +279,11 @@ export default function AllRecipesPage() {
                             </legend>
                             <div className="space-y-3 pt-4">
                               {section.options.map((option) => (
-                                <div
-                                  key={option.id}
-                                  className="flex items-center"
-                                >
-                                  <input
-                                    id={`${section.name}-${option.id}`}
-                                    name={`${section.name}[]`}
-                                    defaultValue={option.name}
-                                    type="checkbox"
-                                    className="h-4 w-4 rounded border-chestnut text-dirt focus:ring-dirt"
-                                  />
-                                  <label
-                                    htmlFor={`${section.name}-${option.id}`}
-                                    className="ml-3 font-nunito text-sm text-chestnut"
-                                  >
-                                    {option.name}
-                                  </label>
-                                </div>
+                                <FilterCheckbox
+                                  key={option?.id}
+                                  option={option}
+                                  toggleFilter={handleToggleFilter}
+                                />
                               ))}
                             </div>
                           </fieldset>
@@ -259,9 +302,9 @@ export default function AllRecipesPage() {
                   <LoadingIcon message="Serving up recipes..." />
                 </div>
               ) : (
-                recipes && (
+                filteredRecipes && (
                   <RecipeList
-                    recipes={recipes}
+                    recipes={filteredRecipes}
                     favouriteRecipe={handleFavouriteRecipe}
                   />
                 )
