@@ -5,6 +5,33 @@ import _ from "lodash";
 
 const recipesRef = collection(db, "newRecipes");
 
+export const addDefaultRecipes = async () => {
+  try {
+    // get default recipes
+    const defaultQuery = query(
+      recipesRef,
+      where("createdBy", "==", "default"),
+      orderBy("createdAt", "desc")
+    );
+    const snapshot = await getDocs(defaultQuery);
+    const data = snapshot.docs.map((doc) => doc.data());
+    const recipes = JSON.parse(JSON.stringify(data));
+
+    // add default recipes for current user
+    recipes.forEach(async (recipe) => {
+      const recipeRef = doc(recipesRef);
+      const recipeId = recipeRef.id;
+      recipe.id = recipeId;
+      recipe.href = `recipes/${recipeId}`;
+      recipe.createdBy = auth.currentUser.uid;
+      recipe.createdAt = serverTimestamp();
+      await setDoc(recipeRef, recipe);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages) => {
   // step1: generate a new doc ref
   const recipeRef = doc(recipesRef);
@@ -45,7 +72,8 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
       coverImage: coverImageData,
       otherImages: otherImagesData,
       createdBy: auth.currentUser.uid,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      favourited: false
     };
     const allData = Object.assign({}, recipeData, additionalData);
     // step5: add data to the doc
@@ -72,8 +100,6 @@ export const getOneRecipe = async (docId) => {
   const snapshot = await getDoc(docRef);
   if (snapshot.exists()) {
     const data = JSON.parse(JSON.stringify(snapshot.data()));
-    console.log(data.defaultTags);
-    console.log(data.userAddedTags);
     data.defaultTags = await Promise.all(data.defaultTags.map(async (tagId) => {
       return await getOneDefaultTag(tagId);
     }));
@@ -90,8 +116,8 @@ export const getAllRecipes = async (uid) => {
   try {
     const userQuery = query(
       recipesRef,
-      where("createdBy", "==", auth.currentUser.uid)
-      // orderBy("createdAt", "desc")
+      where("createdBy", "==", auth.currentUser.uid),
+      orderBy("createdAt", "desc")
     );
     const snapshot = await getDocs(userQuery);
     const data = snapshot.docs.map((doc) => doc.data());
