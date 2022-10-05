@@ -1,19 +1,19 @@
-import { PencilIcon, XCircleIcon } from "@heroicons/react/24/outline";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import React, { useEffect, useRef, useState } from "react";
-import UserLayout from "../../../components/layout/UserLayout";
+import { PencilIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import React, { useEffect, useRef, useState } from 'react';
+import UserLayout from '../../../components/layout/UserLayout';
 import {
   getAllRecipes,
   getAllFilters,
   addNewRecipeAndImages,
-} from "../../../services/database";
-import { Combobox } from "@headlessui/react";
-import Tag from "../../../components/recipes/Tag";
-import { useRecipes } from "../../../context/RecipeContext";
-import { useUserAuth } from "../../../context/UserAuthContext";
+} from '../../../services/database';
+import { Combobox } from '@headlessui/react';
+import Tag from '../../../components/recipes/Tag';
+import { useRecipes } from '../../../context/RecipeContext';
+import { useUserAuth } from '../../../context/UserAuthContext';
 
 const classNames = (...classes) => {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ');
 };
 
 const SectionTitle = ({
@@ -65,10 +65,10 @@ const IndentedTextInput = ({ label, placeholder, value, handleEdit }) => {
 };
 
 const TagComboBox = ({ allTags, selectedTags, handleSelect }) => {
-  const [tagQuery, setTagQuery] = useState("");
+  const [tagQuery, setTagQuery] = useState('');
 
   const filteredTags =
-    tagQuery === ""
+    tagQuery === ''
       ? allTags
       : allTags.filter((tag) => {
           return tag.name.toLowerCase().includes(tagQuery.toLowerCase());
@@ -103,8 +103,8 @@ const TagComboBox = ({ allTags, selectedTags, handleSelect }) => {
                 value={tag}
                 className={({ active }) =>
                   classNames(
-                    "relative cursor-default select-none py-1 pl-3 pr-9",
-                    active ? "bg-orange-100 text-hazelnut" : "text-hazelnut"
+                    'relative cursor-default select-none py-1 pl-3 pr-9',
+                    active ? 'bg-orange-100 text-hazelnut' : 'text-hazelnut'
                   )
                 }
               >
@@ -112,8 +112,8 @@ const TagComboBox = ({ allTags, selectedTags, handleSelect }) => {
                   <>
                     <span
                       className={classNames(
-                        "block truncate font-patrick font-medium tracking-wider",
-                        selected && "font-semibold"
+                        'block truncate font-patrick font-medium tracking-wider',
+                        selected && 'font-semibold'
                       )}
                     >
                       {tag.name}
@@ -122,8 +122,8 @@ const TagComboBox = ({ allTags, selectedTags, handleSelect }) => {
                     {selected && (
                       <span
                         className={classNames(
-                          "absolute inset-y-0 right-0 flex items-center pr-2",
-                          active ? "text-rajah" : "text-sajah"
+                          'absolute inset-y-0 right-0 flex items-center pr-2',
+                          active ? 'text-rajah' : 'text-sajah'
                         )}
                       >
                         <CheckIcon className="h-4 w-4" />
@@ -159,14 +159,14 @@ const Instruction = ({
       <div className="mt-1 w-full flex">
         <input
           className={`block w-full min-w-0 rounded-md px-2 py-1 ml-3 input-font input-focus ${
-            isEditing ? "border-1 border-gray-300" : "border-0"
+            isEditing ? 'border-1 border-gray-300' : 'border-0'
           }`}
           type="text"
           id={id}
           value={instruction.text}
           disabled={!isEditing}
           onChange={handleEdit(id)}
-          placeholder={"You missed a step!"}
+          placeholder={'You missed a step!'}
         />
       </div>
     </div>
@@ -185,7 +185,7 @@ const Ingredient = ({
   return (
     <div className="flex w-full">
       <div className="pl-2 w-5 flex items-center justify-center text-hazelnut text-3xl font-patrick font-bold">
-        {isEditing ? <DeleteButton onDelete={() => handleDelete(id)} /> : "•"}
+        {isEditing ? <DeleteButton onDelete={() => handleDelete(id)} /> : '•'}
       </div>
 
       <div className="w-full pl-2 mt-1 flex rounded-md">
@@ -266,9 +266,9 @@ const DeleteButton = ({ onDelete }) => {
 };
 
 export default function AddRecipePage() {
-  const [title, setTitle] = useState("");
-  const [prepTime, setPrepTime] = useState("");
-  const [cookTime, setCookTime] = useState("");
+  const [title, setTitle] = useState('');
+  const [prepTime, setPrepTime] = useState('');
+  const [cookTime, setCookTime] = useState('');
 
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -276,13 +276,13 @@ export default function AddRecipePage() {
   const [isLoadingTags, setIsLoadingTags] = useState(true);
 
   const [instructions, setInstructions] = useState([]);
-  const [newInstruction, setNewInstruction] = useState("");
+  const [newInstruction, setNewInstruction] = useState('');
   const [isEditingInstructions, setIsEditingInstructions] = useState(false);
 
   const [ingredients, setIngredients] = useState([]);
-  const [newIngredientName, setNewIngredientName] = useState("");
-  const [newIngredientUnit, setNewIngredientUnit] = useState("");
-  const [newIngredientQuantity, setNewIngredientQuantity] = useState("");
+  const [newIngredientName, setNewIngredientName] = useState('');
+  const [newIngredientUnit, setNewIngredientUnit] = useState('');
+  const [newIngredientQuantity, setNewIngredientQuantity] = useState('');
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
 
   const [coverPhotoFile, setCoverPhotoFile] = useState();
@@ -327,9 +327,9 @@ export default function AddRecipePage() {
   };
 
   const handleAddInstruction = () => {
-    if (newInstruction && newInstruction !== "") {
+    if (newInstruction && newInstruction !== '') {
       setInstructions(instructions.concat([{ text: newInstruction }]));
-      setNewInstruction("");
+      setNewInstruction('');
     }
   };
 
@@ -363,9 +363,9 @@ export default function AddRecipePage() {
   const handleAddIngredient = () => {
     if (
       newIngredientName &&
-      newIngredientName !== "" &&
+      newIngredientName !== '' &&
       newIngredientQuantity &&
-      newIngredientQuantity !== ""
+      newIngredientQuantity !== ''
     ) {
       console.log(ingredients);
       setIngredients(
@@ -377,9 +377,9 @@ export default function AddRecipePage() {
           },
         ])
       );
-      setNewIngredientName("");
-      setNewIngredientUnit("");
-      setNewIngredientQuantity("");
+      setNewIngredientName('');
+      setNewIngredientUnit('');
+      setNewIngredientQuantity('');
 
       addIngredientRef.current.focus();
     }
@@ -399,10 +399,10 @@ export default function AddRecipePage() {
     e.preventDefault(); // prevent refresh
 
     const defaultTags = selectedTags
-      .filter((t) => t.type !== "My Tags")
+      .filter((t) => t.type !== 'My Tags')
       .map((t) => t.id);
     const userAddedTags = selectedTags
-      .filter((t) => t.type === "My Tags")
+      .filter((t) => t.type === 'My Tags')
       .map((t) => t.id);
 
     const recipeData = {
@@ -419,7 +419,7 @@ export default function AddRecipePage() {
 
   return (
     <main className="mx-auto">
-      <form>
+      <form className="">
         <div className="pt-12 max-w-6xl lg:grid lg:grid-cols-2 lg:gap-x-8 space-y-8 divide-y divide-gray-200 lg:space-y-0 lg:divide-y-0">
           <div className="max-w-lg space-y-8 divide-y divide-gray-200">
             <div className="">
@@ -451,7 +451,7 @@ export default function AddRecipePage() {
             </div>
             <div className="pt-12">
               <SectionTitle
-                title={"Tags"}
+                title={'Tags'}
                 isEditing={isEditingSelectedTags}
                 handleEdit={() =>
                   setIsEditingSelectedTags(!isEditingSelectedTags)
@@ -538,7 +538,7 @@ export default function AddRecipePage() {
                         placeholder="Condensed Milk"
                         onChange={(e) => setNewIngredientName(e.target.value)}
                         onKeyDown={(e) =>
-                          e.key === "Enter" && handleAddIngredient()
+                          e.key === 'Enter' && handleAddIngredient()
                         }
                       />
                     </div>
@@ -578,7 +578,7 @@ export default function AddRecipePage() {
                         value={newInstruction}
                         onChange={(e) => setNewInstruction(e.target.value)}
                         onKeyDown={(e) =>
-                          e.key === "Enter" && handleAddInstruction()
+                          e.key === 'Enter' && handleAddInstruction()
                         }
                         placeholder={
                           instructions.length === 0
@@ -590,15 +590,6 @@ export default function AddRecipePage() {
                   </div>
                 )}
               </div>
-            </div>
-            <div>
-              <button
-                className="mt-8 py-1 px-3 rounded-lg bg-chrome-yellow text-base text-white font-nunito font-bold"
-                type="button"
-                onClick={handleSubmit}
-              >
-                Upload
-              </button>
             </div>
           </div>
           <div className="max-w-lg border-0 border-t-1 border-gray-200 lg:col-span-1">
@@ -651,6 +642,17 @@ export default function AddRecipePage() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+        <div className="mt-10 w-full lg:w-1/2">
+          <div className="lg:mr-4 border-0 border-t border-gray-200">
+            <button
+              className="mt-12 py-1 px-3 rounded-lg bg-chrome-yellow text-base text-white font-nunito font-bold"
+              type="button"
+              onClick={handleSubmit}
+            >
+              Upload
+            </button>
           </div>
         </div>
       </form>
