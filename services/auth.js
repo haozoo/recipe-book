@@ -1,16 +1,21 @@
-import { AuthErrorCodes, deleteUser, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider, updateEmail, updatePassword } from "firebase/auth";
+import { AuthErrorCodes, deleteUser, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider, updateEmail, updatePassword, getAdditionalUserInfo } from "firebase/auth";
 import { auth, provider } from "./firebase";
 import { showLoginError } from "../utils/constants";
 import Router from "next/router";
+import { addDefaultRecipes } from "./database";
 
 export const handleGoogleLogin = async () => {
   provider.setCustomParameters({ prompt: "select_account" });
 
   signInWithPopup(auth, provider)
-    .then((result) => {
+    .then(async (result) => {
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const token = credential.accessToken;
       const user = result.user; // redux action? --> dispatch({ type: SET_USER, user });
+      // add sample recipes for new user
+      if (getAdditionalUserInfo(result).isNewUser) {
+        await addDefaultRecipes();
+      }
       Router.push("/recipes")
     })
     .catch((error) => {
@@ -43,6 +48,8 @@ export const createAccount = async () => {
 
   try {
     await createUserWithEmailAndPassword(auth, email, password)
+    // add sample recipes for new user
+    await addDefaultRecipes();
   }
   catch(error) {
     console.log(`There was an error: ${error}`)
