@@ -83,7 +83,7 @@ export default function SingleRecipePage({ recipe }) {
               {ingredients.map((ingredient, i) => (
                 <div className="flex items-center" key={i}>
                   <input id={i} type="checkbox" value="" className="w-4 h-4 bg-gray-100 rounded-full border-chestnut focus:ring-0 focus:ring-offset-0 text-atomic-tangerine"/>
-                  <label htmlFor={i} className="ml-4 w-full">{ingredient.quantity*serving}{ingredient.unit} {ingredient.item}</label>
+                  <label htmlFor={i} className="ml-4 w-full">{ingredient.quantity*serving}{ingredient.unit} {ingredient.name}</label>
                 </div>
               ))}
             </div>
