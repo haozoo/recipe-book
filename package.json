@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install",
-    "pre-commit": "next-lint"
+    "pre-commit": "next lint"
   },
   "dependencies": {
     "@headlessui/react": "^1.6.6",
