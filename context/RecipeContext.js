@@ -8,6 +8,18 @@ export function RecipeContextProvider({ children }) {
   const [recipes, setRecipes] = useState([]);
   const [filters, setFilters] = useState([]);
 
+  const favouriteRecipe = async (rid) => {
+    if (rid) {
+      // call favourite function
+      const newRecipes = recipes.map((recipe) =>
+        recipe?.id === rid
+          ? { ...recipe, favourited: !recipe?.favourited }
+          : recipe
+      );
+      setRecipes(newRecipes);
+    }
+  };
+
   const getRecipes = async (uid) => {
     if (uid) {
       const newRecipes = await getAllRecipes(uid);
@@ -31,7 +43,14 @@ export function RecipeContextProvider({ children }) {
 
   return (
     <recipeContext.Provider
-      value={{ recipes, filters, getRecipe, getRecipes, getFilters }}
+      value={{
+        recipes,
+        filters,
+        favouriteRecipe,
+        getRecipe,
+        getRecipes,
+        getFilters,
+      }}
     >
       {children}
     </recipeContext.Provider>

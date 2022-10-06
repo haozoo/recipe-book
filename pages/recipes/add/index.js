@@ -428,6 +428,7 @@ export default function AddRecipePage() {
       instructions: instructions.map((instruction) => instruction.text),
       defaultTags,
       userAddedTags,
+      favourited: false,
     };
 
     const newError = checkValidRecipe(rawRecipeData, coverPhotoFile);
