@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
-import { ReceiptRefundIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   AdjustmentsVerticalIcon,
   ChevronDownIcon,
@@ -11,7 +11,6 @@ import RecipeList from "../../components/recipes/RecipeList";
 import { useUserAuth } from "../../context/UserAuthContext";
 import LoadingIcon from "../../components/utility/LoadingIcon";
 import { useRecipes } from "../../context/RecipeContext";
-import { filter } from "lodash";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -111,10 +110,6 @@ export default function AllRecipesPage() {
       setFilteredRecipes(newRecipes);
     }
   }, [activeFilters]);
-
-  useEffect(() => {
-    console.log(filteredRecipes);
-  }, [filteredRecipes]);
 
   const handleToggleFilter = (isActive, id) => {
     const newFilters = activeFilters.map((filter) => {

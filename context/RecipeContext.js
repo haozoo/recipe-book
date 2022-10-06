@@ -9,12 +9,15 @@ export function RecipeContextProvider({ children }) {
   const [filters, setFilters] = useState([]);
 
   const getRecipes = async (uid) => {
-    if (recipes?.length > 0) return recipes;
     if (uid) {
       const newRecipes = await getAllRecipes(uid);
       setRecipes(newRecipes);
-      return newRecipes;
     }
+  };
+
+  const getRecipe = async (rid) => {
+    const recipe = recipes.find((recipe) => recipe.id === rid);
+    return recipe;
   };
 
   const getFilters = async (uid) => {
@@ -28,7 +31,7 @@ export function RecipeContextProvider({ children }) {
 
   return (
     <recipeContext.Provider
-      value={{ recipes, filters, getRecipes, getFilters }}
+      value={{ recipes, filters, getRecipe, getRecipes, getFilters }}
     >
       {children}
     </recipeContext.Provider>
