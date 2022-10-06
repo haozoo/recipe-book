@@ -85,7 +85,7 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
                         "group flex items-center px-4 py-2 text-sm font-nunito font-semibold"
                       )}
                       onClick={() =>
-                        Router.push(`${USER_ADD_RECIPE_PATH}/${recipe?.id}.js`)
+                        Router.push(`${USER_ADD_RECIPE_PATH}/${recipe?.id}`)
                       }
                     >
                       <PencilSquareIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />

@@ -2,15 +2,11 @@ import { PencilIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import React, { useEffect, useRef, useState } from 'react';
 import UserLayout from '../../../components/layout/UserLayout';
-import {
-  getAllRecipes,
-  getAllFilters,
-  addNewRecipeAndImages,
-} from '../../../services/database';
-import { Combobox } from '@headlessui/react';
-import Tag from '../../../components/recipes/Tag';
-import { useRecipes } from '../../../context/RecipeContext';
-import { useUserAuth } from '../../../context/UserAuthContext';
+import { addNewRecipeAndImages } from "../../../services/database";
+import { Combobox } from "@headlessui/react";
+import Tag from "../../../components/recipes/Tag";
+import { useRecipes } from "../../../context/RecipeContext";
+import { useUserAuth } from "../../../context/UserAuthContext";
 import { checkValidRecipe } from "../../../utils/constraints";
 import FormErrorModal from "../../../components/utility/FormErrorModal";
 import _ from "lodash";
@@ -274,10 +270,11 @@ const DeleteButton = ({ onDelete }) => {
   );
 };
 
-export default function AddRecipePage() {
+export default function AddRecipePage({ recipe = {} }) {
   const [title, setTitle] = useState("");
   const [prepTime, setPrepTime] = useState("");
   const [cookTime, setCookTime] = useState("");
+  const [favourited, setFavourited] = useState(false);
 
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -310,6 +307,23 @@ export default function AddRecipePage() {
   // 1. Set loading on page mount.
   useEffect(() => {
     setIsLoadingTags(true);
+    console.log("WHY", recipe);
+    if (!_.isEmpty(recipe)) {
+      setTitle(recipe?.title);
+      setPrepTime(recipe?.prepTime);
+      setCookTime(recipe?.cookTime);
+      setFavourited(recipe?.favourited);
+      // setSelectedTags(recipe?.allTags);
+      setInstructions(
+        recipe?.instructions.map((instruction) => {
+          return {
+            text: instruction,
+          };
+        })
+      );
+      setIngredients(recipe?.ingredients);
+      // setCoverPhotoFile(undefined);
+    }
   }, []);
 
   // 2. Wait until user is defined to fetch recipes w/ uid.
@@ -428,7 +442,7 @@ export default function AddRecipePage() {
       instructions: instructions.map((instruction) => instruction.text),
       defaultTags,
       userAddedTags,
-      favourited: false,
+      favourited,
     };
 
     const newError = checkValidRecipe(rawRecipeData, coverPhotoFile);
@@ -640,7 +654,7 @@ export default function AddRecipePage() {
                   setIsEditingInstructions(!isEditingInstructions)
                 }
               />
-              <div className="">
+              <div>
                 {instructions.map((instruction, idx) => {
                   return (
                     <Instruction
