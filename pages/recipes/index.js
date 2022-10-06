@@ -50,8 +50,14 @@ export default function AllRecipesPage() {
   const [activeFilters, setActiveFilters] = useState([]);
 
   const { user } = useUserAuth();
-  const { recipes, favouriteRecipe, getRecipes, filters, getFilters } =
-    useRecipes();
+  const {
+    recipes,
+    deleteRecipe,
+    favouriteRecipe,
+    getRecipes,
+    filters,
+    getFilters,
+  } = useRecipes();
 
   // 1. Set loading on page mount.
   useEffect(() => {
@@ -295,6 +301,7 @@ export default function AllRecipesPage() {
                 filteredRecipes && (
                   <RecipeList
                     recipes={filteredRecipes}
+                    deleteRecipe={deleteRecipe}
                     favouriteRecipe={favouriteRecipe}
                   />
                 )

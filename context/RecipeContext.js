@@ -8,6 +8,14 @@ export function RecipeContextProvider({ children }) {
   const [recipes, setRecipes] = useState([]);
   const [filters, setFilters] = useState([]);
 
+  const deleteRecipe = async (rid) => {
+    if (rid) {
+      // call delete function
+      const newRecipes = recipes.filter((recipe) => recipe?.id !== rid);
+      setRecipes(newRecipes);
+    }
+  };
+
   const favouriteRecipe = async (rid) => {
     if (rid) {
       // call favourite function
@@ -46,6 +54,7 @@ export function RecipeContextProvider({ children }) {
       value={{
         recipes,
         filters,
+        deleteRecipe,
         favouriteRecipe,
         getRecipe,
         getRecipes,
