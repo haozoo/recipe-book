@@ -60,8 +60,8 @@ export default function FormErrorModal({ error, open, setOpen }) {
                     <div className="mt-2 text-left text-sm text-gray-500">
                       <p className="pb-2">{error?.text}</p>
                       <ul className="list-disc list-inside">
-                        {error?.errors?.map((error) => {
-                          return <li className=""> {error}</li>;
+                        {error?.errors?.map((error, idx) => {
+                          return <li key={idx}> {error}</li>;
                         })}
                       </ul>
                     </div>
