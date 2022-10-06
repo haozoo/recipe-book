@@ -14,29 +14,28 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
   let coverImageData;
   try {
     coverImageData = await uploadRecipeImage(recipeId, coverImage);
-  } catch (error) {
-    alert("cover image upload failed!");
-    console.error(error);
-    return;
+  } catch (err) {
+    console.log(err);
+    return "Failed to upload cover image";
   }
 
   // step3: upload other images to storage
   let otherImagesData = [];
   try {
-    await Promise.all(otherImages.map(async (image) => {
-      const otherImageData = await uploadRecipeImage(recipeId, image);
-      otherImagesData.push(otherImageData);
-    }));
-    alert("all image uploaded!");
-  } catch (error) {
+    await Promise.all(
+      otherImages.map(async (image) => {
+        const otherImageData = await uploadRecipeImage(recipeId, image);
+        otherImagesData.push(otherImageData);
+      })
+    );
+  } catch (err) {
     // delete uploaded images from storage
     const uploadedImages = [coverImageData].concat(otherImagesData);
     await deleteUploadedImages(uploadedImages);
-    alert("other image upload failed!");
-    console.error(error);
-    return;
+    console.log(err);
+    return "Failed to upload gallery images!";
   }
-  
+
   try {
     // step4: combine recipe data with additional data
     const additionalData = {
@@ -45,20 +44,20 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
       coverImage: coverImageData,
       otherImages: otherImagesData,
       createdBy: auth.currentUser.uid,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     };
     const allData = Object.assign({}, recipeData, additionalData);
     // step5: add data to the doc
     await setDoc(recipeRef, allData);
-    alert("recipe uploaded!");
-  } catch (error) {
+  } catch (err) {
     // delete uploaded images from storage
     const uploadedImages = [coverImageData].concat(otherImagesData);
     await deleteUploadedImages(uploadedImages);
-    alert("recipe upload failed!");
-    console.error(error);
-    return;
+    console.log(err);
+    return "Failed to upload recipe data";
   }
+
+  return "SUCCESS"
 }
 
 const deleteUploadedImages = async (images) => {
