@@ -1,5 +1,6 @@
-import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes, getStorage } from "firebase/storage";
 import { storage } from "./firebase";
+import { getDoc } from "firebase/firestore";
 
 export const uploadRecipeImage = async (recipeRef, image) => {
   const imagePath = `recipe-imgs/${recipeRef}-${image.name}`;

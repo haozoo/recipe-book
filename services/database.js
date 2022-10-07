@@ -222,8 +222,8 @@ export const getAllFilters = async (uid) => {
 export const deleteRecipe = async (recipeId) => {
   try {
     const recipeRef = doc(db, "newRecipes", recipeId);
-    await deleteDoc(recipeRef);
     await deleteImage(recipeRef);
+    await deleteDoc(recipeRef);
   } catch (error) {
     console.error(error);
     return "Failed to delete recipe";
