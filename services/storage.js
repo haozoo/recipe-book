@@ -14,7 +14,7 @@ export const deleteRecipeImage = async (imagePath) => {
   await deleteObject(imageRef);
 }
 
-const deleteImage = async (recipeRef) => {
+export const deleteImage = async (recipeRef) => {
   try {
     const storage = getStorage();
     const recipe = await getDoc(recipeRef);
