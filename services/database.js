@@ -1,5 +1,5 @@
 import { addDoc, deleteDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
-import { deleteRecipeImage, uploadRecipeImage} from "./storage";
+import { deleteRecipeImage, uploadRecipeImage, deleteImage} from "./storage";
 import { auth, db } from "./firebase";
 import _ from "lodash";
 
@@ -223,6 +223,7 @@ export const deleteRecipe = async (recipeId) => {
   try {
     const recipeRef = doc(db, "newRecipes", recipeId);
     await deleteDoc(recipeRef);
+    await deleteImage(recipeRef);
   } catch (error) {
     console.error(error);
     return "Failed to delete recipe";
@@ -252,3 +253,27 @@ export const clickHeart = async (recipeId) => {
   }
   return "SUCCESS";
 };
+
+export const deleteUserData = async (userId) => {
+
+  try {
+    const batch = writeBatch(db);
+    const myRecipes = query(collection(db, "newRecipes"), where("createdBy", "==", userId));
+    const recipesSnap = await getDocs(myRecipes);
+    recipesSnap.forEach((doc) => {
+      deleteImage(doc.ref);
+      batch.delete(doc.ref);
+    });
+    const myTags = query(collection(db, "newRecipes"), where("createdBy", "==", userId));
+    const tagsSnap = await getDocs(myTags);
+    tagsSnap.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+
+  } catch (error) {
+    console.error(error);
+    return "Failed to delete user data";
+  }
+  return "SUCCESS";
+}

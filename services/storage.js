@@ -13,3 +13,22 @@ export const deleteRecipeImage = async (imagePath) => {
   const imageRef = ref(storage, imagePath);
   await deleteObject(imageRef);
 }
+
+const deleteImage = async (recipeRef) => {
+  try {
+    const storage = getStorage();
+    const recipe = await getDoc(recipeRef);
+    const imagePath = recipe.data().coverImage.path;
+    
+    if (!imagePath.includes("sample-recipe-imgs/")) {
+      const imageRef = ref(storage, imagePath);
+      await deleteObject(imageRef);
+      console.log("Image deleted successfully")
+    }
+
+  } catch (error) {
+    console.error(error);
+    return "Failed to delete image";
+  }
+  return "SUCCESS";
+}

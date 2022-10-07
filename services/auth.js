@@ -3,6 +3,7 @@ import { auth, provider } from "./firebase";
 import { showLoginError } from "../utils/constants";
 import Router from "next/router";
 import { addDefaultRecipes } from "./database";
+import { deleteUserData } from "./database";
 
 export const handleGoogleLogin = async () => {
   provider.setCustomParameters({ prompt: "select_account" });
@@ -100,10 +101,19 @@ export const updateUserProfile = async(newusername) => {
 
 // Delete User Account registered with email/password
 export const deleteUserAccount = async (password) => {
+
   try {
     const check = await checkPassword(password)
+    const userId = check.user.uid;
+
+    await deleteUserData(userId);
+    console.log("Documents successfully deleted")
+
     await deleteUser(check.user)
     console.log("Account deleted successfully")
+
+    alert("Account deleted!")
+
   } catch (error) {
     console.log(error.code);
     console.log(error.message);
