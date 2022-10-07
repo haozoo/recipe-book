@@ -41,29 +41,28 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
   let coverImageData;
   try {
     coverImageData = await uploadRecipeImage(recipeId, coverImage);
-  } catch (error) {
-    alert("cover image upload failed!");
-    console.error(error);
-    return;
+  } catch (err) {
+    console.log(err);
+    return "Failed to upload cover image";
   }
 
   // step3: upload other images to storage
   let otherImagesData = [];
   try {
-    await Promise.all(otherImages.map(async (image) => {
-      const otherImageData = await uploadRecipeImage(recipeId, image);
-      otherImagesData.push(otherImageData);
-    }));
-    alert("all image uploaded!");
-  } catch (error) {
+    await Promise.all(
+      otherImages.map(async (image) => {
+        const otherImageData = await uploadRecipeImage(recipeId, image);
+        otherImagesData.push(otherImageData);
+      })
+    );
+  } catch (err) {
     // delete uploaded images from storage
     const uploadedImages = [coverImageData].concat(otherImagesData);
     await deleteUploadedImages(uploadedImages);
-    alert("other image upload failed!");
-    console.error(error);
-    return;
+    console.log(err);
+    return "Failed to upload gallery images!";
   }
-  
+
   try {
     // step4: combine recipe data with additional data
     const additionalData = {
@@ -73,20 +72,19 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
       otherImages: otherImagesData,
       createdBy: auth.currentUser.uid,
       createdAt: serverTimestamp(),
-      favourited: false
     };
     const allData = Object.assign({}, recipeData, additionalData);
     // step5: add data to the doc
     await setDoc(recipeRef, allData);
-    alert("recipe uploaded!");
-  } catch (error) {
+  } catch (err) {
     // delete uploaded images from storage
     const uploadedImages = [coverImageData].concat(otherImagesData);
     await deleteUploadedImages(uploadedImages);
-    alert("recipe upload failed!");
-    console.error(error);
-    return;
+    console.log(err);
+    return "Failed to upload recipe data";
   }
+
+  return "SUCCESS"
 }
 
 const deleteUploadedImages = async (images) => {
@@ -122,7 +120,16 @@ export const getAllRecipes = async (uid) => {
     const snapshot = await getDocs(userQuery);
     const data = snapshot.docs.map((doc) => doc.data());
     const recipes = JSON.parse(JSON.stringify(data));
-    return recipes;
+
+    // flatten tags
+    const flattenedFilterRecipes = recipes.map((recipe) => {
+      const { defaultTags, userAddedTags, ...recipeInfo } = recipe;
+      return {
+        ...recipeInfo,
+        allTags: [].concat(defaultTags).concat(userAddedTags),
+      };
+    });
+    return flattenedFilterRecipes;
   } catch (err) {
     console.error(err);
   }
@@ -214,12 +221,14 @@ export const getAllFilters = async (uid) => {
 
 export const deleteRecipe = async (recipeId) => {
   try {
-    const recipeRef = doc(db, "recipes", recipeId);
-    await deletcDoc(recipeRef);
+    const recipeRef = doc(db, "newRecipes", recipeId);
+    await deleteDoc(recipeRef);
   } catch (error) {
     console.error(error);
+    return "Failed to delete recipe";
   }
-}
+  return "SUCCESS";
+};
 
 export const deleteTag = async (tagId) => {
   try {
@@ -228,17 +237,18 @@ export const deleteTag = async (tagId) => {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 export const clickHeart = async (recipeId) => {
   try {
-    const recipeRef = doc(db, "recipes", recipeId);
-    const docSnap = await getDoc(recipeRef)
-
-    await updateDoc(recipeRef, { 
-      favourited : !docSnap.data().favourited
-    })
+    const recipeRef = doc(db, "newRecipes", recipeId);
+    const docSnap = await getDoc(recipeRef);
+    await updateDoc(recipeRef, {
+      favourited: !docSnap.data().favourited,
+    });
   } catch (error) {
-    console.error(error)
+    console.error(error);
+    return "Failed to favourite recipe";
   }
-}
+  return "SUCCESS";
+};
