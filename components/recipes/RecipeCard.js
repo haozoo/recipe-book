@@ -39,15 +39,15 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
             </div>
           </a>
         </Link>
-        <button
-          className="absolute top-2 right-2"
-          onClick={() => favouriteRecipe(recipe?.id)}
-        >
+        <button className="" onClick={() => favouriteRecipe(recipe?.id)}>
           <FullHeartIcon
-            className={`flex-shrink-0 h-6 w-6 ${
+            className={`absolute top-2 right-2 flex-shrink-0 h-8 w-8 ${
               recipe?.favourited ? "text-red-400" : "text-white"
             }`}
           />
+          {!recipe?.favourited && (
+            <EmptyHeartIcon className="absolute top-2 right-2 flex-shrink-0 h-8 w-8 text-gray-200" />
+          )}
         </button>
       </div>
       <div className="mt-4 flex items-center justify-between">

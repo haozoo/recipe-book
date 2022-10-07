@@ -196,12 +196,14 @@ export const getAllFilters = async (uid) => {
 
 export const deleteRecipe = async (recipeId) => {
   try {
-    const recipeRef = doc(db, "recipes", recipeId);
-    await deletcDoc(recipeRef);
+    const recipeRef = doc(db, "newRecipes", recipeId);
+    await deleteDoc(recipeRef);
   } catch (error) {
     console.error(error);
+    return "Failed to delete recipe";
   }
-}
+  return "SUCCESS";
+};
 
 export const deleteTag = async (tagId) => {
   try {
@@ -210,17 +212,18 @@ export const deleteTag = async (tagId) => {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 export const clickHeart = async (recipeId) => {
   try {
-    const recipeRef = doc(db, "recipes", recipeId);
-    const docSnap = await getDoc(recipeRef)
-
-    await updateDoc(recipeRef, { 
-      favourited : !docSnap.data().favourited
-    })
+    const recipeRef = doc(db, "newRecipes", recipeId);
+    const docSnap = await getDoc(recipeRef);
+    await updateDoc(recipeRef, {
+      favourited: !docSnap.data().favourited,
+    });
   } catch (error) {
-    console.error(error)
+    console.error(error);
+    return "Failed to favourite recipe";
   }
-}
+  return "SUCCESS";
+};

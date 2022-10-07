@@ -1,6 +1,11 @@
 import { createContext, useContext, useState } from "react";
 
-import { getAllFilters, getAllRecipes } from "../services/database";
+import {
+  getAllFilters,
+  getAllRecipes,
+  deleteRecipe as deleteRecipeFromDB,
+  clickHeart as favouriteRecipeInDB,
+} from "../services/database";
 
 const recipeContext = createContext();
 
@@ -10,21 +15,31 @@ export function RecipeContextProvider({ children }) {
 
   const deleteRecipe = async (rid) => {
     if (rid) {
-      // call delete function
-      const newRecipes = recipes.filter((recipe) => recipe?.id !== rid);
-      setRecipes(newRecipes);
+      const status = await deleteRecipeFromDB(rid);
+
+      if (status === "SUCCESS") {
+        const newRecipes = recipes.filter((recipe) => recipe?.id !== rid);
+        setRecipes(newRecipes);
+      }
+
+      return status;
     }
   };
 
   const favouriteRecipe = async (rid) => {
     if (rid) {
-      // call favourite function
-      const newRecipes = recipes.map((recipe) =>
-        recipe?.id === rid
-          ? { ...recipe, favourited: !recipe?.favourited }
-          : recipe
-      );
-      setRecipes(newRecipes);
+      const status = await favouriteRecipeInDB(rid);
+
+      if (status === "SUCCESS") {
+        const newRecipes = recipes.map((recipe) =>
+          recipe?.id === rid
+            ? { ...recipe, favourited: !recipe?.favourited }
+            : recipe
+        );
+        setRecipes(newRecipes);
+      }
+
+      return status;
     }
   };
 

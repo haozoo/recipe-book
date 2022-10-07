@@ -11,6 +11,7 @@ import RecipeList from "../../components/recipes/RecipeList";
 import { useUserAuth } from "../../context/UserAuthContext";
 import LoadingIcon from "../../components/utility/LoadingIcon";
 import { useRecipes } from "../../context/RecipeContext";
+import Notification from "../../components/utility/Notification";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -48,6 +49,9 @@ export default function AllRecipesPage() {
 
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [activeFilters, setActiveFilters] = useState([]);
+
+  const [error, setError] = useState({});
+  const [errorNotifIsOpen, setErrorNotifIsOpen] = useState(false);
 
   const { user } = useUserAuth();
   const {
@@ -120,9 +124,41 @@ export default function AllRecipesPage() {
     setActiveFilters(newFilters);
   };
 
+  const handleFavourite = async (rid) => {
+    setErrorNotifIsOpen(false);
+    const status = await favouriteRecipe(rid);
+    if (status !== "SUCCESS") {
+      setError({
+        title: "Favourite Recipe Failed",
+        text: `Unfortunately your recipe could not be favourited at this time, please try again later.`,
+        errors: [status],
+      });
+      setErrorNotifIsOpen(true);
+    }
+  };
+
+  const handleDelete = async (rid) => {
+    setErrorNotifIsOpen(false);
+    const status = await deleteRecipe(rid);
+    if (status !== "SUCCESS") {
+      setError({
+        title: "Delete Recipe Failed",
+        text: `Unfortunately your recipe could not be deleted at this time, please try again later.`,
+        errors: [status],
+      });
+      setErrorNotifIsOpen(true);
+    }
+  };
+
   return (
     <>
       <div className="relative">
+        {/* Notification */}
+        <Notification
+          error={error}
+          open={errorNotifIsOpen}
+          setOpen={setErrorNotifIsOpen}
+        />
         {/* Mobile filter dialog */}
         <Transition.Root show={mobileFiltersOpen} as={Fragment}>
           <Dialog
@@ -301,8 +337,8 @@ export default function AllRecipesPage() {
                 filteredRecipes && (
                   <RecipeList
                     recipes={filteredRecipes}
-                    deleteRecipe={deleteRecipe}
-                    favouriteRecipe={favouriteRecipe}
+                    deleteRecipe={handleDelete}
+                    favouriteRecipe={handleFavourite}
                   />
                 )
               )}
