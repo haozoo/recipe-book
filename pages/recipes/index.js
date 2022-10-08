@@ -11,10 +11,35 @@ import RecipeList from "../../components/recipes/RecipeList";
 import { useUserAuth } from "../../context/UserAuthContext";
 import LoadingIcon from "../../components/utility/LoadingIcon";
 import { useRecipes } from "../../context/RecipeContext";
+import Notification from "../../components/utility/Notification";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
+
+const FilterCheckbox = ({ option, toggleFilter }) => {
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    toggleFilter(checked, option?.id);
+  }, [checked]);
+
+  return (
+    <div className="flex items-center">
+      <input
+        className="h-4 w-4 rounded border-chestnut text-dirt focus:ring-dirt"
+        id={option?.id}
+        name={option?.name}
+        type="checkbox"
+        checked={checked}
+        onChange={() => setChecked(!checked)}
+      />
+      <label className="ml-3 font-nunito text-sm text-chestnut">
+        {option?.name}
+      </label>
+    </div>
+  );
+};
 
 export default function AllRecipesPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -22,14 +47,21 @@ export default function AllRecipesPage() {
   const [isLoadingFilters, setIsLoadingFilters] = useState(true);
   const [isLoadingRecipes, setIsLoadingRecipes] = useState(true);
 
-  const { user } = useUserAuth();
-  const { recipes, getRecipes, filters, getFilters } = useRecipes();
+  const [filteredRecipes, setFilteredRecipes] = useState([]);
+  const [activeFilters, setActiveFilters] = useState([]);
 
-  const handleFavouriteRecipe = (rId, favourited) => {
-    var newAllRecipes = recipes;
-    newAllRecipes[rId].favourited = favourited;
-    setAllRecipes(newAllRecipes);
-  };
+  const [error, setError] = useState({});
+  const [errorNotifIsOpen, setErrorNotifIsOpen] = useState(false);
+
+  const { user } = useUserAuth();
+  const {
+    recipes,
+    deleteRecipe,
+    favouriteRecipe,
+    getRecipes,
+    filters,
+    getFilters,
+  } = useRecipes();
 
   // 1. Set loading on page mount.
   useEffect(() => {
@@ -39,23 +71,94 @@ export default function AllRecipesPage() {
 
   // 2. Wait until user is defined to fetch recipes w/ uid.
   useEffect(() => {
-    if (user) {
+    if (user && recipes?.length === 0) {
       getRecipes(user.uid);
+    }
+    if (user && filters?.length === 0) {
       getFilters(user.uid);
     }
   }, [user]);
 
   // 3. Wait until recipes/filters are defined to stop loading.
   useEffect(() => {
-    if (filters?.length !== 0) setIsLoadingFilters(false);
+    if (filters?.length !== 0) {
+      const newFilters = filters
+        .flatMap((obj) => obj.options)
+        .map((obj) => ({ ...obj, active: false }));
+      setActiveFilters(newFilters);
+      setIsLoadingFilters(false);
+    }
   }, [filters]);
+
   useEffect(() => {
-    if (recipes?.length !== 0) setIsLoadingRecipes(false);
+    if (recipes?.length !== 0) {
+      setFilteredRecipes(recipes);
+      setIsLoadingRecipes(false);
+    }
   }, [recipes]);
+
+  useEffect(() => {
+    const activeTags = activeFilters.reduce(
+      (arr, obj) => (obj?.active ? [...arr, obj?.id] : arr),
+      []
+    );
+
+    if (activeTags.length === 0) {
+      setFilteredRecipes(recipes);
+    } else {
+      const newRecipes = recipes.filter((recipe) => {
+        return (
+          recipe?.allTags.filter((tagId) => activeTags.includes(tagId))
+            ?.length !== 0
+        );
+      });
+      setFilteredRecipes(newRecipes);
+    }
+  }, [activeFilters]);
+
+  const handleToggleFilter = (isActive, id) => {
+    const newFilters = activeFilters.map((filter) => {
+      return filter.id !== id ? filter : { ...filter, active: isActive };
+    });
+
+    setActiveFilters(newFilters);
+  };
+
+  const handleFavourite = async (rid) => {
+    setErrorNotifIsOpen(false);
+    const status = await favouriteRecipe(rid);
+    if (status !== "SUCCESS") {
+      setError({
+        title: "Favourite Recipe Failed",
+        text: `Unfortunately your recipe could not be favourited at this time, please try again later.`,
+        errors: [status],
+      });
+      setErrorNotifIsOpen(true);
+    }
+  };
+
+  const handleDelete = async (rid) => {
+    setErrorNotifIsOpen(false);
+    const status = await deleteRecipe(rid);
+    if (status !== "SUCCESS") {
+      setError({
+        title: "Delete Recipe Failed",
+        text: `Unfortunately your recipe could not be deleted at this time, please try again later.`,
+        errors: [status],
+      });
+      setErrorNotifIsOpen(true);
+    }
+  };
 
   return (
     <>
       <div className="relative">
+        {/* Notification */}
+        <Notification
+          error={error}
+          open={errorNotifIsOpen}
+          setOpen={setErrorNotifIsOpen}
+        />
         {/* Mobile filter dialog */}
         <Transition.Root show={mobileFiltersOpen} as={Fragment}>
           <Dialog
@@ -134,24 +237,11 @@ export default function AllRecipesPage() {
                             <Disclosure.Panel className="px-4 pt-4 pb-2">
                               <div className="space-y-6">
                                 {section.options.map((option) => (
-                                  <div
-                                    key={option.id}
-                                    className="flex items-center ml-2"
-                                  >
-                                    <input
-                                      id={`${section.name}-${option.id}`}
-                                      name={`${section.name}[]`}
-                                      defaultValue={option.name}
-                                      type="checkbox"
-                                      className="h-4 w-4 rounded border-chestnut text-dirt focus:ring-dirt"
-                                    />
-                                    <label
-                                      htmlFor={`${section.name}-${option.id}`}
-                                      className="ml-3 font-nunito text-sm text-chestnut"
-                                    >
-                                      {option.name}
-                                    </label>
-                                  </div>
+                                  <FilterCheckbox
+                                    key={option?.id}
+                                    option={option}
+                                    toggleFilter={handleToggleFilter}
+                                  />
                                 ))}
                               </div>
                             </Disclosure.Panel>
@@ -221,24 +311,11 @@ export default function AllRecipesPage() {
                             </legend>
                             <div className="space-y-3 pt-4">
                               {section.options.map((option) => (
-                                <div
-                                  key={option.id}
-                                  className="flex items-center"
-                                >
-                                  <input
-                                    id={`${section.name}-${option.id}`}
-                                    name={`${section.name}[]`}
-                                    defaultValue={option.name}
-                                    type="checkbox"
-                                    className="h-4 w-4 rounded border-chestnut text-dirt focus:ring-dirt"
-                                  />
-                                  <label
-                                    htmlFor={`${section.name}-${option.id}`}
-                                    className="ml-3 font-nunito text-sm text-chestnut"
-                                  >
-                                    {option.name}
-                                  </label>
-                                </div>
+                                <FilterCheckbox
+                                  key={option?.id}
+                                  option={option}
+                                  toggleFilter={handleToggleFilter}
+                                />
                               ))}
                             </div>
                           </fieldset>
@@ -257,10 +334,11 @@ export default function AllRecipesPage() {
                   <LoadingIcon message="Serving up recipes..." />
                 </div>
               ) : (
-                recipes && (
+                filteredRecipes && (
                   <RecipeList
-                    recipes={recipes}
-                    favouriteRecipe={handleFavouriteRecipe}
+                    recipes={filteredRecipes}
+                    deleteRecipe={handleDelete}
+                    favouriteRecipe={handleFavourite}
                   />
                 )
               )}

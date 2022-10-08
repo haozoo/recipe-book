@@ -1,6 +1,7 @@
+import { deleteRecipe } from "../../services/database";
 import RecipeCard from "./RecipeCard";
 
-export default function RecipeList({ recipes, favouriteRecipe }) {
+export default function RecipeList({ recipes, deleteRecipe, favouriteRecipe }) {
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl py-8 lg:py-0 lg:max-w-7xl">
@@ -10,6 +11,7 @@ export default function RecipeList({ recipes, favouriteRecipe }) {
               <RecipeCard
                 key={recipe.id}
                 recipe={recipe}
+                deleteRecipe={deleteRecipe}
                 favouriteRecipe={favouriteRecipe}
               />
             ))}

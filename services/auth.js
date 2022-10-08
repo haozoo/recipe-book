@@ -1,16 +1,22 @@
-import { AuthErrorCodes, deleteUser, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider, updateEmail, updatePassword } from "firebase/auth";
+import { AuthErrorCodes, deleteUser, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider, updateEmail, updatePassword, getAdditionalUserInfo } from "firebase/auth";
 import { auth, provider } from "./firebase";
 import { showLoginError } from "../utils/constants";
 import Router from "next/router";
+import { addDefaultRecipes } from "./database";
+import { deleteUserData } from "./database";
 
 export const handleGoogleLogin = async () => {
   provider.setCustomParameters({ prompt: "select_account" });
 
   signInWithPopup(auth, provider)
-    .then((result) => {
+    .then(async (result) => {
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const token = credential.accessToken;
       const user = result.user; // redux action? --> dispatch({ type: SET_USER, user });
+      // add sample recipes for new user
+      if (getAdditionalUserInfo(result).isNewUser) {
+        await addDefaultRecipes();
+      }
       Router.push("/recipes")
     })
     .catch((error) => {
@@ -43,6 +49,8 @@ export const createAccount = async () => {
 
   try {
     await createUserWithEmailAndPassword(auth, email, password)
+    // add sample recipes for new user
+    await addDefaultRecipes();
   }
   catch(error) {
     console.log(`There was an error: ${error}`)
@@ -81,12 +89,31 @@ export const getUserProfile = async () => {
   }
 }
 
+export const updateUserProfile = async(newusername) => {
+  updateProfile(auth.currentUser, {displayName: newusername}).
+    then(()=> {
+      // Profile updated
+    }).catch((error) => {
+      console.log(error.code);
+      console.log(error.message);
+    })
+}
+
 // Delete User Account registered with email/password
 export const deleteUserAccount = async (password) => {
+
   try {
     const check = await checkPassword(password)
+    const userId = check.user.uid;
+
+    await deleteUserData(userId);
+    console.log("Documents successfully deleted")
+
     await deleteUser(check.user)
     console.log("Account deleted successfully")
+
+    alert("Account deleted!")
+
   } catch (error) {
     console.log(error.code);
     console.log(error.message);
@@ -118,22 +145,24 @@ export const changeEmailAddress = async (newEmail, password) => {
     const check = await checkPassword(password)
     await updateEmail(check.user, newEmail)
     console.log("Email successfully Updated")
-
   } catch (error) {
     console.log(error.code);
     console.log(error.message);
   }
-
 }
 
 // Reauthentication
 const checkPassword = async (password) => {
-    const user = auth.currentUser
-    const credential = EmailAuthProvider.credential(user.email, password)
-    const check = await reauthenticateWithCredential(user, credential)
-    console.log("Reauthentication completed")
-    return check
-}
+  try {
+    const user = auth.currentUser;
+    const credential = EmailAuthProvider.credential(user.email, password);
+    const check = await reauthenticateWithCredential(user, credential);
+    console.log("Reauthentication completed");
+    return check;
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 // Delete google user account - no reauthentication
 export const deleteGoogleUserAccount = async () => {
