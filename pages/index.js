@@ -7,8 +7,9 @@ import {
 import { Header } from '../components/landing-page/Header'
 import { Container } from '../components/landing-page/Container'
 
-
 export default function Home() {
+  
+
   return (
     <div className='flex flex-col h-screen'>
       <Head>
@@ -17,6 +18,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
+
       <main className='flex flex-col lg:flex-row flex-grow'>
       
         <div className='flex-1 h-full bg-chrome-yellow'>
