@@ -39,7 +39,7 @@ export function Header() {
           <div className="flex items-center gap-x-4 md:gap-x-8">
             <div className="font-nunito text-lg">
               <button
-                className="group flex items-center px-4 py-2 text-sm font-nunito font-semibold"
+                className="group flex items-center px-4 py-2 text-lg font-nunito"
                 onClick={() => setLoginModalIsOpen(true)}
               >
                 Sign in
