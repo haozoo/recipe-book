@@ -39,7 +39,14 @@ export default function SingleRecipePage({ recipeID }) {
 }
 
 SingleRecipePage.getLayout = (page) => {
-  return <UserLayout activePageTitle="Edit Recipe">{page}</UserLayout>;
+  return (
+    <UserLayout
+      activePageTitle="Edit Recipe"
+      activePageHeading="Edit your recipe"
+    >
+      {page}
+    </UserLayout>
+  );
 };
 
 export async function getServerSideProps(context) {

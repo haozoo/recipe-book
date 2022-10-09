@@ -783,5 +783,12 @@ export default function AddRecipePage({ recipe = {} }) {
 }
 
 AddRecipePage.getLayout = function getLayout(page) {
-  return <UserLayout activePageTitle="Add a new recipe!">{page}</UserLayout>;
+  return (
+    <UserLayout
+      activePageTitle="Upload Recipe"
+      activePageHeading="Add a new recipe!"
+    >
+      {page}
+    </UserLayout>
+  );
 };

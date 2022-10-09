@@ -351,5 +351,9 @@ export default function AllRecipesPage() {
 }
 
 AllRecipesPage.getLayout = (page) => {
-  return <UserLayout activePageTitle="Your recipes">{page}</UserLayout>;
+  return (
+    <UserLayout activePageTitle="All Recipes" activePageHeading="Your recipes">
+      {page}
+    </UserLayout>
+  );
 };

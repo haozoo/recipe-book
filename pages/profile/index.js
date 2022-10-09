@@ -402,5 +402,9 @@ export default function UserProfilePage() {
 }
 
 UserProfilePage.getLayout = (page) => {
-  return <UserLayout activePageTitle="Your profile">{page}</UserLayout>;
+  return (
+    <UserLayout activePageTitle="User Profile" activePageHeading="Your profile">
+      {page}
+    </UserLayout>
+  );
 };

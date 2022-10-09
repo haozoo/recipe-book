@@ -7,6 +7,11 @@ export default function FavouriteRecipesPage() {
 
 FavouriteRecipesPage.getLayout = function getLayout(page) {
   return (
-    <UserLayout activePageTitle="Your favourite recipes">{page}</UserLayout>
+    <UserLayout
+      activePageTitle="Favourite Recipes"
+      activePageHeading="Your favourite recipes"
+    >
+      {page}
+    </UserLayout>
   );
 };
