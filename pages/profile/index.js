@@ -251,7 +251,7 @@ export default function UserProfilePage() {
         <UserInfoHeading
           heading="Username"
           text="Your username address associated with your account. This
-          username will be used as your login."
+          username will only be your display name."
           name="Username"
           Icon={UsernameIcon}
           data={[

@@ -3,6 +3,7 @@ import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import {
   AUTH_LOGIN_PATH,
   footerNavigationOptions,
+  LANDING_PAGE_PATH,
   sidebarNavigationOptions,
   USER_PROFILE_PATH,
 } from "../../utils/constants";
@@ -72,7 +73,7 @@ export default function UserLayout({ children, activePageTitle }) {
   const { user, logOut } = useUserAuth();
 
   useEffect(() => {
-    if (!user) Router.push(AUTH_LOGIN_PATH);
+    if (!user) Router.push(LANDING_PAGE_PATH);
   }, [user]);
 
   return (

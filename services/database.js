@@ -126,6 +126,8 @@ export const getAllRecipes = async (uid) => {
       const { defaultTags, userAddedTags, ...recipeInfo } = recipe;
       return {
         ...recipeInfo,
+        defaultTags,
+        userAddedTags,
         allTags: [].concat(defaultTags).concat(userAddedTags),
       };
     });
