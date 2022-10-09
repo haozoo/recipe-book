@@ -194,7 +194,7 @@ export default function AllRecipesPage() {
                       <h2 className="text-lg font-lora font-semibold text-chestnut">
                         Filter Recipes
                       </h2>
-                      <p className="w-5/6 pt-2 font-nunito text-pale-silver text-sm">
+                      <p className="w-5/6 pt-2 font-nunito text-gray-500 text-sm">
                         Check multiple boxes below to narrow recipe search
                         results.
                       </p>
@@ -292,7 +292,7 @@ export default function AllRecipesPage() {
                         <AdjustmentsVerticalIcon className="text-platinum flex-shrink-0 h-5 w-5" />
                       </div>
                     </div>
-                    <p className="w-5/6 pt-2 font-nunito text-pale-silver text-sm">
+                    <p className="w-5/6 pt-2 font-nunito text-gray-500 text-sm">
                       Check multiple boxes below to narrow recipe search
                       results.
                     </p>
@@ -328,7 +328,7 @@ export default function AllRecipesPage() {
             </aside>
 
             {/* Product grid */}
-            <div className="lg:col-span-3 xl:col-span-4 mb-32">
+            <div className="content-start lg:col-span-3 xl:col-span-4 mb-32">
               {isLoadingRecipes ? (
                 <div className="pt-36">
                   <LoadingIcon message="Serving up recipes..." />
