@@ -9,8 +9,7 @@ export default function RecipeList({ recipes, deleteRecipe, favouriteRecipe }) {
           className="grid grid-cols-1 gap-y-10 gap-x-14 
         sm:grid-cols-2 
         lg:grid-cols-3 lg:gap-x-16 
-        xl:grid-cols-4 xl:gap-x-20
-        2xl:grid-cols-5"
+        2xl:grid-cols-4 2xl:gap-x-20"
         >
           {recipes &&
             recipes.map((recipe) => (
