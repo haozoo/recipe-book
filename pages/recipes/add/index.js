@@ -307,7 +307,6 @@ export default function AddRecipePage({ recipe = {} }) {
   // 1. Set loading on page mount.
   useEffect(() => {
     setIsLoadingTags(true);
-    console.log("WHY", recipe);
     if (!_.isEmpty(recipe)) {
       setTitle(recipe?.title);
       setPrepTime(recipe?.prepTime);
@@ -519,7 +518,7 @@ export default function AddRecipePage({ recipe = {} }) {
         open={errorModalIsOpen}
         setOpen={setErrorModalIsOpen}
       />
-      <form className="">
+      <form className="" autoComplete="off">
         <div className="pt-12 max-w-6xl lg:grid lg:grid-cols-2 lg:gap-x-8 space-y-8 divide-y divide-gray-200 lg:space-y-0 lg:divide-y-0">
           <div className="max-w-lg space-y-8 divide-y divide-gray-200">
             <div className="">
@@ -720,7 +719,7 @@ export default function AddRecipePage({ recipe = {} }) {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    <div className="flex text-sm text-gray-600">
+                    <div className="flex flex-col sm:flex-row text-sm text-gray-600">
                       <label
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600"

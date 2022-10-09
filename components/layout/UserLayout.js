@@ -1,5 +1,5 @@
 import { useState, Fragment, useEffect } from "react";
-import { ChevronRightIcon } from "@heroicons/react/24/outline";
+import { ChevronRightIcon, UserIcon } from "@heroicons/react/24/outline";
 import {
   AUTH_LOGIN_PATH,
   footerNavigationOptions,
@@ -13,15 +13,21 @@ import Router from "next/router";
 import { Menu, Transition } from "@headlessui/react";
 import { RecipeContextProvider } from "../../context/RecipeContext";
 
-const UserIcon = ({ user, handleLogOut }) => {
+const ProfileIcon = ({ user, handleLogOut }) => {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="flex max-w-xs pt-2 items-center rounded-full bg-white text-sm">
+        <Menu.Button className="flex max-w-10 pt-2 items-center rounded-full bg-white text-sm">
           <img
             className="h-8 w-8 sm:h-12 sm:w-12 rounded-full"
-            src="https://images.unsplash.com/photo-1525351484163-7529414344d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80"
+            src={
+              user?.photoURL
+                ? user?.photoURL
+                : "https://images.unsplash.com/photo-1525351484163-7529414344d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80"
+            }
             alt=""
+            aria-hidden="true"
+            data-noaft=""
           />
         </Menu.Button>
       </div>
@@ -39,7 +45,7 @@ const UserIcon = ({ user, handleLogOut }) => {
           <div className="px-4 py-3 font-nunito">
             <p className="text-sm text-stone-700 font-semibold">Signed in as</p>
             <p className="truncate text-sm font-extrabold text-chestnut">
-              {user}
+              {user?.email}
             </p>
           </div>
           <div className="py-1 hover:bg-floral-white hover:text-chestnut">
@@ -79,13 +85,13 @@ export default function UserLayout({ children, activePageTitle }) {
   return (
     <RecipeContextProvider>
       {/* Sidebar */}
-      <div className="fixed inset-y-0 flex w-14 flex-col">
+      <div className="fixed inset-y-0 flex w-14 sm:w-16 flex-col">
         <div className="flex min-h-0 flex-1 flex-col items-center bg-rajah">
           <div className="flex h-16 flex-shrink-0 items-center mt-4 mb-12">
             <Link href={sidebarNavigationOptions[0].href}>
               <a>
                 <img
-                  className="h-18 w-18"
+                  className="h-18 w-18 sm:p-1"
                   src="/recipe_logo.png"
                   alt="Workflow"
                 />
@@ -93,37 +99,46 @@ export default function UserLayout({ children, activePageTitle }) {
             </Link>
           </div>
           <div className="flex flex-1 flex-col overflow-y-auto">
-            <nav className="flex-1 space-y-12 px-3 py-4">
+            <nav className="flex-1 space-y-12 sm:space-y-14 px-3 py-4">
               {sidebarNavigationOptions.map((item) => (
                 <Link key={item.id} add href={item.href}>
                   <a className="text-white group flex items-center mx-6 text-sm font-medium">
-                    <item.icon className="text-chestnut flex-shrink-0 h-6 w-6" />
+                    <item.icon
+                      className="text-hazelnut flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8
+                     hover:text-orange-200"
+                    />
                   </a>
                 </Link>
               ))}
-              <div className="bg-dirt opacity-40 mx-6 my-20 w-6 h-0.5 rounded-xl" />
-              <button
+              <div className="sm:hidden bg-dirt opacity-40 mx-6 my-20 w-6 h-0.5 rounded-xl" />
+              <Link add href={USER_PROFILE_PATH}>
+                <a className="sm:hidden text-white group flex items-center mx-6 text-sm font-medium ">
+                  <UserIcon className="text-hazelnut flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8" />
+                </a>
+              </Link>
+
+              {/* <button
                 className="text-white group flex items-center mx-6 text-sm font-medium"
                 onClick={setSidebarExpanded}
               >
-                <ChevronRightIcon className="text-chestnut flex-shrink-0 h-6 w-6" />
-              </button>
+                <ChevronRightIcon className="text-chestnut flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8" />
+              </button> */}
             </nav>
           </div>
         </div>
       </div>
 
       {/* Header */}
-      <div className="ml-14">
+      <div className="ml-14 sm:ml-16">
         <div className="sticky top-0 z-10 px-10 sm:px-16 lg:px-16 flex h-24 flex-shrink-0 bg-white border-b-2">
           <div className="flex items-center pt-2">
-            <div className="font-patrick font-bold text-chestnut tracking-wide text-3xl">
+            <div className="font-patrick font-bold text-chestnut tracking-wide text-2xl sm:text-3xl">
               {activePageTitle}
             </div>
           </div>
-          <div className="flex flex-1 justify-end">
+          <div className="hidden sm:flex sm:flex-1 sm:justify-end">
             <div className="flex items-center pt-1">
-              <UserIcon user={user?.email} handleLogOut={logOut} />
+              <ProfileIcon user={user} handleLogOut={logOut} />
             </div>
           </div>
         </div>
@@ -142,7 +157,6 @@ export default function UserLayout({ children, activePageTitle }) {
                   href="https://github.com/haozoo/recipe-book"
                   className="text-gray-400 hover:text-gray-500"
                 >
-                  <span className="sr-only">{item.name}</span>
                   <item.icon className="h-6 w-6" aria-hidden="true" />
                 </a>
               ))}

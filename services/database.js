@@ -1,4 +1,4 @@
-import { addDoc, deleteDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
+import { addDoc, deleteDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
 import { deleteRecipeImage, uploadRecipeImage, deleteImage} from "./storage";
 import { auth, db } from "./firebase";
 import _ from "lodash";

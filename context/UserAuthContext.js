@@ -8,7 +8,6 @@ import { auth } from "../services/firebase";
 import Router from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
-  AUTH_LOGIN_PATH,
   LANDING_PAGE_PATH,
   USER_ALL_RECIPE_PATH,
 } from "../utils/constants";

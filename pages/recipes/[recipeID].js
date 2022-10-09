@@ -162,11 +162,11 @@ export default function SingleRecipePage({ recipeID }) {
             <div className="aspect-square h-72 flex items-center justify-center overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3 bg-blanched-almond">
               <img src={recipe.coverImage.url} alt="" className="h-full" />
             </div>
-            <div>
+            {/* <div>
               <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">
                 Gallery
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
