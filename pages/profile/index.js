@@ -95,6 +95,7 @@ const UserInfoHeading = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setResult("");
     setIsLoading(true);
     const status = await handleUpload(e);
     if (status === "SUCCESS") {

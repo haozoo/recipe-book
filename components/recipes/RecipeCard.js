@@ -116,7 +116,14 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
           </Transition>
         </Menu>
       </div>
-      <p className="mt-1 font-nunito text-md text-chestnut">{recipe?.title}</p>
+      <p className="mt-1 font-nunito text-md text-chestnut">
+        {recipe?.sample && (
+          <div className="inline-block px-2 py-1 mr-3 text-sm text-gray-400 font-bold bg-gray-100 rounded-md">
+            Sample
+          </div>
+        )}
+        {recipe?.title}
+      </p>
     </div>
   );
 }
