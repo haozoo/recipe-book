@@ -3,6 +3,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import React, { useEffect, useRef, useState } from 'react';
 import UserLayout from '../../../components/layout/UserLayout';
 import { addNewRecipeAndImages } from "../../../services/database";
+import { editRecipeAndImages } from '../../../services/database';
 import { Combobox } from "@headlessui/react";
 import Tag from "../../../components/recipes/Tag";
 import { useRecipes } from "../../../context/RecipeContext";
@@ -216,7 +217,7 @@ const Ingredient = ({
               className="block w-full min-w-0 rounded-none rounded-r-md border border-l-transparent px-3 py-1 input-font border-1 border-gray-300 input-focus"
               type="text"
               id="ingredient-name"
-              value={ingredient.item}
+              value={ingredient.name}
               placeholder="Condensed Milk"
               onChange={handleEditName(id)}
             />
@@ -227,7 +228,7 @@ const Ingredient = ({
               {`${ingredient.quantity}${ingredient.unit}`}
             </span>
             <span className="flex items-center pl-2 input-font">
-              {ingredient.item}
+              {ingredient.name}
             </span>
           </>
         )}
@@ -270,7 +271,7 @@ const DeleteButton = ({ onDelete }) => {
   );
 };
 
-export default function AddRecipePage({ recipe = {} }) {
+export default function AddRecipePage({ recipe = {}}) {
   const [title, setTitle] = useState("");
   const [prepTime, setPrepTime] = useState("");
   const [cookTime, setCookTime] = useState("");
@@ -307,6 +308,7 @@ export default function AddRecipePage({ recipe = {} }) {
   // 1. Set loading on page mount.
   useEffect(() => {
     setIsLoadingTags(true);
+    console.log("WHY", recipe);
     if (!_.isEmpty(recipe)) {
       setTitle(recipe?.title);
       setPrepTime(recipe?.prepTime);
@@ -367,7 +369,7 @@ export default function AddRecipePage({ recipe = {} }) {
 
   const handleEditIngredientName = (id) => (e) => {
     const newIngredients = ingredients.map((ingredient, idx) => {
-      return id !== idx ? ingredient : { ...ingredient, item: e.target.value };
+      return id !== idx ? ingredient : { ...ingredient, name: e.target.value };
     });
     setIngredients(newIngredients);
   };
@@ -398,7 +400,7 @@ export default function AddRecipePage({ recipe = {} }) {
       setIngredients(
         ingredients.concat([
           {
-            item: newIngredientName,
+            name: newIngredientName,
             unit: newIngredientUnit,
             quantity: newIngredientQuantity,
           },
@@ -459,7 +461,8 @@ export default function AddRecipePage({ recipe = {} }) {
         }),
       };
 
-      const status = await addNewRecipeAndImages(
+      const status = await editRecipeAndImages(
+        recipe.id,
         parsedRecipeData,
         coverPhotoFile,
         []
@@ -518,7 +521,7 @@ export default function AddRecipePage({ recipe = {} }) {
         open={errorModalIsOpen}
         setOpen={setErrorModalIsOpen}
       />
-      <form className="" autoComplete="off">
+      <form className="">
         <div className="pt-12 max-w-6xl lg:grid lg:grid-cols-2 lg:gap-x-8 space-y-8 divide-y divide-gray-200 lg:space-y-0 lg:divide-y-0">
           <div className="max-w-lg space-y-8 divide-y divide-gray-200">
             <div className="">
@@ -719,7 +722,7 @@ export default function AddRecipePage({ recipe = {} }) {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    <div className="flex flex-col sm:flex-row text-sm text-gray-600">
+                    <div className="flex text-sm text-gray-600">
                       <label
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600"
@@ -783,12 +786,5 @@ export default function AddRecipePage({ recipe = {} }) {
 }
 
 AddRecipePage.getLayout = function getLayout(page) {
-  return (
-    <UserLayout
-      activePageTitle="Upload Recipe"
-      activePageHeading="Add a new recipe!"
-    >
-      {page}
-    </UserLayout>
-  );
+  return <UserLayout activePageTitle="Add a new recipe!">{page}</UserLayout>;
 };
