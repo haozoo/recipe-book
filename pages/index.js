@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useState } from 'react'
 import {
   handleGoogleLogin,
   createAccount,
@@ -6,12 +7,17 @@ import {
 } from "../services/auth";
 import { Header } from '../components/landing-page/Header'
 import { Container } from '../components/landing-page/Container'
+import RegisterModal from "../components/utility/RegisterModal";
 
 export default function Home() {
-  
+  const [registerModalIsOpen, setRegisterModalIsOpen] = useState(false);
 
   return (
     <div className='flex flex-col h-screen'>
+      <RegisterModal
+          open={registerModalIsOpen}
+          setOpen={setRegisterModalIsOpen}
+        />
       <Head>
         <title>Recipe App</title>
         <meta name="description" />
@@ -31,7 +37,9 @@ export default function Home() {
                 Cooking is now made easy with <span className='font-patrick italic text-hazelnut text-3xl tracking-wide'>REcipes</span>, your cooking companion!
               </p>
               <span className='inline-block text-2xl align-center'>
-                <button href="/register" className="bg-white hover:opacity-75 text-chrome-yellow px-4 py-2 rounded-lg">
+                <button 
+                  onClick={() => setRegisterModalIsOpen(true)} 
+                  className="bg-white hover:opacity-75 text-chrome-yellow px-4 py-2 rounded-lg">
                   <span className='font-nunito font-bold'>
                     Register
                   </span>
@@ -48,18 +56,10 @@ export default function Home() {
         </div>
         <div className='flex-1 h-full bg-blanched-almond'>
           <Container>
-            <div className='relative w-full h-full'>
+            <div className='relative'>
               <img 
-                className='absolute top-0'
-                src="/kitchen-baking-and-cooking-tool.png"
-              />
-              <img 
-                className='absolute top-[26.5rem]'
-                src="/kitchen-baking-and-cooking-tool.png"
-              />
-              <img 
-                className='overflow-hidden absolute z-10 top-[20.5rem] left-[6.9rem] scale-[2] block'
-                src="/desktop-prototype.png"
+                className='absolute top-[9rem] left-[2rem] scale-[1.4] block'
+                src="/sample-app.jpg"
               />
             </div>
           </Container>
