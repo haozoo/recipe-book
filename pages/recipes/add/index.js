@@ -220,7 +220,7 @@ const Ingredient = ({
               className="block w-full min-w-0 rounded-none rounded-r-md border border-l-transparent px-3 py-1 input-font border-1 border-gray-300 input-focus"
               type="text"
               id="ingredient-name"
-              value={ingredient.item}
+              value={ingredient.name}
               placeholder="Condensed Milk"
               onChange={handleEditName(id)}
             />
@@ -231,7 +231,7 @@ const Ingredient = ({
               {`${ingredient.quantity}${ingredient.unit}`}
             </span>
             <span className="flex items-center pl-2 input-font">
-              {ingredient.item}
+              {ingredient.name}
             </span>
           </>
         )}
@@ -296,6 +296,7 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
 
   const [coverPhotoFile, setCoverPhotoFile] = useState();
+  const [coverPhotoLink, setCoverPhotoLink] = useState();
 
   const [successModalIsOpen, setSuccessModalIsOpen] = useState(false);
   const [error, setError] = useState({});
@@ -316,7 +317,11 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
       setPrepTime(recipe?.prepTime);
       setCookTime(recipe?.cookTime);
       setFavourited(recipe?.favourited);
-      // setSelectedTags(recipe?.allTags);
+      setSelectedTags(
+        filters
+          .flatMap(({ options }) => options)
+          .filter((tag) => recipe?.allTags.includes(tag.id))
+      );
       setInstructions(
         recipe?.instructions.map((instruction) => {
           return {
@@ -325,7 +330,7 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
         })
       );
       setIngredients(recipe?.ingredients);
-      // setCoverPhotoFile(undefined);
+      setCoverPhotoLink(recipe?.coverImage?.url);
     }
   }, []);
 
@@ -338,7 +343,7 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
 
   // 3. Wait until recipes/filters are defined to stop loading.
   useEffect(() => {
-    if (filters?.length !== 0) {
+    if (editing || filters?.length !== 0) {
       const flattenedTags = filters.flatMap(({ options }) => options);
       setAllTags(flattenedTags);
       setIsLoadingTags(false);
@@ -698,20 +703,23 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
           <div className="max-w-lg border-0 border-t-1 border-gray-200 lg:col-span-1">
             <div className="pt-12 lg:pt-0">
               <SectionTitle title="Images" />
-              {coverPhotoFile ? (
+              {coverPhotoFile || coverPhotoLink ? (
                 <div className="relative">
-                  <div className="aspect-w-3 aspect-h-2">
-                    <img
-                      className="rounded-lg object-cover shadow-lg"
-                      src={URL.createObjectURL(coverPhotoFile)}
-                      alt="Your cover photo."
-                    />
-                  </div>
+                  <img
+                    className="aspect-w-3 aspect-h-2 rounded-lg object-cover shadow-lg mix-blend-darken"
+                    src={
+                      coverPhotoLink
+                        ? coverPhotoLink
+                        : URL.createObjectURL(coverPhotoFile)
+                    }
+                    alt="Your cover photo."
+                  />
                   <XMarkIcon
                     onClick={() => {
                       setCoverPhotoFile();
+                      setCoverPhotoLink();
                     }}
-                    className="absolute top-3 right-3 z-20 flex-shrink-0 h-10 w-10 text-white hover:text-yellow-600"
+                    className="absolute top-3 right-3 z-5 flex-shrink-0 h-10 w-10 mix-blend-exclusion text-gray-300 hover:text-red-500"
                   />
                 </div>
               ) : (

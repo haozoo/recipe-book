@@ -26,6 +26,7 @@ export default function SingleRecipePage({ recipeID }) {
       getRecipes(user.uid);
     }
     getRecipeFromContext();
+    console.log(recipe);
   }, [user, recipes]);
 
   useEffect(() => {
@@ -35,7 +36,11 @@ export default function SingleRecipePage({ recipeID }) {
     }
   }, [recipe]);
 
-  return <div>{!_.isEmpty(recipe) && <AddRecipePage recipe={recipe} />}</div>;
+  return (
+    <div>
+      {!_.isEmpty(recipe) && <AddRecipePage recipe={recipe} editing={true} />}
+    </div>
+  );
 }
 
 SingleRecipePage.getLayout = (page) => {
