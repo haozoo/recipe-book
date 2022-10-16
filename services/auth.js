@@ -28,8 +28,8 @@ export const handleGoogleLogin = async () => {
 };
 
 export const handleEmailLogin = async () => {
-  const loginEmail = txtEmail.value
-  const loginPassword = txtPassword.value
+  const loginEmail = email.value
+  const loginPassword = password.value
 
   try {
     await signInWithEmailAndPassword(auth, loginEmail, loginPassword)

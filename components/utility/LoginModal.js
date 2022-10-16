@@ -8,6 +8,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useUserAuth } from "../../context/UserAuthContext";
+import { showLoginError } from "../../utils/constants";
 
 export default function LoginModal({ open, setOpen }) {
   const [email, setEmail] = useState("");
@@ -78,6 +79,10 @@ export default function LoginModal({ open, setOpen }) {
                     <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-12">
                       <div className="mx-auto w-full lg:w-96">
                         <div>
+                          <div id="divLoginError" classname="group">
+                            <div id="lblLoginErrorMessage" className="errorlabel"></div>
+
+                          </div>
                           <div className="mt-6">
                             <form action="#" method="POST" className="space-y-6">
                               <div>
@@ -151,7 +156,7 @@ export default function LoginModal({ open, setOpen }) {
                               <div>
                                 <button
                                   type="button"
-                                  onClick={handleSubmit}
+                                  onClick={handleEmailLogin}
                                   className="flex w-full justify-center rounded-md border border-transparent bg-chrome-yellow py-2 px-4 text-lg font-medium text-white shadow-sm hover:opacity-75 focus:outline-none focus:ring-2 focus:ring-hazelnut focus:ring-offset-2"
                                 >
                                   SIGN IN
