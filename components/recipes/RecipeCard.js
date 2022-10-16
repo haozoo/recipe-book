@@ -50,7 +50,7 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
           )}
         </button>
       </div>
-      <div className="mt-4 flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center">
           <ClockIcon className="text-chestnut flex-shrink-0 h-4 w-4" />
           <p className="ml-2 font-nunito font-bold text-xs text-chestnut">
@@ -116,14 +116,14 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
           </Transition>
         </Menu>
       </div>
-      <p className="mt-1 font-nunito text-md text-chestnut">
+      <div className="mt-1 font-nunito text-md text-chestnut truncate">
         {recipe?.sample && (
-          <div className="inline-block px-2 py-1 mr-3 text-sm text-gray-400 font-bold bg-gray-100 rounded-md">
+          <p className="inline-block px-2 py-1 mr-3 text-sm text-gray-400 font-bold bg-gray-100 rounded-md">
             Sample
-          </div>
+          </p>
         )}
         {recipe?.title}
-      </p>
+      </div>
     </div>
   );
 }
