@@ -1,7 +1,11 @@
 import { PencilIcon, XCircleIcon } from '@heroicons/react/24/outline';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import React, { useEffect, useRef, useState } from 'react';
-import UserLayout from '../../../components/layout/UserLayout';
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
+import React, { useEffect, useRef, useState } from "react";
+import UserLayout from "../../../components/layout/UserLayout";
 import { addNewRecipeAndImages } from "../../../services/database";
 import { Combobox } from "@headlessui/react";
 import Tag from "../../../components/recipes/Tag";
@@ -270,7 +274,7 @@ const DeleteButton = ({ onDelete }) => {
   );
 };
 
-export default function AddRecipePage({ recipe = {} }) {
+export default function AddRecipePage({ recipe = {}, editing = false }) {
   const [title, setTitle] = useState("");
   const [prepTime, setPrepTime] = useState("");
   const [cookTime, setCookTime] = useState("");
@@ -695,11 +699,19 @@ export default function AddRecipePage({ recipe = {} }) {
             <div className="pt-12 lg:pt-0">
               <SectionTitle title="Images" />
               {coverPhotoFile ? (
-                <div className="aspect-w-3 aspect-h-2">
-                  <img
-                    className="rounded-lg object-cover shadow-lg"
-                    src={URL.createObjectURL(coverPhotoFile)}
-                    alt="Your cover photo."
+                <div className="relative">
+                  <div className="aspect-w-3 aspect-h-2">
+                    <img
+                      className="rounded-lg object-cover shadow-lg"
+                      src={URL.createObjectURL(coverPhotoFile)}
+                      alt="Your cover photo."
+                    />
+                  </div>
+                  <XMarkIcon
+                    onClick={() => {
+                      setCoverPhotoFile();
+                    }}
+                    className="absolute top-3 right-3 z-20 flex-shrink-0 h-10 w-10 text-white hover:text-yellow-600"
                   />
                 </div>
               ) : (
