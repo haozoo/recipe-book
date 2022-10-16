@@ -34,8 +34,9 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
             <div className="aspect-w-1 aspect-h-1 h-72 w-full overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3">
               <picture>
                 <img
-                  src={recipe.coverImage.url}
                   className="h-full w-full object-cover object-center group-hover:opacity-75"
+                  src={recipe.coverImage.url}
+                  alt="Recipe cover photo"
                 />
               </picture>
             </div>

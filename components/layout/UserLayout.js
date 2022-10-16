@@ -19,17 +19,19 @@ const ProfileIcon = ({ user, handleLogOut }) => {
     <Menu as="div" className="relative inline-block text-left">
       <div>
         <Menu.Button className="flex max-w-10 pt-2 items-center rounded-full bg-white text-sm">
-          <img
-            className="h-8 w-8 sm:h-12 sm:w-12 rounded-full"
-            src={
-              user?.photoURL
-                ? user?.photoURL
-                : "https://images.unsplash.com/photo-1525351484163-7529414344d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80"
-            }
-            alt=""
-            aria-hidden="true"
-            data-noaft=""
-          />
+          <picture>
+            <img
+              className="h-8 w-8 sm:h-12 sm:w-12 rounded-full"
+              src={
+                user?.photoURL
+                  ? user?.photoURL
+                  : "https://images.unsplash.com/photo-1525351484163-7529414344d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80"
+              }
+              alt=""
+              aria-hidden="true"
+              data-noaft=""
+            />
+          </picture>
         </Menu.Button>
       </div>
 
@@ -99,11 +101,13 @@ export default function UserLayout({
             <div className="flex h-16 flex-shrink-0 items-center mt-4 mb-12">
               <Link href={sidebarNavigationOptions[0].href}>
                 <a>
-                  <img
-                    className="h-18 w-18 sm:p-1"
-                    src="/recipe_logo.png"
-                    alt="Workflow"
-                  />
+                  <picture>
+                    <img
+                      className="h-18 w-18 sm:p-1"
+                      src="/recipe_logo.png"
+                      alt="Workflow"
+                    />
+                  </picture>
                 </a>
               </Link>
             </div>

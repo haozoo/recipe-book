@@ -160,7 +160,13 @@ export default function SingleRecipePage({ recipeID }) {
           </div>
           <div className="flex w-full flex-col">
             <div className="aspect-square h-72 flex items-center justify-center overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3 bg-blanched-almond">
-              <img src={recipe.coverImage.url} alt="" className="h-full" />
+              <picture>
+                <img
+                  src={recipe.coverImage.url}
+                  alt="Recipe Cover Photo"
+                  className="h-full"
+                />
+              </picture>
             </div>
             {/* <div>
               <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">

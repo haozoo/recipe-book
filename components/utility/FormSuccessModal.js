@@ -35,11 +35,13 @@ export default function FormSuccessModal({ open, setOpen, action }) {
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <div>
                   <div className="mx-auto flex items-center justify-center rounded-full ">
-                    <img
-                      className="h-20 w-20"
-                      src="/recipe_logo.png"
-                      alt="Workflow"
-                    />
+                    <picture>
+                      <img
+                        className="h-20 w-20"
+                        src="/recipe_logo.png"
+                        alt="Workflow"
+                      />
+                    </picture>
                   </div>
                   <div className="mt-3 text-center font-nunito sm:mt-5">
                     <Dialog.Title

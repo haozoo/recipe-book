@@ -79,18 +79,27 @@ export default function Home() {
         <div className="flex-1 h-full bg-blanched-almond">
           <Container>
             <div className="relative w-full h-full">
-              <img
-                className="absolute top-0"
-                src="/kitchen-baking-and-cooking-tool.png"
-              />
-              <img
-                className="absolute top-[26.5rem]"
-                src="/kitchen-baking-and-cooking-tool.png"
-              />
-              <img
-                className="overflow-hidden absolute z-10 top-[20.5rem] left-[6.9rem] scale-[2] block"
-                src="/desktop-prototype.png"
-              />
+              <picture>
+                <img
+                  className="absolute top-0"
+                  src="/kitchen-baking-and-cooking-tool.png"
+                  alt="Cooking tools"
+                />
+              </picture>
+              <picture>
+                <img
+                  className="absolute top-[26.5rem]"
+                  src="/kitchen-baking-and-cooking-tool.png"
+                  alt="Baking tools"
+                />
+              </picture>
+              <picture>
+                <img
+                  className="overflow-hidden absolute z-10 top-[20.5rem] left-[6.9rem] scale-[2] block"
+                  src="/desktop-prototype.png"
+                  alt="Desktop image"
+                />
+              </picture>
             </div>
           </Container>
         </div>
