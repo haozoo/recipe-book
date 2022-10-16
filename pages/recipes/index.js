@@ -92,12 +92,16 @@ export default function AllRecipesPage() {
 
   useEffect(() => {
     if (recipes?.length !== 0) {
-      setFilteredRecipes(recipes);
+      filterRecipes()
       setIsLoadingRecipes(false);
     }
   }, [recipes]);
 
   useEffect(() => {
+    filterRecipes()
+  }, [activeFilters]);
+
+  const filterRecipes = () => {
     const activeTags = activeFilters.reduce(
       (arr, obj) => (obj?.active ? [...arr, obj?.id] : arr),
       []
@@ -114,7 +118,7 @@ export default function AllRecipesPage() {
       });
       setFilteredRecipes(newRecipes);
     }
-  }, [activeFilters]);
+  }
 
   const handleToggleFilter = (isActive, id) => {
     const newFilters = activeFilters.map((filter) => {
