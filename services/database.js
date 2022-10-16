@@ -61,6 +61,25 @@ export const editRecipeAndImages = async (recipeId, recipeData, coverImage, othe
   return await updateRecipeAndImages(recipeId, recipeData, coverImage, otherImages);
 }
 
+export const editRecipe = async (recipeId, recipeData) => {
+  try {
+    const additionalData = {
+      id: recipeId,
+      href: `recipes/${recipeId}`,
+      createdBy: auth.currentUser.uid,
+      createdAt: serverTimestamp(),
+    };
+    const allData = Object.assign({}, recipeData, additionalData);
+    const recipeRef = doc(recipesRef, recipeId);
+    await setDoc(recipeRef, allData);
+  } catch (err) {
+    console.log(err);
+    return "Failed to upload recipe data";
+  }
+
+  return "SUCCESS";
+};
+
 const updateRecipeAndImages = async (recipeId, recipeData, coverImage, otherImages) => {
   // step1: upload cover image to storage
   let coverImageData;

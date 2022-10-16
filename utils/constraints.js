@@ -43,7 +43,7 @@ export const checkValidConfirmPassword = (newPassword, confirmPassword) => {
   return "";
 };
 
-export const checkValidRecipe = (recipe, image) => {
+export const checkValidRecipe = (recipe, image, imageurl) => {
   const { title, cookTime, prepTime, ingredients, instructions } = recipe;
   const error = {
     title: "Incomplete Recipe",
@@ -108,16 +108,18 @@ export const checkValidRecipe = (recipe, image) => {
     }
   });
 
-  if (!image) {
-    // potentiall optional
+  if (!imageurl && !image) {
     addErr("Missing cover image");
-  } else {
-    if (image?.size > 5000000) {
-      addErr("Cover image exeeds 10MB");
-    }
-    if (image?.type !== "image/jpeg" && image?.type !== "image/png") {
-      addErr("Cover image file is not in png/jpg format");
-    }
+  }
+  if (!imageurl && image?.size > 5000000) {
+    addErr("Cover image exeeds 10MB");
+  }
+  if (
+    !imageurl &&
+    image?.type !== "image/jpeg" &&
+    image?.type !== "image/png"
+  ) {
+    addErr("Cover image file is not in png/jpg format");
   }
 
   return error.errors.length === 0 ? {} : error;

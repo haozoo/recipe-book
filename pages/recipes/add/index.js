@@ -6,8 +6,8 @@ import {
 } from "@heroicons/react/20/solid";
 import React, { useEffect, useRef, useState } from "react";
 import UserLayout from "../../../components/layout/UserLayout";
-import { addNewRecipeAndImages } from "../../../services/database";
-import { editRecipeAndImages } from '../../../services/database';
+import { addNewRecipeAndImages, editRecipe } from "../../../services/database";
+import { editRecipeAndImages } from "../../../services/database";
 import { Combobox } from "@headlessui/react";
 import Tag from "../../../components/recipes/Tag";
 import { useRecipes } from "../../../context/RecipeContext";
@@ -455,13 +455,17 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
       favourited,
     };
 
-    const newError = checkValidRecipe(rawRecipeData, coverPhotoFile);
+    const newError = checkValidRecipe(
+      rawRecipeData,
+      coverPhotoFile,
+      coverPhotoLink
+    );
 
     if (!_.isEmpty(newError)) {
       setError(newError);
       setErrorModalIsOpen(true);
     } else {
-      const parsedRecipeData = {
+      let parsedRecipeData = {
         ...rawRecipeData,
         cookTime: parseInt(cookTime),
         prepTime: parseInt(prepTime),
@@ -470,12 +474,33 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
         }),
       };
 
-      const status = await editRecipeAndImages(
-        recipe.id,
-        parsedRecipeData,
-        coverPhotoFile,
-        []
-      );
+      // edit recipe and image
+      let status;
+      switch (editing) {
+        case true:
+          status = coverPhotoFile
+            ? await editRecipeAndImages(
+                recipe.id,
+                parsedRecipeData,
+                coverPhotoFile,
+                []
+              )
+            : await editRecipe(
+                recipe.id,
+                Object.assign(parsedRecipeData, {
+                  coverImage: recipe.coverImage,
+                  otherImages: recipe.otherImages,
+                })
+              );
+          break;
+        case false:
+          status = await addNewRecipeAndImages(
+            parsedRecipeData,
+            coverPhotoFile,
+            []
+          );
+          break;
+      }
 
       if (status === "SUCCESS") {
         setSuccessModalIsOpen(true);
@@ -515,6 +540,7 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
     setIsEditingIngredients(false);
 
     setCoverPhotoFile(undefined);
+    setCoverPhotoLink(undefined);
 
     setError({});
   };
@@ -524,6 +550,7 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
       <FormSuccessModal
         open={successModalIsOpen}
         setOpen={setSuccessModalIsOpen}
+        action={editing ? "edit" : "upload"}
       />
       <FormErrorModal
         error={error}
@@ -792,10 +819,10 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
                       fill="currentColor"
                     />
                   </svg>
-                  Uploading...
+                  {editing ? "Editing..." : "Uploading..."}
                 </div>
               ) : (
-                "Upload"
+                <div>{editing ? "Edit" : "Upload"}</div>
               )}
             </button>
           </div>
@@ -806,5 +833,12 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
 }
 
 AddRecipePage.getLayout = function getLayout(page) {
-  return <UserLayout activePageTitle="Add a new recipe!">{page}</UserLayout>;
+  return (
+    <UserLayout
+      activePageHeading="Add a new recipe"
+      activePageTitle="Add a recipe"
+    >
+      {page}
+    </UserLayout>
+  );
 };

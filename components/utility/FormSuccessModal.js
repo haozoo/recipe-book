@@ -5,7 +5,7 @@ import LoadingIcon from "./LoadingIcon";
 import Link from "next/link";
 import { USER_ALL_RECIPE_PATH } from "../../utils/constants";
 
-export default function FormSuccessModal({ open, setOpen }) {
+export default function FormSuccessModal({ open, setOpen, action }) {
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -46,7 +46,7 @@ export default function FormSuccessModal({ open, setOpen }) {
                       as="h3"
                       className="text-lg font-bold leading-6 text-gray-900"
                     >
-                      Recipe upload successful!
+                      Recipe {action} successful!
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
