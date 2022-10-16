@@ -21,17 +21,19 @@ export default function SingleRecipePage({ recipeID }) {
     setIsLoadingRecipe(true);
   }, []);
 
-  useEffect(() => {
-    if (!_.isEmpty(user) && recipes?.length === 0) {
-      getRecipes(user.uid);
-    }
-    getRecipeFromContext();
-    console.log(recipe);
-  }, [user, recipes]);
+  useEffect(
+    () => {
+      if (!_.isEmpty(user) && recipes?.length === 0) {
+        getRecipes(user.uid);
+      }
+      getRecipeFromContext();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, recipes]
+  );
 
   useEffect(() => {
     if (!_.isEmpty(recipe)) {
-      console.log("FINALLY!", recipe);
       setIsLoadingRecipe(false);
     }
   }, [recipe]);

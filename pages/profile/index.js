@@ -200,15 +200,23 @@ const UserInput = ({
 }) => {
   const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    if (value && checkValue) {
-      setErrorMessage(checkValue(value));
-    }
-  }, [value]);
+  useEffect(
+    () => {
+      if (value && checkValue) {
+        setErrorMessage(checkValue(value));
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [value]
+  );
 
-  useEffect(() => {
-    errorMessage?.length !== 0 ? handleError(true) : handleError(false);
-  }, [errorMessage]);
+  useEffect(
+    () => {
+      errorMessage?.length !== 0 ? handleError(true) : handleError(false);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [errorMessage]
+  );
 
   return (
     <div className=" sm:w-1/2 pt-2">

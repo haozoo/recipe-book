@@ -20,9 +20,13 @@ function classNames(...classes) {
 const FilterCheckbox = ({ option, toggleFilter }) => {
   const [checked, setChecked] = useState(false);
 
-  useEffect(() => {
-    toggleFilter(checked, option?.id);
-  }, [checked]);
+  useEffect(
+    () => {
+      toggleFilter(checked, option?.id);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [checked]
+  );
 
   return (
     <div className="flex items-center">
@@ -70,36 +74,52 @@ export default function AllRecipesPage() {
   }, []);
 
   // 2. Wait until user is defined to fetch recipes w/ uid.
-  useEffect(() => {
-    if (user && recipes?.length === 0) {
-      getRecipes(user.uid);
-    }
-    if (user && filters?.length === 0) {
-      getFilters(user.uid);
-    }
-  }, [user]);
+  useEffect(
+    () => {
+      if (user && recipes?.length === 0) {
+        getRecipes(user.uid);
+      }
+      if (user && filters?.length === 0) {
+        getFilters(user.uid);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user]
+  );
 
   // 3. Wait until recipes/filters are defined to stop loading.
-  useEffect(() => {
-    if (filters?.length !== 0) {
-      const newFilters = filters
-        .flatMap((obj) => obj.options)
-        .map((obj) => ({ ...obj, active: false }));
-      setActiveFilters(newFilters);
-      setIsLoadingFilters(false);
-    }
-  }, [filters]);
+  useEffect(
+    () => {
+      if (filters?.length !== 0) {
+        const newFilters = filters
+          .flatMap((obj) => obj.options)
+          .map((obj) => ({ ...obj, active: false }));
+        setActiveFilters(newFilters);
+        setIsLoadingFilters(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filters]
+  );
 
-  useEffect(() => {
-    if (recipes?.length !== 0) {
-      filterRecipes()
-      setIsLoadingRecipes(false);
-    }
-  }, [recipes]);
+  useEffect(
+    () => {
+      if (recipes?.length !== 0) {
+        filterRecipes();
+        setIsLoadingRecipes(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [recipes]
+  );
 
-  useEffect(() => {
-    filterRecipes()
-  }, [activeFilters]);
+  useEffect(
+    () => {
+      filterRecipes();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeFilters]
+  );
 
   const filterRecipes = () => {
     const activeTags = activeFilters.reduce(

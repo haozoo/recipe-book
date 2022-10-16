@@ -26,17 +26,20 @@ export default function SingleRecipePage({ recipeID }) {
     setIsLoadingRecipe(true);
   }, []);
 
-  useEffect(() => {
-    if (!_.isEmpty(user) && recipes?.length === 0) {
-      getRecipes(user.uid);
-    }
-    getRecipeFromContext();
-  }, [user]);
+  useEffect(
+    () => {
+      if (!_.isEmpty(user) && recipes?.length === 0) {
+        getRecipes(user.uid);
+      }
+      getRecipeFromContext();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user]
+  );
 
   useEffect(() => {
     if (!_.isEmpty(recipe)) {
       setIsLoadingRecipe(false);
-      console.log(recipe);
     }
   }, [recipe]);
 

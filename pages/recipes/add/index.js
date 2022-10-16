@@ -311,46 +311,57 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
   const addIngredientRef = useRef(null);
 
   // 1. Set loading on page mount.
-  useEffect(() => {
-    setIsLoadingTags(true);
-    console.log("WHY", recipe);
-    if (!_.isEmpty(recipe)) {
-      setTitle(recipe?.title);
-      setPrepTime(recipe?.prepTime);
-      setCookTime(recipe?.cookTime);
-      setFavourited(recipe?.favourited);
-      setSelectedTags(
-        filters
-          .flatMap(({ options }) => options)
-          .filter((tag) => recipe?.allTags.includes(tag.id))
-      );
-      setInstructions(
-        recipe?.instructions.map((instruction) => {
-          return {
-            text: instruction,
-          };
-        })
-      );
-      setIngredients(recipe?.ingredients);
-      setCoverPhotoLink(recipe?.coverImage?.url);
-    }
-  }, []);
+  useEffect(
+    () => {
+      setIsLoadingTags(true);
+      if (!_.isEmpty(recipe)) {
+        setTitle(recipe?.title);
+        setPrepTime(recipe?.prepTime);
+        setCookTime(recipe?.cookTime);
+        setFavourited(recipe?.favourited);
+        setSelectedTags(
+          filters
+            .flatMap(({ options }) => options)
+            .filter((tag) => recipe?.allTags.includes(tag.id))
+        );
+        setInstructions(
+          recipe?.instructions.map((instruction) => {
+            return {
+              text: instruction,
+            };
+          })
+        );
+        setIngredients(recipe?.ingredients);
+        setCoverPhotoLink(recipe?.coverImage?.url);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   // 2. Wait until user is defined to fetch recipes w/ uid.
-  useEffect(() => {
-    if (user && allTags?.length === 0) {
-      getFilters(user.uid);
-    }
-  }, [user]);
+  useEffect(
+    () => {
+      if (user && allTags?.length === 0) {
+        getFilters(user.uid);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user]
+  );
 
   // 3. Wait until recipes/filters are defined to stop loading.
-  useEffect(() => {
-    if (editing || filters?.length !== 0) {
-      const flattenedTags = filters.flatMap(({ options }) => options);
-      setAllTags(flattenedTags);
-      setIsLoadingTags(false);
-    }
-  }, [filters]);
+  useEffect(
+    () => {
+      if (editing || filters?.length !== 0) {
+        const flattenedTags = filters.flatMap(({ options }) => options);
+        setAllTags(flattenedTags);
+        setIsLoadingTags(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filters]
+  );
 
   const handleDeleteSelectedTag = (id) => {
     setSelectedTags(selectedTags.filter((i, idx) => id !== idx));
@@ -735,15 +746,17 @@ export default function AddRecipePage({ recipe = {}, editing = false }) {
               <SectionTitle title="Images" />
               {coverPhotoFile || coverPhotoLink ? (
                 <div className="relative">
-                  <img
-                    className="aspect-w-3 aspect-h-2 rounded-lg object-cover shadow-lg mix-blend-darken"
-                    src={
-                      coverPhotoLink
-                        ? coverPhotoLink
-                        : URL.createObjectURL(coverPhotoFile)
-                    }
-                    alt="Your cover photo."
-                  />
+                  <picture>
+                    <img
+                      className="aspect-w-3 aspect-h-2 rounded-lg object-cover shadow-lg mix-blend-darken"
+                      src={
+                        coverPhotoLink
+                          ? coverPhotoLink
+                          : URL.createObjectURL(coverPhotoFile)
+                      }
+                      alt="Your cover photo."
+                    />
+                  </picture>
                   <XMarkIcon
                     onClick={() => {
                       setCoverPhotoFile();

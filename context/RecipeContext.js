@@ -52,7 +52,6 @@ export function RecipeContextProvider({ children }) {
 
   const getRecipe = async (rid) => {
     const recipe = recipes.find((recipe) => recipe.id === rid);
-    console.log(recipe);
     return recipe;
   };
 
