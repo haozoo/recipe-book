@@ -264,6 +264,12 @@ export default function UserProfilePage() {
 
   const { user } = useUserAuth();
 
+  const isGoogleAccount = user?.providerData?.find(
+    (provider) => provider.providerId === "google.com"
+  )
+    ? true
+    : false;
+
   const handleUsernameUpdate = async () => {
     const status = await updateUserProfile(username);
     setUsername("");
@@ -322,64 +328,69 @@ export default function UserProfilePage() {
           ]}
         />
       </div>
-      <div className="py-20">
-        <UserInfoHeading
-          heading="Email Address"
-          text="Update your email address associated with your account. Please enter your current password first."
-          type="Update"
-          name="Email"
-          Icon={EmailIcon}
-          handleUpload={handleEmailUpdate}
-          data={[
-            {
-              label: "Current Password",
-              type: "password",
-              value: passwordEmail,
-              handleEdit: setPasswordEmail,
-            },
-            {
-              label: "Email",
-              type: "email",
-              value: email,
-              placeholder: user?.email,
-              checkValue: (val) => checkValidEmail(user?.email, val),
-              handleEdit: setEmail,
-            },
-          ]}
-        />
-      </div>
-      <div className="py-20">
-        <UserInfoHeading
-          heading="Password"
-          text="Update your password associated with your account. Please enter your current password first."
-          type="Update"
-          name="Password"
-          Icon={PasswordIcon}
-          handleUpload={handlePasswordUpdate}
-          data={[
-            {
-              label: "Current Password",
-              type: "password",
-              value: passwordChange,
-              handleEdit: setPasswordChange,
-            },
-            {
-              label: "New Password",
-              type: "password",
-              value: newPassword,
-              checkValue: checkValidNewPassword,
-              handleEdit: setNewPassword,
-            },
-            {
-              label: "Confirm Password",
-              type: "password",
-              value: confirmPassword,
-              checkValue: (val) => checkValidConfirmPassword(newPassword, val),
-              handleEdit: setConfirmPassword,
-            },
-          ]}
-        />
-      </div>
+      {!isGoogleAccount && (
+        <div className="py-20">
+          <UserInfoHeading
+            heading="Email Address"
+            text="Update your email address associated with your account. Please enter your current password first."
+            type="Update"
+            name="Email"
+            Icon={EmailIcon}
+            handleUpload={handleEmailUpdate}
+            data={[
+              {
+                label: "Current Password",
+                type: "password",
+                value: passwordEmail,
+                handleEdit: setPasswordEmail,
+              },
+              {
+                label: "Email",
+                type: "email",
+                value: email,
+                placeholder: user?.email,
+                checkValue: (val) => checkValidEmail(user?.email, val),
+                handleEdit: setEmail,
+              },
+            ]}
+          />
+        </div>
+      )}
+      {!isGoogleAccount && (
+        <div className="py-20">
+          <UserInfoHeading
+            heading="Password"
+            text="Update your password associated with your account. Please enter your current password first."
+            type="Update"
+            name="Password"
+            Icon={PasswordIcon}
+            handleUpload={handlePasswordUpdate}
+            data={[
+              {
+                label: "Current Password",
+                type: "password",
+                value: passwordChange,
+                handleEdit: setPasswordChange,
+              },
+              {
+                label: "New Password",
+                type: "password",
+                value: newPassword,
+                checkValue: checkValidNewPassword,
+                handleEdit: setNewPassword,
+              },
+              {
+                label: "Confirm Password",
+                type: "password",
+                value: confirmPassword,
+                checkValue: (val) =>
+                  checkValidConfirmPassword(newPassword, val),
+                handleEdit: setConfirmPassword,
+              },
+            ]}
+          />
+        </div>
+      )}
       <div className="py-20">
         <UserInfoHeading
           heading="Account"
