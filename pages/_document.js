@@ -6,7 +6,6 @@ export default function Document() {
   return (
     <Html>
       <Head>
-        <title>REcipes</title>
         <link
           rel="apple-touch-icon"
           sizes="180x180"
