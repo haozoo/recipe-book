@@ -3,9 +3,15 @@ import {
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
 import React, { useEffect, useState } from "react";
+import { UserInput } from "../../components/forms/UserInput";
 import UserLayout from "../../components/layout/UserLayout";
 import { useUserAuth } from "../../context/UserAuthContext";
-import { changeEmailAddress, changePassword } from "../../services/auth";
+import {
+  changeEmailAddress,
+  changePassword,
+  deleteUserAccount,
+  updateUserProfile,
+} from "../../services/auth";
 import {
   checkValidConfirmPassword,
   checkValidEmail,
@@ -57,10 +63,49 @@ const PasswordIcon = () => {
   );
 };
 
-const UserInfoHeading = ({ heading, text, name, Icon, handleUpload, data }) => {
+const AccountIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="flex-shrink-0 h-7 w-7 p-1 bg-orange-100 rounded-full border-2 border-orange-300 text-orange-400"
+    >
+      <path
+        fillRule="evenodd"
+        d="M19 5.5a4.5 4.5 0 01-4.791 4.49c-.873-.055-1.808.128-2.368.8l-6.024 7.23a2.724 2.724 0 11-3.837-3.837L9.21 8.16c.672-.56.855-1.495.8-2.368a4.5 4.5 0 015.873-4.575c.324.105.39.51.15.752L13.34 4.66a.455.455 0 00-.11.494 3.01 3.01 0 001.617 1.617c.17.07.363.02.493-.111l2.692-2.692c.241-.241.647-.174.752.15.14.435.216.9.216 1.382zM4 17a1 1 0 100-2 1 1 0 000 2z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+};
+
+const UserInfoHeading = ({
+  heading,
+  text,
+  type,
+  name,
+  Icon,
+  handleUpload,
+  data,
+}) => {
   const [errors, setErrors] = useState(Array(data?.length).fill(false));
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setResult("");
+    setIsLoading(true);
+    const status = await handleUpload(e);
+    if (status === "SUCCESS") {
+      setResult(`${name} has been updated succesffuly!`);
+    } else {
+      setResult("An error has occurred, please retry later.");
+    }
+    setIsLoading(false);
+  };
 
   return (
     <div>
@@ -73,7 +118,7 @@ const UserInfoHeading = ({ heading, text, name, Icon, handleUpload, data }) => {
       <p className="pl-1 py-2 text-lg font-medium tracking-wide text-hazelnut font-patrick">
         {text}
       </p>
-      <form className="pt-8 w-full sm:w-1/2">
+      <form className="pt-8 w-full" onSubmit={handleSubmit} autoComplete="off">
         {data &&
           data.map((input, idx) => {
             return (
@@ -95,7 +140,7 @@ const UserInfoHeading = ({ heading, text, name, Icon, handleUpload, data }) => {
               />
             );
           })}
-        <div className="flex items-center mt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center mt-2">
           <button
             className="py-2 px-4 bg-rajah rounded-lg text-white text-sm font-patrick tracking-wider font-extrabold disabled:opacity-30"
             type="button"
@@ -107,15 +152,7 @@ const UserInfoHeading = ({ heading, text, name, Icon, handleUpload, data }) => {
               ) ||
               errors.reduce((acc, err) => acc || err, false)
             }
-            onClick={async (e) => {
-              setIsLoading(true);
-              const res = await handleUpload(e);
-              if (res === "error")
-                setResult("An error has occurred, please retry later.");
-              if (res === "success")
-                setResult(`${name} has been updated succesffuly!`);
-              setIsLoading(false);
-            }}
+            onClick={handleSubmit}
           >
             {isLoading ? (
               <div className="flex items-center">
@@ -138,10 +175,13 @@ const UserInfoHeading = ({ heading, text, name, Icon, handleUpload, data }) => {
                 Updating...
               </div>
             ) : (
-              `Update ${name}`
+              `${type} ${name}`
             )}
           </button>
-          <p className="pl-2 text-gray-400 text-sm font-patrick tracking-wider font-extrabold">
+          <p
+            className="flex justify-center mt-2 text-gray-400 text-sm font-patrick tracking-wider font-extrabold
+            sm:justify-start sm:pl-2 sm:mt-0"
+          >
             {result}
           </p>
         </div>
@@ -150,99 +190,59 @@ const UserInfoHeading = ({ heading, text, name, Icon, handleUpload, data }) => {
   );
 };
 
-const UserInput = ({
-  label,
-  type,
-  value,
-  checkValue,
-  placeholder,
-  handleEdit,
-  handleError,
-}) => {
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    if (value && checkValue) {
-      setErrorMessage(checkValue(value));
-    }
-  }, [value]);
-
-  useEffect(() => {
-    errorMessage?.length !== 0 ? handleError(true) : handleError(false);
-  }, [errorMessage]);
-
-  return (
-    <div className="pt-2">
-      <label
-        className="bg-white text-base font-patrick font-extrabold tracking-wide text-chestnut"
-        id={type}
-      >
-        {label}
-      </label>
-      <div className="relative mt-1 rounded-md shadow-sm">
-        <input
-          className={`block w-full pr-10 rounded-md border-2 border-gray-300 input-font input-focus ${
-            errorMessage &&
-            "border-red-300  text-red-900 focus:border-red-500 focus:outline-none focus:ring-red-500"
-          }`}
-          type={type}
-          id={type}
-          value={value}
-          placeholder={placeholder}
-          onChange={(e) => handleEdit(e.target.value)}
-          required
-        />
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-          {errorMessage && (
-            <ExclamationCircleIcon
-              className="h-5 w-5 text-red-500"
-              aria-hidden="true"
-            />
-          )}
-        </div>
-      </div>
-      <p
-        className={`h-4 text-sm text-red-400 font-patrick font-extrabold tracking-wide ${
-          !errorMessage && "invisible"
-        }`}
-      >
-        {errorMessage}
-      </p>
-    </div>
-  );
-};
 
 export default function UserProfilePage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
 
-  const [password, setPassword] = useState("");
+  const [passwordEmail, setPasswordEmail] = useState("");
+  const [passwordChange, setPasswordChange] = useState("");
+  const [passwordDelete, setPasswordDelete] = useState("");
+
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const { user } = useUserAuth();
 
+  const isGoogleAccount = user?.providerData?.find(
+    (provider) => provider.providerId === "google.com"
+  )
+    ? true
+    : false;
+
+  const handleUsernameUpdate = async () => {
+    const status = await updateUserProfile(username);
+    setUsername("");
+
+    return status;
+  };
+
   const handleEmailUpdate = async () => {
-    try {
-      await changeEmailAddress(email, password);
-      setEmail("");
-      setPassword("");
-      return "success";
-    } catch (err) {
-      return "error";
-    }
+    const status = await changeEmailAddress(email, passwordEmail);
+    setEmail("");
+    setPasswordEmail("");
+
+    return status;
   };
 
   const handlePasswordUpdate = async () => {
-    try {
-      await changePassword(password, newPassword, confirmPassword);
-      setPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-      return "success";
-    } catch (err) {
-      return "error";
-    }
+    const status = await changePassword(
+      passwordChange,
+      newPassword,
+      confirmPassword
+    );
+    setPasswordChange("");
+    setNewPassword("");
+    setConfirmPassword("");
+
+    return status;
+  };
+
+  const handleDeleteAccount = async () => {
+    const status = await deleteUserAccount(passwordDelete);
+    setPasswordDelete("");
+
+    return status;
   };
 
   return (
@@ -252,8 +252,10 @@ export default function UserProfilePage() {
           heading="Username"
           text="Your username address associated with your account. This
           username will only be your display name."
+          type="Update"
           name="Username"
           Icon={UsernameIcon}
+          handleUpload={handleUsernameUpdate}
           data={[
             {
               label: "Username",
@@ -266,58 +268,83 @@ export default function UserProfilePage() {
           ]}
         />
       </div>
+      {!isGoogleAccount && (
+        <div className="py-20">
+          <UserInfoHeading
+            heading="Email Address"
+            text="Update your email address associated with your account. Please enter your current password first."
+            type="Update"
+            name="Email"
+            Icon={EmailIcon}
+            handleUpload={handleEmailUpdate}
+            data={[
+              {
+                label: "Current Password",
+                type: "password",
+                value: passwordEmail,
+                handleEdit: setPasswordEmail,
+              },
+              {
+                label: "Email",
+                type: "email",
+                value: email,
+                placeholder: user?.email,
+                checkValue: (val) => checkValidEmail(user?.email, val),
+                handleEdit: setEmail,
+              },
+            ]}
+          />
+        </div>
+      )}
+      {!isGoogleAccount && (
+        <div className="py-20">
+          <UserInfoHeading
+            heading="Password"
+            text="Update your password associated with your account. Please enter your current password first."
+            type="Update"
+            name="Password"
+            Icon={PasswordIcon}
+            handleUpload={handlePasswordUpdate}
+            data={[
+              {
+                label: "Current Password",
+                type: "password",
+                value: passwordChange,
+                handleEdit: setPasswordChange,
+              },
+              {
+                label: "New Password",
+                type: "password",
+                value: newPassword,
+                checkValue: checkValidNewPassword,
+                handleEdit: setNewPassword,
+              },
+              {
+                label: "Confirm Password",
+                type: "password",
+                value: confirmPassword,
+                checkValue: (val) =>
+                  checkValidConfirmPassword(newPassword, val),
+                handleEdit: setConfirmPassword,
+              },
+            ]}
+          />
+        </div>
+      )}
       <div className="py-20">
         <UserInfoHeading
-          heading="Email Address"
-          text="Update your email address associated with your account. Please enter your current password first."
-          name="Email"
-          Icon={EmailIcon}
-          handleUpload={handleEmailUpdate}
+          heading="Account"
+          text="Delete your account. All your data will be deleted. This action cannot be undone. Please enter your current password first."
+          type="Delete"
+          name="Account"
+          Icon={AccountIcon}
+          handleUpload={handleDeleteAccount}
           data={[
             {
               label: "Current Password",
               type: "password",
-              value: password,
-              handleEdit: setPassword,
-            },
-            {
-              label: "Email",
-              type: "email",
-              value: email,
-              placeholder: user?.email,
-              checkValue: (val) => checkValidEmail(user?.email, val),
-              handleEdit: setEmail,
-            },
-          ]}
-        />
-      </div>
-      <div className="py-20">
-        <UserInfoHeading
-          heading="Password"
-          text="Update your password associated with your account. Please enter your current password first."
-          name="Password"
-          Icon={PasswordIcon}
-          handleUpload={handlePasswordUpdate}
-          data={[
-            {
-              label: "Current Password",
-              type: "password",
-              value: password,
-              handleEdit: setPassword,
-            },
-            {
-              label: "New Password",
-              type: "password",
-              value: newPassword,
-              checkValue: checkValidNewPassword,
-              handleEdit: setNewPassword,
-            },
-            {
-              label: "Confirm Password",
-              type: "password",
-              value: confirmPassword,
-              checkValue: (val) => checkValidConfirmPassword(newPassword, val),
-              handleEdit: setConfirmPassword,
+              value: passwordDelete,
+              handleEdit: setPasswordDelete,
             },
           ]}
         />
@@ -327,5 +354,9 @@ export default function UserProfilePage() {
 }
 
 UserProfilePage.getLayout = (page) => {
-  return <UserLayout activePageTitle="Your profile">{page}</UserLayout>;
+  return (
+    <UserLayout activePageTitle="User Profile" activePageHeading="Your profile">
+      {page}
+    </UserLayout>
+  );
 };

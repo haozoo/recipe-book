@@ -28,10 +28,13 @@ export function Header() {
         <nav className="relative z-20 flex justify-between">
           <div className="flex items-center md:gap-x-2">
             <Link href="#">
-              <img
-                className="h-16 w-16"
-                src="/recipe_logo.png"
-              />
+              <picture>
+                <img
+                  className="h-16 w-16"
+                  src="/recipe_logo.png"
+                  alt="REcipe brand logo"
+                />
+              </picture>
             </Link>
             <span className='inline-block align-bottom'>
               <span className="font-patrick text-chestnut tracking-wide text-3xl pr-2">

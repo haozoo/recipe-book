@@ -1,5 +1,20 @@
-import { addDoc, deleteDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
-import { deleteRecipeImage, uploadRecipeImage, deleteImage} from "./storage";
+import {
+  addDoc,
+  deleteDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
+  writeBatch,
+  arrayRemove,
+} from "firebase/firestore";
+import { deleteRecipeImages, deleteImage, uploadRecipeImage } from "./storage";
 import { auth, db } from "./firebase";
 import _ from "lodash";
 
@@ -33,11 +48,56 @@ export const addDefaultRecipes = async () => {
 }
 
 export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages) => {
-  // step1: generate a new doc ref
+  // generate a new doc ref
   const recipeRef = doc(recipesRef);
   const recipeId = recipeRef.id;
+  // set recipe data and images 
+  return await updateRecipeAndImages(recipeId, recipeData, coverImage, otherImages);
+}
 
-  // step2: upload cover image to storage
+
+export const editRecipeAndImages = async (recipeId, recipeData, coverImage, otherImages) => {
+  // get old recipe data
+  const recipeRef = doc(recipesRef, recipeId);
+  const snapshot = await getDoc(recipeRef);
+  const oldRecipe = JSON.parse(JSON.stringify(snapshot.data()));
+
+  // delete old images from storage
+  try {
+    const imagePaths = [oldRecipe.coverImage]
+      .concat(oldRecipe.otherImages)
+      .map(image => image.path);
+    await deleteRecipeImages(imagePaths);
+  } catch (err) {
+    console.log(err);
+    return "Failed to delete old images!";
+  }
+  
+  // set recipe data and images 
+  return await updateRecipeAndImages(recipeId, recipeData, coverImage, otherImages);
+}
+
+export const editRecipe = async (recipeId, recipeData) => {
+  try {
+    const additionalData = {
+      id: recipeId,
+      href: `recipes/${recipeId}`,
+      createdBy: auth.currentUser.uid,
+      createdAt: serverTimestamp(),
+    };
+    const allData = Object.assign({}, recipeData, additionalData);
+    const recipeRef = doc(recipesRef, recipeId);
+    await setDoc(recipeRef, allData);
+  } catch (err) {
+    console.log(err);
+    return "Failed to upload recipe data";
+  }
+
+  return "SUCCESS";
+};
+
+const updateRecipeAndImages = async (recipeId, recipeData, coverImage, otherImages) => {
+  // step1: upload cover image to storage
   let coverImageData;
   try {
     coverImageData = await uploadRecipeImage(recipeId, coverImage);
@@ -46,7 +106,7 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
     return "Failed to upload cover image";
   }
 
-  // step3: upload other images to storage
+  // step2: upload other images to storage
   let otherImagesData = [];
   try {
     await Promise.all(
@@ -57,14 +117,15 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
     );
   } catch (err) {
     // delete uploaded images from storage
-    const uploadedImages = [coverImageData].concat(otherImagesData);
-    await deleteUploadedImages(uploadedImages);
+    const imagePaths = [coverImageData].concat(otherImagesData)
+      .map(image => image.path);
+    await deleteRecipeImages(imagePaths);
     console.log(err);
     return "Failed to upload gallery images!";
   }
 
+  // step3: upload recipe data  to firestore
   try {
-    // step4: combine recipe data with additional data
     const additionalData = {
       id: recipeId,
       href: `recipes/${recipeId}`,
@@ -74,23 +135,18 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
       createdAt: serverTimestamp(),
     };
     const allData = Object.assign({}, recipeData, additionalData);
-    // step5: add data to the doc
+    const recipeRef = doc(recipesRef, recipeId);
     await setDoc(recipeRef, allData);
   } catch (err) {
     // delete uploaded images from storage
-    const uploadedImages = [coverImageData].concat(otherImagesData);
-    await deleteUploadedImages(uploadedImages);
+    const imagePaths = [coverImageData].concat(otherImagesData)
+      .map(image => image.path);
+    await deleteRecipeImages(imagePaths);
     console.log(err);
     return "Failed to upload recipe data";
   }
 
-  return "SUCCESS"
-}
-
-const deleteUploadedImages = async (images) => {
-  await Promise.all(images.map(async (imageData) => {
-    await deleteRecipeImage(imageData.path);
-  }));
+  return "SUCCESS";
 }
 
 export const getOneRecipe = async (docId) => {
@@ -126,8 +182,6 @@ export const getAllRecipes = async (uid) => {
       const { defaultTags, userAddedTags, ...recipeInfo } = recipe;
       return {
         ...recipeInfo,
-        defaultTags,
-        userAddedTags,
         allTags: [].concat(defaultTags).concat(userAddedTags),
       };
     });
@@ -140,28 +194,73 @@ export const getAllRecipes = async (uid) => {
 const defaultTagsRef = collection(db, "newDefaultTags");
 const userAddedTagsRef = collection(db, "newUserAddedTags");
 
-export const addNewUserAddedTag = async (tagsName) => {
-  for(var tagname in tagsName){
-    var exists = false;
-    const querySnapshot = await getDocs(userAddedTagsRef);
-    querySnapshot.forEach((doc) => {
-      if(doc.data().name == tagsName[tagname]){
-        exists = true;
-      }
-    });
-    if(!exists){
-      try {
-        await addDoc(userAddedTagsRef, {
-         name: tagsName[tagname],
-         createdBy: auth.currentUser.uid,
-         createdAt: serverTimestamp()
-       });
-     } catch (error) {
-        console.error(error);
-     }
+export const addNewUserAddedTag = async (tagName) => {
+  var exists = false;
+  const tagQuery = query(
+    userAddedTagsRef,
+    where("createdBy", "==", auth.currentUser.uid)
+  );
+  const querySnapshot = await getDocs(tagQuery);
+  querySnapshot.forEach((doc) => {
+    if (doc.data().name == tagName) {
+      exists = true;
+    }
+  });
+  if (exists) return "DUPLICATE";
+  if (!exists) {
+    try {
+      await addDoc(userAddedTagsRef, {
+        name: tagName,
+        createdBy: auth.currentUser.uid,
+        createdAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error(error);
+      return "Failed to create tag";
+    }
    } 
+  return "SUCCESS";
+};
+
+export const deleteUserAddedTag = async (tagId) => {
+  try {
+    const recipeQuery = query(
+      recipesRef,
+      where("createdBy", "==", auth.currentUser.uid),
+      where("userAddedTags", "array-contains", tagId)
+    );
+
+    const batch = writeBatch(db);
+    const querySnapshot = await getDocs(recipeQuery);
+    querySnapshot.forEach(async (recipeDoc) => {
+      batch.update(recipeDoc.ref, {
+        userAddedTags: arrayRemove(tagId),
+      });
+    });
+    await batch.commit();
+
+    const tagRef = doc(userAddedTagsRef, tagId);
+    await deleteDoc(tagRef);
+  } catch (err) {
+    console.log(err);
+    return "Failed to delete tag";
   }
-}
+  return "SUCCESS";
+};
+
+export const updateUserAddedTag = async (tagId, tagName) => {
+  try {
+    const tagRef = doc(userAddedTagsRef, tagId);
+    await updateDoc(tagRef, {
+      name: tagName
+    });
+  } catch (error) {
+    console.error(error);
+    return "Failed to update tag"
+  }
+  return "SUCCESS"
+};
+
 
 export const getOneDefaultTag = async (docId) => {
   const docRef = doc(defaultTagsRef, docId);
@@ -198,7 +297,7 @@ const getAllDefaultTags = async () => {
 const getAllUserAddedTags = async (uid) => {
   const userQuery = query(
     userAddedTagsRef,
-    where("createdBy", "==", uid),
+    where("createdBy", "==", uid)
     // orderBy("createdAt", "asc")
   );
   const snapshot = await getDocs(userQuery);
@@ -235,7 +334,7 @@ export const deleteRecipe = async (recipeId) => {
 
 export const deleteTag = async (tagId) => {
   try {
-    const tagRef = doc(db, "userAddedTags", tagId);
+    const tagRef = doc(userAddedTagsRef, tagId);
     await deleteDoc(tagRef);
   } catch (error) {
     console.error(error);
@@ -255,9 +354,7 @@ export const clickHeart = async (recipeId) => {
   }
   return "SUCCESS";
 };
-
 export const deleteUserData = async (userId) => {
-
   try {
     const batch = writeBatch(db);
     const myRecipes = query(collection(db, "newRecipes"), where("createdBy", "==", userId));
@@ -272,7 +369,6 @@ export const deleteUserData = async (userId) => {
       batch.delete(doc.ref);
     });
     await batch.commit();
-
   } catch (error) {
     console.error(error);
     return "Failed to delete user data";

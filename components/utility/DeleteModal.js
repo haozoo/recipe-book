@@ -2,7 +2,7 @@ import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
-export default function DeleteRecipeModal({ open, setOpen, handleDelete }) {
+export default function DeleteModal({ type, open, setOpen, handleDelete }) {
   const cancelButtonRef = useRef(null);
 
   return (
@@ -49,13 +49,14 @@ export default function DeleteRecipeModal({ open, setOpen, handleDelete }) {
                       as="h3"
                       className="text-lg font-bold leading-6 text-gray-900"
                     >
-                      Delete Recipe
+                      Delete {type}
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Are you sure you want to delete this recipe? All of its
-                        data will be permanently removed from our servers
-                        forever. This action cannot be undone.
+                        Are you sure you want to delete this{" "}
+                        {type.toLowerCase()}? All of its data will be
+                        permanently removed from our servers forever. This
+                        action cannot be undone.
                       </p>
                     </div>
                   </div>
@@ -73,7 +74,7 @@ export default function DeleteRecipeModal({ open, setOpen, handleDelete }) {
                   </button>
                   <button
                     type="button"
-                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-200 bg-gray-100 px-4 py-2 text-base font-nunito font-extrabold text-gray-700 shadow-sm hover:bg-gray-100 sm:mt-0 sm:w-auto sm:text-sm"
+                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-200 bg-gray-100 px-4 py-2 text-base font-nunito font-bold text-gray-700 shadow-sm hover:bg-gray-100 sm:mt-0 sm:w-auto sm:text-sm"
                     onClick={() => setOpen(false)}
                     ref={cancelButtonRef}
                   >

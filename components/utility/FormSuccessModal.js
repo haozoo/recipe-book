@@ -5,7 +5,7 @@ import LoadingIcon from "./LoadingIcon";
 import Link from "next/link";
 import { USER_ALL_RECIPE_PATH } from "../../utils/constants";
 
-export default function FormSuccessModal({ open, setOpen }) {
+export default function FormSuccessModal({ open, setOpen, action }) {
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -35,18 +35,20 @@ export default function FormSuccessModal({ open, setOpen }) {
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <div>
                   <div className="mx-auto flex items-center justify-center rounded-full ">
-                    <img
-                      className="h-20 w-20"
-                      src="/recipe_logo.png"
-                      alt="Workflow"
-                    />
+                    <picture>
+                      <img
+                        className="h-20 w-20"
+                        src="/recipe_logo.png"
+                        alt="Workflow"
+                      />
+                    </picture>
                   </div>
                   <div className="mt-3 text-center font-nunito sm:mt-5">
                     <Dialog.Title
                       as="h3"
                       className="text-lg font-bold leading-6 text-gray-900"
                     >
-                      Recipe upload successful!
+                      Recipe {action} successful!
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">

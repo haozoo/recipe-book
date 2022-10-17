@@ -29,7 +29,6 @@ export function RecipeContextProvider({ children }) {
   const favouriteRecipe = async (rid) => {
     if (rid) {
       const status = await favouriteRecipeInDB(rid);
-
       if (status === "SUCCESS") {
         const newRecipes = recipes.map((recipe) =>
           recipe?.id === rid
@@ -52,16 +51,13 @@ export function RecipeContextProvider({ children }) {
 
   const getRecipe = async (rid) => {
     const recipe = recipes.find((recipe) => recipe.id === rid);
-    console.log(recipe);
     return recipe;
   };
 
   const getFilters = async (uid) => {
-    if (filters?.length > 0) return filters;
     if (uid) {
       const newFilters = await getAllFilters(uid);
       setFilters(newFilters);
-      return newFilters;
     }
   };
 
