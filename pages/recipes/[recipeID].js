@@ -3,6 +3,7 @@ import { HeartIcon as EmptyHeartIcon } from "@heroicons/react/24/outline";
 import {
   HeartIcon as FullHeartIcon,
   MinusSmallIcon,
+  PencilSquareIcon,
   PlusSmallIcon,
   UserIcon,
 } from "@heroicons/react/24/solid";
@@ -103,50 +104,57 @@ export default function SingleRecipePage({ recipeID }) {
             <div className="flex w-full flex-col divide-y">
               <div>
                 <div className="flex flex-row items-center justify-between">
-                  <h1 className="font-patrick font-bold text-chestnut tracking-wider text-3xl">
+                  <h1 className="font-patrick font-bold text-chestnut tracking-wider text-2xl sm:text-3xl truncate">
                     {recipe?.title}
                   </h1>
                   <button onClick={() => handleFavourite(recipe?.id)}>
                     {favourited ? (
-                      <FullHeartIcon className="text-red-400 flex-shrink-0 h-8 w-8" />
+                      <FullHeartIcon className="text-red-400 flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8" />
                     ) : (
-                      <EmptyHeartIcon className="text-gray-300 flex-shrink-0 h-8 w-8" />
+                      <EmptyHeartIcon className="text-gray-300 flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8" />
                     )}
                   </button>
                 </div>
                 <div className="flex items-center justify-between mt-2 mb-4">
-                  <div className="flex space-x-4 divide-x-2">
+                  <div className="flex sm:space-x-4 sm:divide-x-2 text-sm sm:text-base truncate">
                     <div className="flex items-baseline space-x-1">
                       <p className="font-nunito font-bold text-hazelnut">
                         {convertTime(recipe.prepTime)}
                       </p>
-                      <p className="input-font">Prep</p>
+                      <p className="text-hazelnut font-patrick font-medium tracking-wider">
+                        Prep
+                      </p>
                     </div>
                     <div className="flex items-baseline space-x-1 pl-4">
                       <p className="font-nunito font-bold text-hazelnut">
                         {convertTime(recipe.cookTime)}
                       </p>
-                      <p className="input-font">Cook</p>
+                      <p className="text-hazelnut font-patrick font-medium tracking-wider">
+                        Cook
+                      </p>
                     </div>
-                    <div className="flex items-baseline space-x-1 pl-4">
+                    <div className="hidden sm:flex sm:items-baseline sm:space-x-1 sm:pl-4">
                       <p className="font-nunito font-bold text-hazelnut">
                         {convertTime(recipe.prepTime + recipe.cookTime)}
                       </p>
-                      <p className="input-font">Total</p>
+                      <p className="text-hazelnut font-patrick font-medium tracking-wider">
+                        Total
+                      </p>
                     </div>
                   </div>
                   <button
-                    className="bg-atomic-tangerine hover:bg-orange-500 text-white text-base font-patrick font-extrabold tracking-wider px-4 py-1 rounded-lg"
+                    className="sm:bg-atomic-tangerine sm:hover:bg-orange-500 text-white text-base font-patrick font-extrabold tracking-wider sm:px-4 py-1 rounded-lg"
                     onClick={() =>
                       Router.push(`${USER_ADD_RECIPE_PATH}/${recipe?.id}`)
                     }
                   >
-                    Edit
+                    <p className="hidden sm:flex">Edit</p>
+                    <PencilSquareIcon className="sm:hidden text-gray-300 flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8" />
                   </button>
                 </div>
               </div>
               <div className="pt-4 pb-2">
-                <h2 className="text-xl font-patrick font-extrabold text-chestnut">
+                <h2 className="text-lg sm:text-xl font-patrick font-extrabold text-chestnut">
                   Tags
                 </h2>
                 {recipe?.allTags?.length !== 0 && (
@@ -172,13 +180,22 @@ export default function SingleRecipePage({ recipeID }) {
                   </div>
                 )}
               </div>
+              <div className="py-8 lg:p-0 lg:hidden">
+                <picture>
+                  <img
+                    src={recipe.coverImage.url}
+                    alt="Recipe Cover Photo"
+                    className="aspect-w-3 aspect-h-4 rounded-lg object-cover shadow-lg"
+                  />
+                </picture>
+              </div>
               <div className="py-8">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-patrick font-extrabold text-chestnut pb-2">
+                  <h2 className="text-lg sm:text-xl font-patrick font-extrabold text-chestnut pb-2">
                     Ingredients
                   </h2>
                   <div className="flex space-x-2 pb-2 items-center align-middle">
-                    <UserIcon className="flex-shrink-0 h-4 w-4 text-gray-500" />
+                    <UserIcon className="flex-shrink-0 sm:h-4 sm:w-4 h-3 w-3 text-gray-500" />
                     <button
                       disabled={serving == 1 ? true : false}
                       onClick={() => setServing(serving - 1)}
@@ -226,7 +243,7 @@ export default function SingleRecipePage({ recipeID }) {
               </div>
             </div>
           </div>
-          <div className="max-w-lg">
+          <div className="hidden sm:flex sm:max-w-lg">
             <picture>
               <img
                 src={recipe.coverImage.url}
