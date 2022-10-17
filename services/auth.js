@@ -59,9 +59,14 @@ export const handleEmailLogin = async () => {
 export const createAccount = async () => {
   const email = txtEmail.value;
   const password = txtPassword.value;
+  const name = username.value;
 
   try {
     await createUserWithEmailAndPassword(auth, email, password);
+    const user = auth.currentUser;
+    if(user){
+      user.displayName = name;
+    }
     // add sample recipes for new user
     await addDefaultRecipes();
   } catch (error) {
