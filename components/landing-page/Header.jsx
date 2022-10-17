@@ -14,7 +14,7 @@ export function Header() {
   const [registerModalIsOpen, setRegisterModalIsOpen] = useState(false);
 
   return (
-    
+
     <header className="py-4">
       <Container>
         <LoginModal
@@ -25,12 +25,12 @@ export function Header() {
           open={registerModalIsOpen}
           setOpen={setRegisterModalIsOpen}
         />
-        <nav className="relative z-50 flex justify-between">
+        <nav className="relative z-20 flex justify-between">
           <div className="flex items-center md:gap-x-2">
             <Link href="#">
               <img
-                  className="h-16 w-16"
-                  src="/recipe_logo.png"
+                className="h-16 w-16"
+                src="/recipe_logo.png"
               />
             </Link>
             <span className='inline-block align-bottom'>
@@ -51,11 +51,11 @@ export function Header() {
                 Sign in
               </button>
             </div>
-            <button 
+            <button
               onClick={() => setRegisterModalIsOpen(true)}
               className="font-nunito text-lg bg-chrome-yellow hover:opacity-75 text-white px-4 py-2 rounded-full"
             >
-                Register
+              Register
             </button>
           </div>
         </nav>

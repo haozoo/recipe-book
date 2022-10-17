@@ -79,7 +79,7 @@ export default function LoginModal({ open, setOpen }) {
                     <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-12">
                       <div className="mx-auto w-full lg:w-96">
                         <div>
-                          <div id="divLoginError" classname="group">
+                          <div id="divLoginError" className="group">
                             <div id="lblLoginErrorMessage" className="errorlabel"></div>
 
                           </div>
