@@ -65,12 +65,12 @@ export default function SingleRecipePage({ recipeID }) {
       setDefaultTags(
         filters
           .flatMap(({ options }) => options)
-          .filter((tag) => recipe?.defaultTags.includes(tag.id))
+          .filter((tag) => recipe?.defaultTags?.includes(tag.id))
       );
       setUserDefTags(
         filters
           .flatMap(({ options }) => options)
-          .filter((tag) => recipe?.userAddedTags.includes(tag.id))
+          .filter((tag) => recipe?.userAddedTags?.includes(tag.id))
       );
       setIsLoadingRecipe(false);
     }
