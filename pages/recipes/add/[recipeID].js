@@ -4,17 +4,26 @@ import _ from "lodash";
 import AddRecipePage from ".";
 import { useRecipes } from "../../../context/RecipeContext";
 import { useUserAuth } from "../../../context/UserAuthContext";
+import LoadingIcon from "../../../components/utility/LoadingIcon";
 
 export default function SingleRecipePage({ recipeID }) {
   const [recipe, setRecipe] = useState({});
   const [isLoadingRecipe, setIsLoadingRecipe] = useState(true);
 
+  const [found, setFound] = useState(false);
+
   const { user } = useUserAuth();
   const { recipes, getRecipe, getRecipes } = useRecipes();
 
   const getRecipeFromContext = async () => {
+    if (recipes?.length === 0) {
+      await getRecipes(user.uid);
+    }
+
     const newRecipe = await getRecipe(recipeID);
+    setFound(!newRecipe ? false : true);
     setRecipe(newRecipe);
+    setIsLoadingRecipe(false);
   };
 
   useEffect(() => {
@@ -23,10 +32,7 @@ export default function SingleRecipePage({ recipeID }) {
 
   useEffect(
     () => {
-      if (!_.isEmpty(user) && recipes?.length === 0) {
-        getRecipes(user.uid);
-      }
-      getRecipeFromContext();
+      if (!_.isEmpty(user)) getRecipeFromContext();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, recipes]
@@ -40,7 +46,19 @@ export default function SingleRecipePage({ recipeID }) {
 
   return (
     <div>
-      {!_.isEmpty(recipe) && <AddRecipePage recipe={recipe} editing={true} />}
+      {!_.isEmpty(recipe) ? (
+        <AddRecipePage recipe={recipe} editing={true} />
+      ) : (
+        <div className="pt-36">
+          <LoadingIcon
+            message={
+              !isLoadingRecipe && !found
+                ? "We can't find your recipe!"
+                : "Finding up your recipe..."
+            }
+          />
+        </div>
+      )}
     </div>
   );
 }

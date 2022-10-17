@@ -47,7 +47,7 @@ const TagLine = ({ tag, deleteTag, editTag }) => {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
-            className="w-5 h-5 text-sajah"
+            className="w-5 h-5 text-orange-400"
           >
             <path
               fillRule="evenodd"
@@ -224,7 +224,15 @@ export default function TagPage() {
             </h2>
             <div className="pt-6 flex flex-wrap">
               {dietryTags?.map((tag, idx) => {
-                return <Tag tag={tag} key={idx} id={idx} readOnly={true} />;
+                return (
+                  <Tag
+                    tag={tag}
+                    key={idx}
+                    id={idx}
+                    readOnly={true}
+                    isDefault={true}
+                  />
+                );
               })}
             </div>
           </div>
@@ -237,7 +245,15 @@ export default function TagPage() {
             </h2>
             <div className="pt-6 flex flex-wrap">
               {mealTypeTags?.map((tag, idx) => {
-                return <Tag tag={tag} key={idx} id={idx} readOnly={true} />;
+                return (
+                  <Tag
+                    tag={tag}
+                    key={idx}
+                    id={idx}
+                    readOnly={true}
+                    isDefault={true}
+                  />
+                );
               })}
             </div>
           </div>

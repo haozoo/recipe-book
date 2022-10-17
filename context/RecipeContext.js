@@ -29,7 +29,6 @@ export function RecipeContextProvider({ children }) {
   const favouriteRecipe = async (rid) => {
     if (rid) {
       const status = await favouriteRecipeInDB(rid);
-
       if (status === "SUCCESS") {
         const newRecipes = recipes.map((recipe) =>
           recipe?.id === rid
