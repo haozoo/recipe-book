@@ -1,5 +1,5 @@
-import { addDoc, deleteDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
-import { deleteRecipeImage, uploadRecipeImage, deleteImage} from "./storage";
+import { addDoc, deleteDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
+import { deleteRecipeImages, deleteImage, uploadRecipeImage} from "./storage";
 import { auth, db } from "./firebase";
 import _ from "lodash";
 
@@ -33,11 +33,36 @@ export const addDefaultRecipes = async () => {
 }
 
 export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages) => {
-  // step1: generate a new doc ref
+  // generate a new doc ref
   const recipeRef = doc(recipesRef);
   const recipeId = recipeRef.id;
+  // set recipe data and images 
+  return await updateRecipeAndImages(recipeId, recipeData, coverImage, otherImages);
+}
 
-  // step2: upload cover image to storage
+export const editRecipeAndImages = async (recipeId, recipeData, coverImage, otherImages) => {
+  // get old recipe data
+  const recipeRef = doc(recipesRef, recipeId);
+  const snapshot = await getDoc(recipeRef);
+  const oldRecipe = JSON.parse(JSON.stringify(snapshot.data()));
+
+  // delete old images from storage
+  try {
+    const imagePaths = [oldRecipe.coverImage]
+      .concat(oldRecipe.otherImages)
+      .map(image => image.path);
+    await deleteRecipeImages(imagePaths);
+  } catch (err) {
+    console.log(err);
+    return "Failed to delete old images!";
+  }
+  
+  // set recipe data and images 
+  return await updateRecipeAndImages(recipeId, recipeData, coverImage, otherImages);
+}
+
+const updateRecipeAndImages = async (recipeId, recipeData, coverImage, otherImages) => {
+  // step1: upload cover image to storage
   let coverImageData;
   try {
     coverImageData = await uploadRecipeImage(recipeId, coverImage);
@@ -46,7 +71,7 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
     return "Failed to upload cover image";
   }
 
-  // step3: upload other images to storage
+  // step2: upload other images to storage
   let otherImagesData = [];
   try {
     await Promise.all(
@@ -57,14 +82,15 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
     );
   } catch (err) {
     // delete uploaded images from storage
-    const uploadedImages = [coverImageData].concat(otherImagesData);
-    await deleteUploadedImages(uploadedImages);
+    const imagePaths = [coverImageData].concat(otherImagesData)
+      .map(image => image.path);
+    await deleteRecipeImages(imagePaths);
     console.log(err);
     return "Failed to upload gallery images!";
   }
 
+  // step3: upload recipe data  to firestore
   try {
-    // step4: combine recipe data with additional data
     const additionalData = {
       id: recipeId,
       href: `recipes/${recipeId}`,
@@ -74,23 +100,18 @@ export const addNewRecipeAndImages = async (recipeData, coverImage, otherImages)
       createdAt: serverTimestamp(),
     };
     const allData = Object.assign({}, recipeData, additionalData);
-    // step5: add data to the doc
+    const recipeRef = doc(recipesRef, recipeId);
     await setDoc(recipeRef, allData);
   } catch (err) {
     // delete uploaded images from storage
-    const uploadedImages = [coverImageData].concat(otherImagesData);
-    await deleteUploadedImages(uploadedImages);
+    const imagePaths = [coverImageData].concat(otherImagesData)
+      .map(image => image.path);
+    await deleteRecipeImages(imagePaths);
     console.log(err);
     return "Failed to upload recipe data";
   }
 
-  return "SUCCESS"
-}
-
-const deleteUploadedImages = async (images) => {
-  await Promise.all(images.map(async (imageData) => {
-    await deleteRecipeImage(imageData.path);
-  }));
+  return "SUCCESS";
 }
 
 export const getOneRecipe = async (docId) => {
@@ -126,8 +147,6 @@ export const getAllRecipes = async (uid) => {
       const { defaultTags, userAddedTags, ...recipeInfo } = recipe;
       return {
         ...recipeInfo,
-        defaultTags,
-        userAddedTags,
         allTags: [].concat(defaultTags).concat(userAddedTags),
       };
     });
@@ -235,7 +254,7 @@ export const deleteRecipe = async (recipeId) => {
 
 export const deleteTag = async (tagId) => {
   try {
-    const tagRef = doc(db, "userAddedTags", tagId);
+    const tagRef = doc(userAddedTagsRef, tagId);
     await deleteDoc(tagRef);
   } catch (error) {
     console.error(error);
@@ -255,7 +274,6 @@ export const clickHeart = async (recipeId) => {
   }
   return "SUCCESS";
 };
-
 export const deleteUserData = async (userId) => {
 
   try {
