@@ -43,6 +43,19 @@ export const checkValidConfirmPassword = (newPassword, confirmPassword) => {
   return "";
 };
 
+export const checkValidTag = (tag) => {
+  if (tag?.length < 3) {
+    return "Your tag must be at least 3 characters long.";
+  }
+  if (tag?.length > 15) {
+    return "Your tag must be at less than 15 characters long.";
+  }
+  if (!/^[\w ]*$/.test(tag)) {
+    return "Your tag can only contain letters, numbers and spaces.";
+  }
+  return "";
+};
+
 export const checkValidRecipe = (recipe, image, imageurl) => {
   const { title, cookTime, prepTime, ingredients, instructions } = recipe;
   const error = {

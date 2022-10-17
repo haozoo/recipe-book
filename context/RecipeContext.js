@@ -56,11 +56,9 @@ export function RecipeContextProvider({ children }) {
   };
 
   const getFilters = async (uid) => {
-    if (filters?.length > 0) return filters;
     if (uid) {
       const newFilters = await getAllFilters(uid);
       setFilters(newFilters);
-      return newFilters;
     }
   };
 

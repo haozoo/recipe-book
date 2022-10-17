@@ -12,7 +12,7 @@ import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import Router from "next/router";
 import { USER_ADD_RECIPE_PATH } from "../../utils/constants";
-import DeleteRecipeModal from "../utility/DeleteRecipeModal";
+import DeleteModal from "../utility/DeleteModal";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -23,13 +23,14 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
 
   return (
     <div className="group">
-      <DeleteRecipeModal
+      <DeleteModal
+        type="Recipe"
         open={deleteModalIsOpen}
         setOpen={setDeleteModalIsOpen}
         handleDelete={() => deleteRecipe(recipe?.id)}
       />
       <div className="relative">
-        <Link href={recipe.href}>
+        <Link href={"/" + recipe.href}>
           <a>
             <div className="aspect-w-1 aspect-h-1 h-72 w-full overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3">
               <picture>
