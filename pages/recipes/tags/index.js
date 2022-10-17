@@ -103,7 +103,6 @@ export default function TagPage() {
   useEffect(
     () => {
       if (filters?.length !== 0) {
-        console.log(filters);
         setDietryTags(
           filters.find((tagList) => tagList?.name === DIETRY_REQUIREMENTS)
             ?.options
