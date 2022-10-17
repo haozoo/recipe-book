@@ -61,7 +61,7 @@ export default function SingleRecipePage({ recipeID }) {
   );
 
   useEffect(() => {
-    if (!_.isEmpty(recipe)) {
+    if (!_.isEmpty(recipe) && filters) {
       setDefaultTags(
         filters
           .flatMap(({ options }) => options)
