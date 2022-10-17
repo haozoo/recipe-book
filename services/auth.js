@@ -39,22 +39,25 @@ export const handleEmailLogin = async () => {
     console.log(`There was an error: ${error}`)
     showLoginError(error)
   }
-  
 };
 
 // Create new account using email/password
 export const createAccount = async () => {
-  const email = txtEmail.value
-  const password = txtPassword.value
+  const newEmail = email.value;
+  const newPassword = password.value;
+  const newUsername = username.value;
 
   try {
-    await createUserWithEmailAndPassword(auth, email, password)
+    await createUserWithEmailAndPassword(auth, newEmail, newPassword);
+    const user = auth.currentUser;
+    if (user) {
+      user.displayName = newUsername;
+    }
     // add sample recipes for new user
     await addDefaultRecipes();
   }
   catch(error) {
-    console.log(`There was an error: ${error}`)
-    showLoginError(error)
+    console.log(`There was an error: ${error}`);
   } 
 }
 
