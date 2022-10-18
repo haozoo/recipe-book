@@ -60,14 +60,17 @@ export default function AllRecipesPage() {
   } = useRecipes();
 
   // 1. Set loading on page mount.
-  useEffect(() => {
-    setIsLoadingFilters(true);
-    setIsLoadingRecipes(true);
+  useEffect(
+    () => {
+      setIsLoadingFilters(true);
+      setIsLoadingRecipes(true);
 
-    return () => {
-      resetActiveFilters();
-    };
-  }, []);
+      return () => {
+        resetActiveFilters();
+      };
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   // 2. Wait until user is defined to fetch recipes w/ uid.
   useEffect(

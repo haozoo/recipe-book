@@ -153,7 +153,7 @@ export default function RegisterModal({ open, setOpen }) {
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div className="flex min-h-full justify-center p-0 text-center items-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -164,7 +164,7 @@ export default function RegisterModal({ open, setOpen }) {
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl sm:p-6">
-                <div className="p-4 border-2 border-chestnut">
+                <div className="p-4 border-2 border-gray-300">
                   <div className="flex justify-center">
                     <h2 className="mt-4 text-3xl font-patrick tracking-wide text-gray-900">
                       Create Account
@@ -188,9 +188,9 @@ export default function RegisterModal({ open, setOpen }) {
                             <button
                               onClick={handleGoogleLogin}
                               type="button"
-                              className="text-gray-700 outline-gray bg-white hover:bg-white/90 focus:ring-4 focus:outline-none focus:ring-white/50 font-medium font-nunito rounded-lg text-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
+                              className="text-gray-700 outline-gray bg-white hover:bg-white/90 focus:ring-4 focus:outline-none focus:ring-white/50 font-semibold font-nunito rounded-lg text-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
                             >
-                              <GoogleIcon/>
+                              <GoogleIcon />
                               Sign in with Google
                             </button>
                           </div>
@@ -241,13 +241,17 @@ export default function RegisterModal({ open, setOpen }) {
                             id="confirmPassword"
                             value={confirmPassword}
                             handleEdit={setConfirmPassword}
-                            checkValue={(val) => checkValidConfirmPassword(password, val)}
+                            checkValue={(val) =>
+                              checkValidConfirmPassword(password, val)
+                            }
                           />
 
                           <div className="flex space-x-4 pt-4">
                             <button
                               type="button"
-                              onClick={() => createAccount(email, username, password)}
+                              onClick={() =>
+                                createAccount(email, username, password)
+                              }
                               className="flex w-full justify-center rounded-md border border-transparent bg-chrome-yellow py-2 px-4 text-lg font-medium text-white shadow-sm hover:opacity-75 focus:outline-none focus:ring-2 focus:ring-hazelnut focus:ring-offset-2"
                             >
                               SIGN UP

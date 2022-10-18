@@ -56,9 +56,9 @@ export const showLoginError = (error) => {
   const divLoginError = document.querySelector('#divLoginError');
   const lblLoginErrorMessage = document.getElementById('#lblLoginErrorMessage');
   if (error.code == AuthErrorCodes.INVALID_PASSWORD) {
-    divLoginError.innerHTML = `<div style="color:red; font:nunito">❗Wrong password. Please try again.</div>`
+    divLoginError.innerHTML = `<div style="color:red; font:nunito">Wrong password. Please try again.</div>`;
   }
   else {
-    divLoginError.innerHTML = `<div style="color:red; font:nunito">❗Error: User does not exist.</div>`
+    divLoginError.innerHTML = `<div style="color:red; font:nunito">Error: User does not exist.</div>`;
   }
 }

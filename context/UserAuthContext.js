@@ -23,7 +23,9 @@ export function UserAuthContextProvider({ children }) {
       Router.push(USER_ALL_RECIPE_PATH);
     } catch (error) {
       console.log(`There was an error: ${error}`);
+      return "ERROR";
     }
+    return "SUCCESS";
   }
 
   function signUp(email, password) {

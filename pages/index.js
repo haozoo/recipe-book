@@ -13,11 +13,11 @@ export default function Home() {
   const [registerModalIsOpen, setRegisterModalIsOpen] = useState(false);
 
   return (
-    <div className='flex flex-col h-screen'>
+    <div className="flex flex-col h-screen">
       <RegisterModal
-          open={registerModalIsOpen}
-          setOpen={setRegisterModalIsOpen}
-        />
+        open={registerModalIsOpen}
+        setOpen={setRegisterModalIsOpen}
+      />
       <Head>
         <title>Recipe App</title>
         <meta name="description" />
@@ -25,41 +25,36 @@ export default function Home() {
       </Head>
       <Header />
 
-      <main className="flex flex-col lg:flex-row flex-grow">
-        <div className="flex-1 h-full bg-chrome-yellow">
-          <Container>
-            <div className="pt-60 inline-block my-auto align-content">
-              <h2 className="font-semibold italic font-nunito text-5xl text-white tracking-wide leading-14">
-                Never lose or forget your favourite recipes again.
-              </h2>
-              <p className="font-nunito text-white text-2xl py-8">
-                Cooking is now made easy with{" "}
-                <span className="font-patrick italic text-hazelnut text-3xl tracking-wide">
-                  REcipes
-                </span>
-                , your cooking companion!
-              </p>
-              <span className='inline-block text-2xl align-center'>
-                <button 
-                  onClick={() => setRegisterModalIsOpen(true)} 
-                  className="bg-white hover:opacity-75 text-chrome-yellow px-4 py-2 rounded-lg">
-                  <span className='font-nunito font-bold'>
-                    Register
-                  </span>
-                </button>
-                <span className="text-white font-nunito text-xl pl-2">
-                  to store your recipes for free!
-                </span>
+      <main className="flex flex-col w-full sm:flex-row h-full">
+        <div className="flex h-full w-full md:w-3/5 lg:w-2/5 bg-chrome-yellow z-10 shadow-md shadow-sajah">
+          <div className="pt-32 sm:pt-0 pb-32 px-12 md:px-16 lg:px-20 inline-block my-auto align-content">
+            <h2 className="font-extrabold font-inter text-4xl sm:text-5xl 2xl:text-6xl text-white tracking-wide leading-16">
+              Never lose your{" "}
+              <span className="text-white">favourite recipes</span> again.
+            </h2>
+            <p className="font-nunito font-bold text-floral-white text-xl sm:text-2xl py-8">
+              Make cooking easier with{" "}
+              <span className="font-patrick font-bold text-yellow-700 text-2xl sm:text-3xl tracking-wide">
+                REcipes
               </span>
-              <p className="font-nunito text-white text-xl py-4">OR</p>
+              , your new cooking companion.
+            </p>
+            <div className="flex flex-wrap space-x-4 items-center">
+              <button
+                onClick={() => setRegisterModalIsOpen(true)}
+                className="h-12 bg-white px-4 md:px-8 py-2 rounded-md font-nunito font-bold text-base xl:text-lg text-yellow-700 hover:text-yellow-800 shadow-sajah shadow-sm
+                hover:bg-orange-100"
+              >
+                Register
+              </button>
               <button
                 onClick={handleGoogleLogin}
                 type="button"
-                className="text-chestnut bg-white hover:bg-white/90 focus:ring-4 focus:outline-none focus:ring-white/50 font-medium font-nunito rounded-lg text-xl px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
+                className="h-12 text-yellow-700 bg-white hover:opacity-75 focus:ring-white/50 font-bold font-nunito rounded-md text-base xl:text-lg px-4 2xl:px-8 py-2.5 text-center inline-flex items-center shadow-sajah shadow-sm"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="mr-2 -ml-1 w-6 h-6"
+                  className="w-6 h-6"
                   aria-hidden="true"
                   focusable="false"
                   data-icon="google"
@@ -83,23 +78,22 @@ export default function Home() {
                     d="m419.404 58.936-82.933 67.896C313.136 112.246 285.552 103.82 256 103.82c-66.729 0-123.429 42.957-143.965 102.724l-83.397-68.276h-.014C71.23 56.123 157.06 0 256 0c62.115 0 119.068 22.126 163.404 58.936z"
                   />
                 </svg>
-                Sign in with Google
+
+                <span className="hidden 2xl:flex xl:pl-4">
+                  Sign in with Google
+                </span>
               </button>
             </div>
-          </Container>
+          </div>
         </div>
-        <div className="flex-1 h-full bg-blanched-almond">
-          <Container>
-            <div className='relative'>
-              <picture>
-                <img 
-                  className='absolute top-[9rem] left-[2rem] scale-[1.4] block'
-                  src="/sample-app.jpg"
-                  alt="Sample App"
-                />
-              </picture>
-            </div>
-          </Container>
+        <div className="hidden sm:flex flex-row-reverse w-full md:w-2/5 lg:w-3/5 bg-blanched-almond">
+          <div className="relative left-0 lg:left-12">
+            <img
+              className="aspect-w-3 aspect-h-4 h-full rounded-lg object-cover"
+              src="/sample-app.jpg"
+              alt="Sample App"
+            />
+          </div>
         </div>
       </main>
     </div>
