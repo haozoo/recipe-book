@@ -59,10 +59,10 @@ export default function LoginModal({ open, setOpen }) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl sm:p-6">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 w-5/6 sm:max-w-4xl sm:p-6">
                 <div className="p-4 border-2 border-gray-300">
                   <div className="flex justify-center">
-                    <h2 className="mt-4 text-3xl font-patrick tracking-wide text-gray-900">
+                    <h2 className="mt-4 text-3xl font-patrick tracking-wide text-gray-900 text-center">
                       Welcome back to REcipes!
                     </h2>
                   </div>
@@ -249,11 +249,11 @@ export default function LoginModal({ open, setOpen }) {
                             <button
                               onClick={handleGoogleLogin}
                               type="button"
-                              className="text-gray-700 outline-gray bg-white hover:bg-white/90 focus:ring-4 focus:outline-none focus:ring-white/50 font-medium font-nunito rounded-lg text-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
+                              className="text-gray-700 outline-gray bg-white hover:bg-white/90 focus:ring-4 focus:outline-none focus:ring-white/50 font-medium font-nunito rounded-lg text-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mb-2"
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="mr-2 -ml-1 w-6 h-6"
+                                className="w-6 h-6"
                                 aria-hidden="true"
                                 focusable="false"
                                 data-icon="google"
@@ -277,7 +277,9 @@ export default function LoginModal({ open, setOpen }) {
                                   d="m419.404 58.936-82.933 67.896C313.136 112.246 285.552 103.82 256 103.82c-66.729 0-123.429 42.957-143.965 102.724l-83.397-68.276h-.014C71.23 56.123 157.06 0 256 0c62.115 0 119.068 22.126 163.404 58.936z"
                                 />
                               </svg>
-                              Sign in with Google
+                              <p className="hidden sm:flex sm:pl-3">
+                                Sign in with Google
+                              </p>
                             </button>
                           </div>
                         </div>

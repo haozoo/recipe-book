@@ -25,16 +25,16 @@ export default function Home() {
       </Head>
       <Header />
 
-      <main className="flex flex-col w-full sm:flex-row h-full">
-        <div className="flex h-full w-full md:w-3/5 lg:w-2/5 bg-chrome-yellow z-10 shadow-md shadow-sajah">
-          <div className="pt-32 sm:pt-0 pb-32 px-12 md:px-16 lg:px-20 inline-block my-auto align-content">
-            <h2 className="font-extrabold font-inter text-4xl sm:text-5xl 2xl:text-6xl text-white tracking-wide leading-16">
+      <main className="bg-blanched-almond sm:bg-none flex flex-col w-full sm:flex-row h-full overflow-y-hidden">
+        <div className="flex h-full w-full md:w-3/5 lg:w-2/5 bg-chrome-yellow z-10 sm:shadow-md sm:shadow-sajah">
+          <div className="pt-16 sm:pt-0 pb-16 sm:pb-32 px-12 md:px-16 lg:px-20 inline-block my-auto align-content">
+            <h2 className="font-extrabold font-inter text-4xl md:text-5xl 2xl:text-6xl text-white tracking-wide leading-16">
               Never lose your{" "}
               <span className="text-white">favourite recipes</span> again.
             </h2>
-            <p className="font-nunito font-bold text-floral-white text-xl sm:text-2xl py-8">
+            <p className="font-nunito font-bold text-floral-white text-lg sm:text-xl md:text-2xl py-8">
               Make cooking easier with{" "}
-              <span className="font-patrick font-bold text-yellow-700 text-2xl sm:text-3xl tracking-wide">
+              <span className="font-patrick font-bold text-yellow-700 text-xl sm:text-2xl md:text-3xl tracking-wide">
                 REcipes
               </span>
               , your new cooking companion.
@@ -86,13 +86,33 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="hidden sm:flex flex-row-reverse w-full md:w-2/5 lg:w-3/5 bg-blanched-almond">
-          <div className="relative left-0 lg:left-12">
+        <div className="sm:hidden flex p-14 mx-auto">
+          <picture>
             <img
-              className="aspect-w-3 aspect-h-4 h-full rounded-lg object-cover"
-              src="/sample-app.jpg"
+              className="z-10 object-contain h-full rounded-lg"
+              src="/phone.png"
               alt="Sample App"
             />
+          </picture>
+        </div>
+        <div className="hidden sm:flex flex-row-reverse w-full md:w-2/5 lg:w-3/5 bg-blanched-almond">
+          <div className="hidden lg:flex xl:3/4">
+            <picture className="flex flex-row-reverse p-0 m-0">
+              <img
+                className="h-full rounded-lg object-contain"
+                src="/sample-app.jpg"
+                alt="Sample App"
+              />
+            </picture>
+          </div>
+          <div className=" flex lg:hidden m-16 2xl:flex 2xl:pr-0 2xl:mr-0 xl:w-1/4 xl:max-h-lg">
+            <picture>
+              <img
+                className="object-contain h-full rounded-lg"
+                src="/phone.png"
+                alt="Sample App"
+              />
+            </picture>
           </div>
         </div>
       </main>

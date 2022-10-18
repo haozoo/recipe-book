@@ -19,7 +19,7 @@ const GoogleIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className="mr-2 -ml-1 w-6 h-6"
+      className="w-6 h-6"
       aria-hidden="true"
       focusable="false"
       data-icon="google"
@@ -58,11 +58,14 @@ const UserInput = ({
   const [errorMessage, setErrorMessage] = useState("");
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    if (value && checkValue) {
-      setErrorMessage(checkValue(value));
-    }
-  }, [value]);
+  useEffect(
+    () => {
+      if (value && checkValue) {
+        setErrorMessage(checkValue(value));
+      }
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps
+    [value]
+  );
 
   useEffect(() => {
     errorMessage?.length !== 0 ? setError(true) : setError(false);
@@ -165,7 +168,7 @@ export default function RegisterModal({ open, setOpen }) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl sm:p-6">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 w-5/6 sm:max-w-4xl sm:p-6">
                 <div className="p-4 border-2 border-gray-300">
                   <div className="flex justify-center">
                     <h2 className="mt-4 text-3xl font-patrick tracking-wide text-gray-900">
@@ -190,10 +193,12 @@ export default function RegisterModal({ open, setOpen }) {
                             <button
                               onClick={handleGoogleLogin}
                               type="button"
-                              className="text-gray-700 outline-gray bg-white hover:bg-white/90 focus:ring-4 focus:outline-none focus:ring-white/50 font-semibold font-nunito rounded-lg text-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
+                              className="text-gray-700 outline-gray bg-white hover:bg-white/90 focus:ring-4 focus:outline-none focus:ring-white/50 font-semibold font-nunito rounded-lg text-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mb-2"
                             >
                               <GoogleIcon />
-                              Sign in with Google
+                              <p className="hidden sm:flex sm:pl-3">
+                                Sign in with Google
+                              </p>
                             </button>
                           </div>
                           <div className="relative">
@@ -298,11 +303,13 @@ export default function RegisterModal({ open, setOpen }) {
                       </div>
                     </div>
                     <div className="relative hidden w-0 flex-1 lg:block">
-                      <img
-                        className="absolute inset-0 h-full w-full object-cover"
-                        src="/registerImage.png"
-                        alt=""
-                      />
+                      <picture>
+                        <img
+                          className="absolute inset-0 h-full w-full object-cover"
+                          src="/registerImage.png"
+                          alt=""
+                        />
+                      </picture>
                     </div>
                   </div>
                 </div>
