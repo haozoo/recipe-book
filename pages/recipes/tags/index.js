@@ -13,6 +13,7 @@ import { useUserAuth } from "../../../context/UserAuthContext";
 import {
   DIETRY_REQUIREMENTS,
   MEAL_TYPES,
+  USER_ALL_RECIPE_PATH,
   USER_TAGS,
 } from "../../../utils/constants";
 import {
@@ -21,8 +22,9 @@ import {
   updateUserAddedTag,
 } from "../../../services/database";
 import DeleteModal from "../../../components/utility/DeleteModal";
+import Link from "next/link";
 
-const TagLine = ({ tag, deleteTag, editTag }) => {
+const TagLine = ({ tag, deleteTag, editTag, toggleFilter }) => {
   const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
   const [updateModalIsOpen, setUpdateModalIsOpen] = useState(false);
 
@@ -43,18 +45,26 @@ const TagLine = ({ tag, deleteTag, editTag }) => {
       />
       <div className="group flex justify-between w-full py-2">
         <div className="flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-5 h-5 text-orange-400"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.38 3H5.5zM6 7a1 1 0 100-2 1 1 0 000 2z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <Link href={USER_ALL_RECIPE_PATH}>
+            <a
+              onClick={() => {
+                toggleFilter(true, tag?.id);
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-5 h-5 text-orange-400"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.38 3H5.5zM6 7a1 1 0 100-2 1 1 0 000 2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </a>
+          </Link>
           <p className="pl-2 text-base font-patrick font-medium tracking-wide text-hazelnut">
             {tag?.name}
           </p>
@@ -84,7 +94,7 @@ export default function TagPage() {
   const [userDefTags, setUserDefTags] = useState([]);
 
   const { user } = useUserAuth();
-  const { filters, getFilters, getRecipes } = useRecipes();
+  const { filters, getFilters, toggleFilter, getRecipes } = useRecipes();
 
   useEffect(() => {
     setIsLoadingTags(true);
@@ -207,6 +217,7 @@ export default function TagPage() {
                     tag={tag}
                     deleteTag={handleDeleteTag}
                     editTag={handleUpdateTag}
+                    toggleFilter={toggleFilter}
                   />
                 );
               })}

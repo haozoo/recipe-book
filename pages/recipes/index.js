@@ -17,17 +17,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const FilterCheckbox = ({ option, toggleFilter }) => {
-  const [checked, setChecked] = useState(false);
-
-  useEffect(
-    () => {
-      toggleFilter(checked, option?.id);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [checked]
-  );
-
+const FilterCheckbox = ({ option, checked, toggleFilter }) => {
   return (
     <div className="flex items-center">
       <input
@@ -36,7 +26,7 @@ const FilterCheckbox = ({ option, toggleFilter }) => {
         name={option?.name}
         type="checkbox"
         checked={checked}
-        onChange={() => setChecked(!checked)}
+        onChange={() => toggleFilter(!checked, option?.id)}
       />
       <label className="ml-3 font-nunito text-sm text-chestnut">
         {option?.name}
@@ -52,7 +42,6 @@ export default function AllRecipesPage() {
   const [isLoadingRecipes, setIsLoadingRecipes] = useState(true);
 
   const [filteredRecipes, setFilteredRecipes] = useState([]);
-  const [activeFilters, setActiveFilters] = useState([]);
 
   const [error, setError] = useState({});
   const [errorNotifIsOpen, setErrorNotifIsOpen] = useState(false);
@@ -64,13 +53,20 @@ export default function AllRecipesPage() {
     favouriteRecipe,
     getRecipes,
     filters,
+    activeFilters,
     getFilters,
+    toggleFilter,
+    resetActiveFilters,
   } = useRecipes();
 
   // 1. Set loading on page mount.
   useEffect(() => {
     setIsLoadingFilters(true);
     setIsLoadingRecipes(true);
+
+    return () => {
+      resetActiveFilters();
+    };
   }, []);
 
   // 2. Wait until user is defined to fetch recipes w/ uid.
@@ -88,19 +84,11 @@ export default function AllRecipesPage() {
   );
 
   // 3. Wait until recipes/filters are defined to stop loading.
-  useEffect(
-    () => {
-      if (filters?.length !== 0) {
-        const newFilters = filters
-          .flatMap((obj) => obj.options)
-          .map((obj) => ({ ...obj, active: false }));
-        setActiveFilters(newFilters);
-        setIsLoadingFilters(false);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters]
-  );
+  useEffect(() => {
+    if (filters?.length !== 0 || activeFilters?.length !== 0) {
+      setIsLoadingFilters(false);
+    }
+  }, [filters, activeFilters]);
 
   useEffect(
     () => {
@@ -138,14 +126,6 @@ export default function AllRecipesPage() {
       });
       setFilteredRecipes(newRecipes);
     }
-  }
-
-  const handleToggleFilter = (isActive, id) => {
-    const newFilters = activeFilters.map((filter) => {
-      return filter.id !== id ? filter : { ...filter, active: isActive };
-    });
-
-    setActiveFilters(newFilters);
   };
 
   const handleFavourite = async (rid) => {
@@ -264,7 +244,7 @@ export default function AllRecipesPage() {
                                   <FilterCheckbox
                                     key={option?.id}
                                     option={option}
-                                    toggleFilter={handleToggleFilter}
+                                    toggleFilter={toggleFilter}
                                   />
                                 ))}
                               </div>
@@ -338,7 +318,12 @@ export default function AllRecipesPage() {
                                 <FilterCheckbox
                                   key={option?.id}
                                   option={option}
-                                  toggleFilter={handleToggleFilter}
+                                  checked={
+                                    activeFilters?.find(
+                                      (tag) => tag?.id === option?.id
+                                    )?.active
+                                  }
+                                  toggleFilter={toggleFilter}
                                 />
                               ))}
                             </div>
@@ -356,6 +341,10 @@ export default function AllRecipesPage() {
               {isLoadingRecipes ? (
                 <div className="pt-36">
                   <LoadingIcon message="Serving up recipes..." />
+                </div>
+              ) : filteredRecipes?.length === 0 && recipes?.length !== 0 ? (
+                <div className="pt-36">
+                  <LoadingIcon message="You have no recipes with those tags!" />
                 </div>
               ) : (
                 filteredRecipes && (

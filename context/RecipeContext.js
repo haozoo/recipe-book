@@ -13,6 +13,8 @@ export function RecipeContextProvider({ children }) {
   const [recipes, setRecipes] = useState([]);
   const [filters, setFilters] = useState([]);
 
+  const [activeFilters, setActiveFilters] = useState([]);
+
   const deleteRecipe = async (rid) => {
     if (rid) {
       const status = await deleteRecipeFromDB(rid);
@@ -57,8 +59,26 @@ export function RecipeContextProvider({ children }) {
   const getFilters = async (uid) => {
     if (uid) {
       const newFilters = await getAllFilters(uid);
+      const newActiveFilters = newFilters
+        .flatMap((obj) => obj.options)
+        .map((obj) => ({ ...obj, active: false }));
       setFilters(newFilters);
+      setActiveFilters(newActiveFilters);
     }
+  };
+
+  const toggleFilter = (isActive, id) => {
+    const newFilters = activeFilters.map((filter) => {
+      return filter.id !== id ? filter : { ...filter, active: isActive };
+    });
+    setActiveFilters(newFilters);
+  };
+
+  const resetActiveFilters = () => {
+    const newActiveFilters = filters
+      .flatMap((obj) => obj.options)
+      .map((obj) => ({ ...obj, active: false }));
+    setActiveFilters(newActiveFilters);
   };
 
   return (
@@ -66,11 +86,14 @@ export function RecipeContextProvider({ children }) {
       value={{
         recipes,
         filters,
+        activeFilters,
         deleteRecipe,
         favouriteRecipe,
         getRecipe,
         getRecipes,
         getFilters,
+        toggleFilter,
+        resetActiveFilters,
       }}
     >
       {children}

@@ -1,5 +1,8 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 import React from "react";
+import { useRecipes } from "../../context/RecipeContext";
+import { USER_ALL_RECIPE_PATH } from "../../utils/constants";
 
 export default function Tag({
   tag,
@@ -8,6 +11,8 @@ export default function Tag({
   id,
   handleDelete,
 }) {
+  const { toggleFilter } = useRecipes();
+
   return (
     <div
       className={`flex items-center mr-2 mb-2 py-1 rounded-md ${
@@ -15,7 +20,16 @@ export default function Tag({
       } ${readOnly ? "px-3" : "pl-3"}`}
     >
       <div className="text-white font-patrick font-extrabold tracking-wider">
-        {tag.name}
+        <Link href={USER_ALL_RECIPE_PATH}>
+          <a
+            onClick={() => {
+              console.log(tag?.id);
+              toggleFilter(true, tag?.id);
+            }}
+          >
+            {tag.name}
+          </a>
+        </Link>
       </div>
       {!readOnly && (
         <button
