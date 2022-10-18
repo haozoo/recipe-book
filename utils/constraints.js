@@ -13,11 +13,28 @@ export const checkValidUsername = (oldUsername, username) => {
   return "";
 };
 
+export const checkNewValidUsername = (username) => {
+  if (username?.length < 3) {
+    return "Your username must be at least 3 characters long.";
+  }
+  if (!/^[\w ]*$/.test(username)) {
+    return "Your username can only contain letters, numbers and spaces.";
+  }
+  return "";
+};
+
 export const checkValidEmail = (oldEmail, email) => {
   if (oldEmail === email) {
     return "Your new email must be different.";
   }
-  if (!/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/.test(email)) {
+  if (!/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) {
+    return "Not a valid email!";
+  }
+  return "";
+};
+
+export const checkNewValidEmail = (email) => {
+  if (!/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) {
     return "Not a valid email!";
   }
   return "";

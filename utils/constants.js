@@ -54,11 +54,11 @@ export const showLoginError = (error) => {
   const txtEmail = document.querySelector('#txtEmail');
   const txtPassword = document.querySelector('#txtPassword');
   const divLoginError = document.querySelector('#divLoginError');
-  const lblLoginErrorMessage = document.querySelector('#lblLoginErrorMessage');
+  const lblLoginErrorMessage = document.getElementById('#lblLoginErrorMessage');
   if (error.code == AuthErrorCodes.INVALID_PASSWORD) {
-    lblLoginErrorMessage.innerHTML = `Wrong password. Try again.`
+    divLoginError.innerHTML = `<div style="color:red; font:nunito">❗Wrong password. Please try again.</div>`
   }
   else {
-    lblLoginErrorMessage.innerHTML = `Error: ${error.message}`      
+    divLoginError.innerHTML = `<div style="color:red; font:nunito">❗Error: User does not exist.</div>`
   }
 }

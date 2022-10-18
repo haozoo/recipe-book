@@ -43,8 +43,8 @@ export const handleGoogleLogin = async () => {
 };
 
 export const handleEmailLogin = async () => {
-  const loginEmail = txtEmail.value;
-  const loginPassword = txtPassword.value;
+  const loginEmail = email.value
+  const loginPassword = password.value
 
   try {
     await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
@@ -56,22 +56,17 @@ export const handleEmailLogin = async () => {
 };
 
 // Create new account using email/password
-export const createAccount = async () => {
-  const email = txtEmail.value;
-  const password = txtPassword.value;
-  const name = username.value;
-
+export const createAccount = async (email, username, password) => {
   try {
     await createUserWithEmailAndPassword(auth, email, password);
     const user = auth.currentUser;
-    if(user){
-      user.displayName = name;
+    if (user) {
+      user.displayName = username;
     }
     // add sample recipes for new user
     await addDefaultRecipes();
   } catch (error) {
     console.log(`There was an error: ${error}`);
-    showLoginError(error);
   }
 };
 

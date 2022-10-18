@@ -142,7 +142,7 @@ const UserInfoHeading = ({
           })}
         <div className="flex flex-col sm:flex-row sm:items-center mt-2">
           <button
-            className="py-2 px-4 bg-sajah rounded-lg text-white text-sm font-patrick tracking-wider font-extrabold disabled:opacity-30"
+            className="py-2 px-4 bg-rajah rounded-lg text-white text-sm font-patrick tracking-wider font-extrabold disabled:opacity-30"
             type="button"
             disabled={
               isLoading ||

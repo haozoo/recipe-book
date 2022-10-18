@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useState } from 'react'
 import {
   handleGoogleLogin,
   createAccount,
@@ -6,12 +7,22 @@ import {
 } from "../services/auth";
 import { Header } from '../components/landing-page/Header'
 import { Container } from '../components/landing-page/Container'
+import RegisterModal from "../components/utility/RegisterModal";
 
 export default function Home() {
-  
+  const [registerModalIsOpen, setRegisterModalIsOpen] = useState(false);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className='flex flex-col h-screen'>
+      <RegisterModal
+          open={registerModalIsOpen}
+          setOpen={setRegisterModalIsOpen}
+        />
+      <Head>
+        <title>Recipe App</title>
+        <meta name="description" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Header />
 
       <main className="flex flex-col lg:flex-row flex-grow">
@@ -28,12 +39,13 @@ export default function Home() {
                 </span>
                 , your cooking companion!
               </p>
-              <span className="inline-block text-2xl align-center">
-                <button
-                  href="/register"
-                  className="bg-white hover:opacity-75 text-chrome-yellow px-4 py-2 rounded-lg"
-                >
-                  <span className="font-nunito font-bold">Register</span>
+              <span className='inline-block text-2xl align-center'>
+                <button 
+                  onClick={() => setRegisterModalIsOpen(true)} 
+                  className="bg-white hover:opacity-75 text-chrome-yellow px-4 py-2 rounded-lg">
+                  <span className='font-nunito font-bold'>
+                    Register
+                  </span>
                 </button>
                 <span className="text-white font-nunito text-xl pl-2">
                   to store your recipes for free!
@@ -78,26 +90,12 @@ export default function Home() {
         </div>
         <div className="flex-1 h-full bg-blanched-almond">
           <Container>
-            <div className="relative w-full h-full">
+            <div className='relative'>
               <picture>
-                <img
-                  className="absolute top-0"
-                  src="/kitchen-baking-and-cooking-tool.png"
-                  alt="Cooking tools"
-                />
-              </picture>
-              <picture>
-                <img
-                  className="absolute top-[26.5rem]"
-                  src="/kitchen-baking-and-cooking-tool.png"
-                  alt="Baking tools"
-                />
-              </picture>
-              <picture>
-                <img
-                  className="overflow-hidden absolute z-10 top-[20.5rem] left-[6.9rem] scale-[2] block"
-                  src="/desktop-prototype.png"
-                  alt="Desktop image"
+                <img 
+                  className='absolute top-[9rem] left-[2rem] scale-[1.4] block'
+                  src="/sample-app.jpg"
+                  alt="Sample App"
                 />
               </picture>
             </div>
