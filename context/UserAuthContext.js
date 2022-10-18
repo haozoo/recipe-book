@@ -21,15 +21,32 @@ export function UserAuthContextProvider({ children }) {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       Router.push(USER_ALL_RECIPE_PATH);
-    } catch (error) {
-      console.log(`There was an error: ${error}`);
-      return "ERROR";
+    } catch (err) {
+      switch (err?.code) {
+        case "auth/invalid-email":
+          return "Invalid email";
+        case "auth/wrong-password":
+          return "Wrong password";
+        default:
+          return "Error logging in.";
+      }
     }
     return "SUCCESS";
   }
 
-  function signUp(email, password) {
-    return createUserWithEmailAndPassword(auth, email, password);
+  async function signUp(email, password) {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      Router.push(USER_ALL_RECIPE_PATH);
+    } catch (err) {
+      switch (err?.code) {
+        case "auth/email-already-in-use":
+          return "Email already in use";
+        default:
+          return "Error signing up.";
+      }
+    }
+    return "SUCCESS";
   }
 
   function logOut() {
@@ -38,7 +55,7 @@ export function UserAuthContextProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentuser) => {
-      console.log("Auth", currentuser);
+      // console.log("Auth", currentuser);
       setUser(currentuser);
       if (!currentuser) Router.push(LANDING_PAGE_PATH);
     });

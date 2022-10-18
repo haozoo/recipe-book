@@ -23,7 +23,6 @@ export default function Tag({
         <Link href={USER_ALL_RECIPE_PATH}>
           <a
             onClick={() => {
-              console.log(tag?.id);
               toggleFilter(true, tag?.id);
             }}
           >

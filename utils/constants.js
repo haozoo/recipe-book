@@ -50,15 +50,15 @@ export const footerNavigationOptions = [
 ];
 
 
-export const showLoginError = (error) => {  
-  const txtEmail = document.querySelector('#txtEmail');
-  const txtPassword = document.querySelector('#txtPassword');
-  const divLoginError = document.querySelector('#divLoginError');
-  const lblLoginErrorMessage = document.getElementById('#lblLoginErrorMessage');
-  if (error.code == AuthErrorCodes.INVALID_PASSWORD) {
-    divLoginError.innerHTML = `<div style="color:red; font:nunito">Wrong password. Please try again.</div>`;
-  }
-  else {
-    divLoginError.innerHTML = `<div style="color:red; font:nunito">Error: User does not exist.</div>`;
-  }
-}
+// export const showLoginError = (error) => {  
+//   const txtEmail = document.querySelector('#txtEmail');
+//   const txtPassword = document.querySelector('#txtPassword');
+//   const divLoginError = document.querySelector('#divLoginError');
+//   const lblLoginErrorMessage = document.getElementById('#lblLoginErrorMessage');
+//   if (error.code == AuthErrorCodes.INVALID_PASSWORD) {
+//     divLoginError.innerHTML = `<div style="color:red; font:nunito">Wrong password. Please try again.</div>`;
+//   }
+//   else {
+//     divLoginError.innerHTML = `<div style="color:red; font:nunito">Error: User does not exist.</div>`;
+//   }
+// }

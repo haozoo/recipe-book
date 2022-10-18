@@ -15,7 +15,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth, provider } from "./firebase";
-import { showLoginError } from "../utils/constants";
+import { showLoginError, USER_ALL_RECIPE_PATH } from "../utils/constants";
 import Router from "next/router";
 import { addDefaultRecipes } from "./database";
 import { deleteUserData } from "./database";
@@ -43,15 +43,14 @@ export const handleGoogleLogin = async () => {
 };
 
 export const handleEmailLogin = async () => {
-  const loginEmail = email.value
-  const loginPassword = password.value
+  const loginEmail = email.value;
+  const loginPassword = password.value;
 
   try {
     await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
     Router.push("/recipes");
   } catch (error) {
     console.log(`There was an error: ${error}`);
-    showLoginError(error);
   }
 };
 
@@ -65,9 +64,16 @@ export const createAccount = async (email, username, password) => {
     }
     // add sample recipes for new user
     await addDefaultRecipes();
-  } catch (error) {
-    console.log(`There was an error: ${error}`);
+    Router.push(USER_ALL_RECIPE_PATH);
+  } catch (err) {
+    switch (err?.code) {
+      case "auth/email-already-in-use":
+        return "Email already in use";
+      default:
+        return "Error signing up.";
+    }
   }
+  return "SUCCESS";
 };
 
 // // Automatically signout for now
