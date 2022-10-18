@@ -20,9 +20,13 @@ function classNames(...classes) {
 const FilterCheckbox = ({ option, toggleFilter }) => {
   const [checked, setChecked] = useState(false);
 
-  useEffect(() => {
-    toggleFilter(checked, option?.id);
-  }, [checked]);
+  useEffect(
+    () => {
+      toggleFilter(checked, option?.id);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [checked]
+  );
 
   return (
     <div className="flex items-center">
@@ -70,34 +74,54 @@ export default function AllRecipesPage() {
   }, []);
 
   // 2. Wait until user is defined to fetch recipes w/ uid.
-  useEffect(() => {
-    if (user && recipes?.length === 0) {
-      getRecipes(user.uid);
-    }
-    if (user && filters?.length === 0) {
-      getFilters(user.uid);
-    }
-  }, [user]);
+  useEffect(
+    () => {
+      if (user && recipes?.length === 0) {
+        getRecipes(user.uid);
+      }
+      if (user && filters?.length === 0) {
+        getFilters(user.uid);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user]
+  );
 
   // 3. Wait until recipes/filters are defined to stop loading.
-  useEffect(() => {
-    if (filters?.length !== 0) {
-      const newFilters = filters
-        .flatMap((obj) => obj.options)
-        .map((obj) => ({ ...obj, active: false }));
-      setActiveFilters(newFilters);
-      setIsLoadingFilters(false);
-    }
-  }, [filters]);
+  useEffect(
+    () => {
+      if (filters?.length !== 0) {
+        const newFilters = filters
+          .flatMap((obj) => obj.options)
+          .map((obj) => ({ ...obj, active: false }));
+        setActiveFilters(newFilters);
+        setIsLoadingFilters(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filters]
+  );
 
-  useEffect(() => {
-    if (recipes?.length !== 0) {
-      setFilteredRecipes(recipes);
-      setIsLoadingRecipes(false);
-    }
-  }, [recipes]);
+  useEffect(
+    () => {
+      if (recipes?.length !== 0) {
+        filterRecipes();
+        setIsLoadingRecipes(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [recipes]
+  );
 
-  useEffect(() => {
+  useEffect(
+    () => {
+      filterRecipes();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeFilters]
+  );
+
+  const filterRecipes = () => {
     const activeTags = activeFilters.reduce(
       (arr, obj) => (obj?.active ? [...arr, obj?.id] : arr),
       []
@@ -114,7 +138,7 @@ export default function AllRecipesPage() {
       });
       setFilteredRecipes(newRecipes);
     }
-  }, [activeFilters]);
+  }
 
   const handleToggleFilter = (isActive, id) => {
     const newFilters = activeFilters.map((filter) => {
@@ -194,7 +218,7 @@ export default function AllRecipesPage() {
                       <h2 className="text-lg font-lora font-semibold text-chestnut">
                         Filter Recipes
                       </h2>
-                      <p className="w-5/6 pt-2 font-nunito text-pale-silver text-sm">
+                      <p className="w-5/6 pt-2 font-nunito text-gray-500 text-sm">
                         Check multiple boxes below to narrow recipe search
                         results.
                       </p>
@@ -292,7 +316,7 @@ export default function AllRecipesPage() {
                         <AdjustmentsVerticalIcon className="text-platinum flex-shrink-0 h-5 w-5" />
                       </div>
                     </div>
-                    <p className="w-5/6 pt-2 font-nunito text-pale-silver text-sm">
+                    <p className="w-5/6 pt-2 font-nunito text-gray-500 text-sm">
                       Check multiple boxes below to narrow recipe search
                       results.
                     </p>
@@ -328,7 +352,7 @@ export default function AllRecipesPage() {
             </aside>
 
             {/* Product grid */}
-            <div className="lg:col-span-3 xl:col-span-4 mb-32">
+            <div className="content-start lg:col-span-3 xl:col-span-4 mb-32">
               {isLoadingRecipes ? (
                 <div className="pt-36">
                   <LoadingIcon message="Serving up recipes..." />
@@ -351,5 +375,9 @@ export default function AllRecipesPage() {
 }
 
 AllRecipesPage.getLayout = (page) => {
-  return <UserLayout activePageTitle="Your recipes">{page}</UserLayout>;
+  return (
+    <UserLayout activePageTitle="All Recipes" activePageHeading="Your recipes">
+      {page}
+    </UserLayout>
+  );
 };

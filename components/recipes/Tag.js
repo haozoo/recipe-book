@@ -1,14 +1,20 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import React from "react";
 
-export default function Tag({ tag, readOnly = true, id, handleDelete }) {
+export default function Tag({
+  tag,
+  isDefault = false,
+  readOnly = true,
+  id,
+  handleDelete,
+}) {
   return (
     <div
-      className={`flex items-center mr-2 mb-2 py-1 rounded-md bg-yellow-400 ${
-        readOnly ? "px-3" : "pl-3"
-      }`}
+      className={`flex items-center mr-2 mb-2 py-1 rounded-md ${
+        isDefault ? "bg-sajah" : "bg-yellow-500"
+      } ${readOnly ? "px-3" : "pl-3"}`}
     >
-      <div className="text-white font-patrick font-semibold tracking-wider">
+      <div className="text-white font-patrick font-extrabold tracking-wider">
         {tag.name}
       </div>
       {!readOnly && (

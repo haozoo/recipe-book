@@ -1,4 +1,19 @@
-import { AuthErrorCodes, deleteUser, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider, updateEmail, updatePassword, getAdditionalUserInfo } from "firebase/auth";
+import {
+  AuthErrorCodes,
+  deleteUser,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  updateEmail,
+  updatePassword,
+  getAdditionalUserInfo,
+  updateProfile,
+} from "firebase/auth";
 import { auth, provider } from "./firebase";
 import { showLoginError } from "../utils/constants";
 import Router from "next/router";
@@ -17,7 +32,7 @@ export const handleGoogleLogin = async () => {
       if (getAdditionalUserInfo(result).isNewUser) {
         await addDefaultRecipes();
       }
-      Router.push("/recipes")
+      Router.push("/recipes");
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -32,12 +47,11 @@ export const handleEmailLogin = async () => {
   const loginPassword = password.value
 
   try {
-    await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
-    Router.push("/recipes")
-  }
-  catch(error) {
-    console.log(`There was an error: ${error}`)
-    showLoginError(error)
+    await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+    Router.push("/recipes");
+  } catch (error) {
+    console.log(`There was an error: ${error}`);
+    showLoginError(error);
   }
 };
 
@@ -51,12 +65,10 @@ export const createAccount = async (email, username, password) => {
     }
     // add sample recipes for new user
     await addDefaultRecipes();
-  }
-  catch(error) {
+  } catch (error) {
     console.log(`There was an error: ${error}`);
-  } 
-}
-
+  }
+};
 
 // // Automatically signout for now
 // signOut(auth)
@@ -68,10 +80,9 @@ export const createAccount = async (email, username, password) => {
 //     console.log(error);
 //   });
 
-
-onAuthStateChanged(auth, (userStatus) => {
-  console.log("user status changed:", userStatus)
-});
+// onAuthStateChanged(auth, (userStatus) => {
+//   console.log("user status changed:", userStatus)
+// });
 
 export const getUserProfile = async () => {
   const user = auth.currentUser;
@@ -81,74 +92,68 @@ export const getUserProfile = async () => {
     console.log(displayName);
     console.log(email);
 
-    return { name: displayName, email: email }
-
+    return { name: displayName, email: email };
   } else {
-    console.error("Please Login!")
+    console.error("Please Login!");
   }
-}
+};
 
-export const updateUserProfile = async(newusername) => {
-  updateProfile(auth.currentUser, {displayName: newusername}).
-    then(()=> {
-      // Profile updated
-    }).catch((error) => {
-      console.log(error.code);
-      console.log(error.message);
-    })
-}
+export const updateUserProfile = async (newusername) => {
+  try {
+    await updateProfile(auth.currentUser, { displayName: newusername });
+  } catch (err) {
+    console.log(err);
+    return "Update profile failed.";
+  }
+  return "SUCCESS";
+};
 
 // Delete User Account registered with email/password
 export const deleteUserAccount = async (password) => {
-
   try {
-    const check = await checkPassword(password)
+    const check = await checkPassword(password);
     const userId = check.user.uid;
-
     await deleteUserData(userId);
-    console.log("Documents successfully deleted")
-
-    await deleteUser(check.user)
-    console.log("Account deleted successfully")
-
-    alert("Account deleted!")
-
+    await deleteUser(check.user);
   } catch (error) {
     console.log(error.code);
     console.log(error.message);
+    return "Failed to delete user account.";
   }
-}
+  return "SUCCESS";
+};
 
 // Change password
-export const changePassword = async (password, newPassword, confirmPassword) => {
+export const changePassword = async (
+  password,
+  newPassword,
+  confirmPassword
+) => {
+  if (newPassword !== confirmPassword) return "FAILURE";
 
-  if (newPassword == confirmPassword) {
-    try {
-      const check = await checkPassword(password)
-      await updatePassword(check.user, newPassword)
-      console.log("Password successfully updated")
-
-    } catch (error) {
-      console.log(error.code);
-      console.log(error.message);
-    }
-  } else {
-    console.log("Your password and confirmation password must match")
+  try {
+    const check = await checkPassword(password);
+    await updatePassword(check.user, newPassword);
+  } catch (error) {
+    console.log(error.code);
+    console.log(error.message);
+    return "Failed to update password.";
   }
-
-}
+  return "SUCCESS";
+};
 
 // Change email address
 export const changeEmailAddress = async (newEmail, password) => {
   try {
-    const check = await checkPassword(password)
-    await updateEmail(check.user, newEmail)
-    console.log("Email successfully Updated")
+    const check = await checkPassword(password);
+    await updateEmail(check.user, newEmail);
   } catch (error) {
     console.log(error.code);
     console.log(error.message);
+    return "Failed to update email.";
   }
-}
+  return "SUCCESS";
+};
 
 // Reauthentication
 const checkPassword = async (password) => {
@@ -156,7 +161,6 @@ const checkPassword = async (password) => {
     const user = auth.currentUser;
     const credential = EmailAuthProvider.credential(user.email, password);
     const check = await reauthenticateWithCredential(user, credential);
-    console.log("Reauthentication completed");
     return check;
   } catch (err) {
     console.log(err);
@@ -165,7 +169,12 @@ const checkPassword = async (password) => {
 
 // Delete google user account - no reauthentication
 export const deleteGoogleUserAccount = async () => {
-  const user = await auth.currentUser
-  await deleteUser(user)
-  console.log("Account deleted successfully")
-}
+  try {
+    const user = await auth.currentUser;
+    await deleteUser(user);
+  } catch (err) {
+    console.log(err);
+    return "Failed to delete user account.";
+  }
+  return "SUCCESS";
+};

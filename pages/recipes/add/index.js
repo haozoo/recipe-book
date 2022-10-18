@@ -1,8 +1,13 @@
 import { PencilIcon, XCircleIcon } from '@heroicons/react/24/outline';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import React, { useEffect, useRef, useState } from 'react';
-import UserLayout from '../../../components/layout/UserLayout';
-import { addNewRecipeAndImages } from "../../../services/database";
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
+import React, { useEffect, useRef, useState } from "react";
+import UserLayout from "../../../components/layout/UserLayout";
+import { addNewRecipeAndImages, editRecipe } from "../../../services/database";
+import { editRecipeAndImages } from "../../../services/database";
 import { Combobox } from "@headlessui/react";
 import Tag from "../../../components/recipes/Tag";
 import { useRecipes } from "../../../context/RecipeContext";
@@ -11,6 +16,7 @@ import { checkValidRecipe } from "../../../utils/constraints";
 import FormErrorModal from "../../../components/utility/FormErrorModal";
 import _ from "lodash";
 import FormSuccessModal from "../../../components/utility/FormSuccessModal";
+import { IndentedTextInput } from "../../../components/forms/IndentedTextInput";
 
 const classNames = (...classes) => {
   return classes.filter(Boolean).join(" ");
@@ -39,32 +45,6 @@ const SectionTitle = ({
           )}
         </button>
       )}
-    </div>
-  );
-};
-
-const IndentedTextInput = ({
-  label,
-  type = "text",
-  placeholder,
-  value,
-  handleEdit,
-}) => {
-  return (
-    <div className="relative rounded-md border border-gray-300 px-4 py-1 input-focus">
-      <label
-        className="absolute -top-3 left-1 -mt-px inline-block bg-white px-1 text-sm font-patrick font-extrabold text-chestnut"
-        htmlFor="name"
-      >
-        {label}
-      </label>
-      <input
-        className="block w-full border-0 p-0 input-font focus:ring-0 appearance-none"
-        type={type}
-        value={value}
-        onChange={(e) => handleEdit(e.target.value)}
-        placeholder={placeholder}
-      />
     </div>
   );
 };
@@ -216,7 +196,7 @@ const Ingredient = ({
               className="block w-full min-w-0 rounded-none rounded-r-md border border-l-transparent px-3 py-1 input-font border-1 border-gray-300 input-focus"
               type="text"
               id="ingredient-name"
-              value={ingredient.item}
+              value={ingredient.name}
               placeholder="Condensed Milk"
               onChange={handleEditName(id)}
             />
@@ -227,7 +207,7 @@ const Ingredient = ({
               {`${ingredient.quantity}${ingredient.unit}`}
             </span>
             <span className="flex items-center pl-2 input-font">
-              {ingredient.item}
+              {ingredient.name}
             </span>
           </>
         )}
@@ -270,7 +250,7 @@ const DeleteButton = ({ onDelete }) => {
   );
 };
 
-export default function AddRecipePage({ recipe = {} }) {
+export default function AddRecipePage({ recipe = {}, editing = false }) {
   const [title, setTitle] = useState("");
   const [prepTime, setPrepTime] = useState("");
   const [cookTime, setCookTime] = useState("");
@@ -292,6 +272,7 @@ export default function AddRecipePage({ recipe = {} }) {
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
 
   const [coverPhotoFile, setCoverPhotoFile] = useState();
+  const [coverPhotoLink, setCoverPhotoLink] = useState();
 
   const [successModalIsOpen, setSuccessModalIsOpen] = useState(false);
   const [error, setError] = useState({});
@@ -305,42 +286,57 @@ export default function AddRecipePage({ recipe = {} }) {
   const addIngredientRef = useRef(null);
 
   // 1. Set loading on page mount.
-  useEffect(() => {
-    setIsLoadingTags(true);
-    console.log("WHY", recipe);
-    if (!_.isEmpty(recipe)) {
-      setTitle(recipe?.title);
-      setPrepTime(recipe?.prepTime);
-      setCookTime(recipe?.cookTime);
-      setFavourited(recipe?.favourited);
-      // setSelectedTags(recipe?.allTags);
-      setInstructions(
-        recipe?.instructions.map((instruction) => {
-          return {
-            text: instruction,
-          };
-        })
-      );
-      setIngredients(recipe?.ingredients);
-      // setCoverPhotoFile(undefined);
-    }
-  }, []);
+  useEffect(
+    () => {
+      setIsLoadingTags(true);
+      if (!_.isEmpty(recipe)) {
+        setTitle(recipe?.title);
+        setPrepTime(recipe?.prepTime);
+        setCookTime(recipe?.cookTime);
+        setFavourited(recipe?.favourited);
+        setSelectedTags(
+          filters
+            .flatMap(({ options }) => options)
+            .filter((tag) => recipe?.allTags.includes(tag.id))
+        );
+        setInstructions(
+          recipe?.instructions.map((instruction) => {
+            return {
+              text: instruction,
+            };
+          })
+        );
+        setIngredients(recipe?.ingredients);
+        setCoverPhotoLink(recipe?.coverImage?.url);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   // 2. Wait until user is defined to fetch recipes w/ uid.
-  useEffect(() => {
-    if (user && allTags?.length === 0) {
-      getFilters(user.uid);
-    }
-  }, [user]);
+  useEffect(
+    () => {
+      if (user && allTags?.length === 0) {
+        getFilters(user.uid);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user]
+  );
 
   // 3. Wait until recipes/filters are defined to stop loading.
-  useEffect(() => {
-    if (filters?.length !== 0) {
-      const flattenedTags = filters.flatMap(({ options }) => options);
-      setAllTags(flattenedTags);
-      setIsLoadingTags(false);
-    }
-  }, [filters]);
+  useEffect(
+    () => {
+      if (editing || filters?.length !== 0) {
+        const flattenedTags = filters.flatMap(({ options }) => options);
+        setAllTags(flattenedTags);
+        setIsLoadingTags(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filters]
+  );
 
   const handleDeleteSelectedTag = (id) => {
     setSelectedTags(selectedTags.filter((i, idx) => id !== idx));
@@ -368,7 +364,7 @@ export default function AddRecipePage({ recipe = {} }) {
 
   const handleEditIngredientName = (id) => (e) => {
     const newIngredients = ingredients.map((ingredient, idx) => {
-      return id !== idx ? ingredient : { ...ingredient, item: e.target.value };
+      return id !== idx ? ingredient : { ...ingredient, name: e.target.value };
     });
     setIngredients(newIngredients);
   };
@@ -399,7 +395,7 @@ export default function AddRecipePage({ recipe = {} }) {
       setIngredients(
         ingredients.concat([
           {
-            item: newIngredientName,
+            name: newIngredientName,
             unit: newIngredientUnit,
             quantity: newIngredientQuantity,
           },
@@ -445,13 +441,17 @@ export default function AddRecipePage({ recipe = {} }) {
       favourited,
     };
 
-    const newError = checkValidRecipe(rawRecipeData, coverPhotoFile);
+    const newError = checkValidRecipe(
+      rawRecipeData,
+      coverPhotoFile,
+      coverPhotoLink
+    );
 
     if (!_.isEmpty(newError)) {
       setError(newError);
       setErrorModalIsOpen(true);
     } else {
-      const parsedRecipeData = {
+      let parsedRecipeData = {
         ...rawRecipeData,
         cookTime: parseInt(cookTime),
         prepTime: parseInt(prepTime),
@@ -460,11 +460,33 @@ export default function AddRecipePage({ recipe = {} }) {
         }),
       };
 
-      const status = await addNewRecipeAndImages(
-        parsedRecipeData,
-        coverPhotoFile,
-        []
-      );
+      // edit recipe and image
+      let status;
+      switch (editing) {
+        case true:
+          status = coverPhotoFile
+            ? await editRecipeAndImages(
+                recipe.id,
+                parsedRecipeData,
+                coverPhotoFile,
+                []
+              )
+            : await editRecipe(
+                recipe.id,
+                Object.assign(parsedRecipeData, {
+                  coverImage: recipe.coverImage,
+                  otherImages: recipe.otherImages,
+                })
+              );
+          break;
+        case false:
+          status = await addNewRecipeAndImages(
+            parsedRecipeData,
+            coverPhotoFile,
+            []
+          );
+          break;
+      }
 
       if (status === "SUCCESS") {
         setSuccessModalIsOpen(true);
@@ -504,6 +526,7 @@ export default function AddRecipePage({ recipe = {} }) {
     setIsEditingIngredients(false);
 
     setCoverPhotoFile(undefined);
+    setCoverPhotoLink(undefined);
 
     setError({});
   };
@@ -513,6 +536,7 @@ export default function AddRecipePage({ recipe = {} }) {
       <FormSuccessModal
         open={successModalIsOpen}
         setOpen={setSuccessModalIsOpen}
+        action={editing ? "edit" : "upload"}
       />
       <FormErrorModal
         error={error}
@@ -695,12 +719,25 @@ export default function AddRecipePage({ recipe = {} }) {
           <div className="max-w-lg border-0 border-t-1 border-gray-200 lg:col-span-1">
             <div className="pt-12 lg:pt-0">
               <SectionTitle title="Images" />
-              {coverPhotoFile ? (
-                <div className="aspect-w-3 aspect-h-2">
-                  <img
-                    className="rounded-lg object-cover shadow-lg"
-                    src={URL.createObjectURL(coverPhotoFile)}
-                    alt="Your cover photo."
+              {coverPhotoFile || coverPhotoLink ? (
+                <div className="relative">
+                  <picture>
+                    <img
+                      className="aspect-w-3 aspect-h-2 rounded-lg object-cover shadow-lg mix-blend-darken"
+                      src={
+                        coverPhotoLink
+                          ? coverPhotoLink
+                          : URL.createObjectURL(coverPhotoFile)
+                      }
+                      alt="Your cover photo."
+                    />
+                  </picture>
+                  <XMarkIcon
+                    onClick={() => {
+                      setCoverPhotoFile();
+                      setCoverPhotoLink();
+                    }}
+                    className="absolute top-3 right-3 z-5 flex-shrink-0 h-10 w-10 mix-blend-exclusion text-gray-300 hover:text-red-500"
                   />
                 </div>
               ) : (
@@ -770,10 +807,10 @@ export default function AddRecipePage({ recipe = {} }) {
                       fill="currentColor"
                     />
                   </svg>
-                  Uploading...
+                  {editing ? "Editing..." : "Uploading..."}
                 </div>
               ) : (
-                "Upload"
+                <div>{editing ? "Edit" : "Upload"}</div>
               )}
             </button>
           </div>
@@ -784,5 +821,12 @@ export default function AddRecipePage({ recipe = {} }) {
 }
 
 AddRecipePage.getLayout = function getLayout(page) {
-  return <UserLayout activePageTitle="Add a new recipe!">{page}</UserLayout>;
+  return (
+    <UserLayout
+      activePageHeading="Add a new recipe"
+      activePageTitle="Add a recipe"
+    >
+      {page}
+    </UserLayout>
+  );
 };

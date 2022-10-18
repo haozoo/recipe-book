@@ -12,7 +12,7 @@ import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import Router from "next/router";
 import { USER_ADD_RECIPE_PATH } from "../../utils/constants";
-import DeleteRecipeModal from "../utility/DeleteRecipeModal";
+import DeleteModal from "../utility/DeleteModal";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -23,19 +23,23 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
 
   return (
     <div className="group">
-      <DeleteRecipeModal
+      <DeleteModal
+        type="Recipe"
         open={deleteModalIsOpen}
         setOpen={setDeleteModalIsOpen}
         handleDelete={() => deleteRecipe(recipe?.id)}
       />
       <div className="relative">
-        <Link href={recipe.href}>
+        <Link href={"/" + recipe.href}>
           <a>
             <div className="aspect-w-1 aspect-h-1 h-72 w-full overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3">
-              <img
-                src={recipe.coverImage.url}
-                className="h-full w-full object-cover object-center group-hover:opacity-75"
-              />
+              <picture>
+                <img
+                  className="h-full w-full object-cover object-center group-hover:opacity-75"
+                  src={recipe.coverImage.url}
+                  alt="Recipe cover photo"
+                />
+              </picture>
             </div>
           </a>
         </Link>
@@ -50,7 +54,7 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
           )}
         </button>
       </div>
-      <div className="mt-4 flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center">
           <ClockIcon className="text-chestnut flex-shrink-0 h-4 w-4" />
           <p className="ml-2 font-nunito font-bold text-xs text-chestnut">
@@ -85,7 +89,7 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
                         "group flex items-center px-4 py-2 text-sm font-nunito font-semibold"
                       )}
                       onClick={() =>
-                        Router.push(`${USER_ADD_RECIPE_PATH}/${recipe?.id}`)
+                        Router.push(`/${USER_ADD_RECIPE_PATH}/${recipe?.id}`)
                       }
                     >
                       <PencilSquareIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
@@ -116,7 +120,14 @@ export default function RecipeCard({ recipe, deleteRecipe, favouriteRecipe }) {
           </Transition>
         </Menu>
       </div>
-      <p className="mt-1 font-nunito text-md text-chestnut">{recipe?.title}</p>
+      <div className="mt-1 font-nunito text-md text-chestnut truncate">
+        {recipe?.sample && (
+          <p className="inline-block px-2 py-1 mr-3 text-sm text-gray-400 font-bold bg-gray-100 rounded-md">
+            Sample
+          </p>
+        )}
+        {recipe?.title}
+      </div>
     </div>
   );
 }

@@ -7,20 +7,20 @@ export function convertTime(time) {
     case 0:
       break;
     case 1:
-      timeString += `${hr} Hour `;
+      timeString += `${hr}h `;
       break;
     default:
-      timeString += `${hr} Hours `;
+      timeString += `${hr}h `;
   }
 
   switch (min) {
     case 0:
       break;
     case 1:
-      timeString += `${min} Minute `;
+      timeString += `${min}m `;
       break;
     default:
-      timeString += `${min} Minutes `;
+      timeString += `${min}m `;
   }
 
   return timeString;

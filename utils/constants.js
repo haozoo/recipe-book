@@ -2,12 +2,14 @@ import {
   HomeIcon,
   HeartIcon,
   PlusCircleIcon,
+  TagIcon,
 } from "@heroicons/react/24/outline";
-import { AuthErrorCodes } from 'firebase/auth';
+import { AuthErrorCodes } from "firebase/auth";
 
 export const USER_PROFILE_PATH = "/profile";
 export const USER_ALL_RECIPE_PATH = "/recipes";
 export const USER_FAVOURITES_PATH = "/recipes/favourites";
+export const USER_TAG_EDITOR_PATH = "/recipes/tags";
 export const USER_ADD_RECIPE_PATH = "/recipes/add";
 
 export const LANDING_PAGE_PATH = "/";
@@ -15,11 +17,16 @@ export const LANDING_PAGE_PATH = "/";
 export const AUTH_LOGIN_PATH = "/auth/login";
 export const AUTH_SIGNUP_PATH = "/auth/signup";
 
+export const DIETRY_REQUIREMENTS = "Dietary Requirements";
+export const MEAL_TYPES = "Meal Type";
+export const USER_TAGS = "My Tags";
+
 export const sidebarNavigationOptions = [
   { id: 1, name: "Home", href: USER_ALL_RECIPE_PATH, icon: HomeIcon },
   { id: 2, name: "Favourites", href: USER_FAVOURITES_PATH, icon: HeartIcon },
+  { id: 3, name: "Tags", href: USER_TAG_EDITOR_PATH, icon: TagIcon },
   {
-    id: 3,
+    id: 4,
     name: "Add Recipe",
     href: USER_ADD_RECIPE_PATH,
     icon: PlusCircleIcon,

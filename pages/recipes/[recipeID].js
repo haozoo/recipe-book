@@ -1,181 +1,279 @@
 import React, { useEffect, useState } from "react";
 import { HeartIcon as EmptyHeartIcon } from "@heroicons/react/24/outline";
-import { HeartIcon as FullHeartIcon } from "@heroicons/react/24/solid";
+import {
+  HeartIcon as FullHeartIcon,
+  MinusSmallIcon,
+  PencilSquareIcon,
+  PlusSmallIcon,
+  UserIcon,
+} from "@heroicons/react/24/solid";
 import UserLayout from "../../components/layout/UserLayout";
 import { convertTime } from "../../utils/helpers";
 import { useRecipes } from "../../context/RecipeContext";
 import { useUserAuth } from "../../context/UserAuthContext";
 import _ from "lodash";
+import Tag from "../../components/recipes/Tag";
+import Router from "next/router";
+import { USER_ADD_RECIPE_PATH } from "../../utils/constants";
+import Notification from "../../components/utility/Notification";
+import LoadingIcon from "../../components/utility/LoadingIcon";
 
 export default function SingleRecipePage({ recipeID }) {
   const [recipe, setRecipe] = useState({});
   const [isLoadingRecipe, setIsLoadingRecipe] = useState(true);
 
-  const { user } = useUserAuth();
-  const { recipes, getRecipe, getRecipes } = useRecipes();
-
   const [serving, setServing] = useState(1);
   const [favourited, setFavourited] = useState(false);
 
+  const [defaultTags, setDefaultTags] = useState([]);
+  const [userDefTags, setUserDefTags] = useState([]);
+
+  const [error, setError] = useState({});
+  const [errorNotifIsOpen, setErrorNotifIsOpen] = useState(false);
+
+  const [found, setFound] = useState(false);
+
+  const { user } = useUserAuth();
+  const { recipes, favouriteRecipe, filters, getRecipe, getRecipes } =
+    useRecipes();
+
   const getRecipeFromContext = async () => {
+    if (recipes?.length === 0) {
+      await getRecipes(user.uid);
+    }
+
     const newRecipe = await getRecipe(recipeID);
+    setFound(!newRecipe ? false : true);
     setRecipe(newRecipe);
+    setIsLoadingRecipe(false);
   };
 
   useEffect(() => {
     setIsLoadingRecipe(true);
   }, []);
 
-  useEffect(() => {
-    if (!_.isEmpty(user) && recipes?.length === 0) {
-      getRecipes(user.uid);
-    }
-    getRecipeFromContext();
-  }, [user]);
+  useEffect(
+    () => {
+      if (!_.isEmpty(user)) getRecipeFromContext();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, recipes]
+  );
 
   useEffect(() => {
-    if (!_.isEmpty(recipe)) {
+    if (!_.isEmpty(recipe) && filters) {
+      setDefaultTags(
+        filters
+          .flatMap(({ options }) => options)
+          .filter((tag) => recipe?.defaultTags?.includes(tag.id))
+      );
+      setUserDefTags(
+        filters
+          .flatMap(({ options }) => options)
+          .filter((tag) => recipe?.userAddedTags?.includes(tag.id))
+      );
       setIsLoadingRecipe(false);
-      console.log(recipe);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipe]);
 
-  const handleFavourite = () => {
+  const handleFavourite = async (rid) => {
+    setErrorNotifIsOpen(false);
+    const status = await favouriteRecipe(rid);
+    if (status !== "SUCCESS") {
+      setError({
+        title: "Favourite Recipe Failed",
+        text: `Unfortunately your recipe could not be favourited at this time, please try again later.`,
+        errors: [status],
+      });
+      setErrorNotifIsOpen(true);
+    }
     setFavourited(!favourited);
   };
 
   return (
-    <div className="single-recipe pt-10">
-      {!isLoadingRecipe && recipe && (
-        <div className="flex flex-row justify-between space-x-24">
-          <div className="flex w-full flex-col">
-            <div>
-              <div className="flex flex-row justify-between">
-                <h1 className="font-architectsDaughter font-bold text-chestnut tracking-wide text-4xl">
-                  {recipe?.title}
-                </h1>
-                <button onClick={handleFavourite}>
-                  {favourited ? (
-                    <FullHeartIcon className="text-red-400 flex-shrink-0 h-10 w-10" />
-                  ) : (
-                    <EmptyHeartIcon className="text-chestnut flex-shrink-0 h-10 w-10" />
-                  )}
-                </button>
+    <>
+      <Notification
+        error={error}
+        open={errorNotifIsOpen}
+        setOpen={setErrorNotifIsOpen}
+      />
+      {!_.isEmpty(recipe) ? (
+        <div className="pt-12 max-w-6xl lg:grid lg:grid-cols-2 lg:gap-x-8 space-y-8 divide-y divide-gray-200 lg:space-y-0 lg:divide-y-0">
+          <div className="max-w-lg space-y-8 divide-y divide-gray-200">
+            <div className="flex w-full flex-col divide-y">
+              <div>
+                <div className="flex flex-row items-center justify-between">
+                  <h1 className="font-patrick font-bold text-chestnut tracking-wider text-2xl sm:text-3xl truncate">
+                    {recipe?.title}
+                  </h1>
+                  <button onClick={() => handleFavourite(recipe?.id)}>
+                    {favourited ? (
+                      <FullHeartIcon className="text-red-400 flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8" />
+                    ) : (
+                      <EmptyHeartIcon className="text-gray-300 flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8" />
+                    )}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between mt-2 mb-4">
+                  <div className="flex sm:space-x-4 sm:divide-x-2 text-sm sm:text-base truncate">
+                    <div className="flex items-baseline space-x-1">
+                      <p className="font-nunito font-bold text-hazelnut">
+                        {convertTime(recipe.prepTime)}
+                      </p>
+                      <p className="text-hazelnut font-patrick font-medium tracking-wider">
+                        Prep
+                      </p>
+                    </div>
+                    <div className="flex items-baseline space-x-1 pl-4">
+                      <p className="font-nunito font-bold text-hazelnut">
+                        {convertTime(recipe.cookTime)}
+                      </p>
+                      <p className="text-hazelnut font-patrick font-medium tracking-wider">
+                        Cook
+                      </p>
+                    </div>
+                    <div className="hidden sm:flex sm:items-baseline sm:space-x-1 sm:pl-4">
+                      <p className="font-nunito font-bold text-hazelnut">
+                        {convertTime(recipe.prepTime + recipe.cookTime)}
+                      </p>
+                      <p className="text-hazelnut font-patrick font-medium tracking-wider">
+                        Total
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    className="sm:bg-atomic-tangerine sm:hover:bg-orange-500 text-white text-base font-patrick font-extrabold tracking-wider sm:px-4 py-1 rounded-lg"
+                    onClick={() =>
+                      Router.push(`${USER_ADD_RECIPE_PATH}/${recipe?.id}`)
+                    }
+                  >
+                    <p className="hidden sm:flex">Edit</p>
+                    <PencilSquareIcon className="sm:hidden text-gray-300 flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8" />
+                  </button>
+                </div>
               </div>
-              <div className="flex flex-row justify-between my-6">
-                <div className="flex flex-row space-x-4">
-                  <div className="flex flex-col">
-                    <p className="text-xs">Prep time</p>
-                    {recipe.prepTime} mins
+              <div className="pt-4 pb-2">
+                <h2 className="text-lg sm:text-xl font-patrick font-extrabold text-chestnut">
+                  Tags
+                </h2>
+                {recipe?.allTags?.length !== 0 && (
+                  <div className="py-2">
+                    <div className="flex flex-row flex-wrap">
+                      {defaultTags?.map((tag, idx) => {
+                        return (
+                          <Tag
+                            tag={tag}
+                            key={idx}
+                            id={idx}
+                            readOnly={true}
+                            isDefault={true}
+                          />
+                        );
+                      })}
+                      {userDefTags?.map((tag, idx) => {
+                        return (
+                          <Tag tag={tag} key={idx} id={idx} readOnly={true} />
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <p className="text-xs">Cook time</p>
-                    {recipe.cookTime} mins
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-xs">Total time</p>
-                    {convertTime(recipe.prepTime + recipe.cookTime)}
+                )}
+              </div>
+              <div className="py-8 lg:p-0 lg:hidden">
+                <picture>
+                  <img
+                    src={recipe.coverImage.url}
+                    alt="Recipe Cover Photo"
+                    className="aspect-w-3 aspect-h-4 rounded-lg object-cover shadow-lg"
+                  />
+                </picture>
+              </div>
+              <div className="py-8">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg sm:text-xl font-patrick font-extrabold text-chestnut pb-2">
+                    Ingredients
+                  </h2>
+                  <div className="flex space-x-2 pb-2 items-center align-middle">
+                    <UserIcon className="flex-shrink-0 sm:h-4 sm:w-4 h-3 w-3 text-gray-500" />
+                    <button
+                      disabled={serving == 1 ? true : false}
+                      onClick={() => setServing(serving - 1)}
+                      className="group cursor-pointer disabled:cursor-default"
+                    >
+                      <MinusSmallIcon className="flex-shrink-0 h-3 w-3 group-disabled:text-gray-400 text-gray-700" />
+                    </button>
+                    <p className="texl-xl font-patrick font-bold">{serving}</p>
+                    <button
+                      onClick={() => setServing(serving + 1)}
+                      className="cursor-pointer"
+                    >
+                      <PlusSmallIcon className="flex-shrink-0 h-3 w-3 text-gray-700" />
+                    </button>
                   </div>
                 </div>
-                <button
-                  id="editRecipeBtn"
-                  className="bg-atomic-tangerine hover:opacity-75 text-white text-sm px-4 rounded-2xl"
-                >
-                  Edit Recipe
-                </button>
-              </div>
-
-              <div className="py-2 border-y border-solid border-chestnut">
-                <p className="text-xs mb-2">Tags</p>
-                <div className="flex flex-row flex-wrap space-x-4 space-y-2 text-sm">
-                  {recipe?.allTags.map((tag, i) => (
-                    <button
-                      key={i}
-                      className="odd:bg-chrome-yellow even:bg-dirt hover:opacity-75 text-white px-4 py-2 rounded-full"
-                    >
-                      {tag.name}
-                    </button>
+                <div className="font-nunito text-gray-800">
+                  {recipe?.ingredients.map((ingredient, i) => (
+                    <div className="flex items-center" key={i}>
+                      <input
+                        id={i}
+                        type="checkbox"
+                        value=""
+                        className="w-4 h-4 bg-gray-100 rounded-full border-gray-300 focus:ring-0 focus:ring-offset-0 text-atomic-tangerine"
+                      />
+                      <label htmlFor={i} className="ml-4 w-full">
+                        {ingredient.quantity * serving}
+                        {ingredient.unit} {ingredient.name}
+                      </label>
+                    </div>
                   ))}
-                  {/* {recipe?.userAddedTags.map((tag, i) => (
-                    <button
-                      key={i}
-                      className="odd:bg-chrome-yellow even:bg-dirt hover:opacity-75 text-white px-4 py-2 rounded-full"
-                    >
-                      {tag.name}
-                    </button>
-                  ))} */}
                 </div>
               </div>
-            </div>
-            <div>
-              <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4 pb-2">
-                Ingredients
-              </p>
-              <div className="flex space-x-2 pb-2 align-middle">
-                <p className="text-sm">Servings</p>
-                <button
-                  disabled={serving == 1 ? true : false}
-                  onClick={() => setServing(serving - 1)}
-                  className="outline outline-2 outline-black bg-atomic-tangerine disabled:bg-platinum font-nunito rounded-full h-6 w-6 cursor-pointer disabled:cursor-default"
-                >
-                  -
-                </button>
-                <p>{serving}</p>
-                <button
-                  onClick={() => setServing(serving + 1)}
-                  className="outline outline-2 outline-chestnut bg-atomic-tangerine font-nunito rounded-full h-6 w-6 cursor-pointer"
-                >
-                  +
-                </button>
+              <div className="py-8">
+                <h2 className="text-xl font-patrick font-extrabold text-chestnut pb-2">
+                  Instructions
+                </h2>
+                <ol style={{ listStyleType: "decimal" }} className="pl-6">
+                  {recipe?.instructions.map((instruction, i) => (
+                    <li key={i} className="pl-2 font-nunito text-gray-800">
+                      {instruction}
+                    </li>
+                  ))}
+                </ol>
               </div>
-              <div className="font-nunito">
-                {recipe?.ingredients.map((ingredient, i) => (
-                  <div className="flex items-center" key={i}>
-                    <input
-                      id={i}
-                      type="checkbox"
-                      value=""
-                      className="w-4 h-4 bg-gray-100 rounded-full border-chestnut focus:ring-0 focus:ring-offset-0 text-atomic-tangerine"
-                    />
-                    <label htmlFor={i} className="ml-4 w-full">
-                      {ingredient.quantity * serving}
-                      {ingredient.unit} {ingredient.name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4 pb-2">
-                Instructions
-              </p>
-              <ol style={{ listStyleType: "decimal" }} className="pl-6">
-                {recipe?.instructions.map((instruction, i) => (
-                  <li key={i} className="pl-2 font-nunito">
-                    {instruction}
-                  </li>
-                ))}
-              </ol>
             </div>
           </div>
-          <div className="flex w-full flex-col">
-            <div className="aspect-square h-72 flex items-center justify-center overflow-hidden rounded-lg sm:aspect-w-2 sm:aspect-h-3 bg-blanched-almond">
-              <img src={recipe.coverImage.url} alt="" className="h-full" />
-            </div>
-            <div>
-              <p className="font-architectsDaughter text-chestnut tracking-wide text-2xl pt-4">
-                Gallery
-              </p>
-            </div>
+          <div className="hidden sm:flex sm:max-w-lg">
+            <picture>
+              <img
+                src={recipe.coverImage.url}
+                alt="Recipe Cover Photo"
+                className="aspect-w-3 aspect-h-4 rounded-lg object-cover shadow-lg"
+              />
+            </picture>
           </div>
         </div>
+      ) : (
+        <div className="pt-36">
+          <LoadingIcon
+            message={
+              !isLoadingRecipe && !found
+                ? "We can't find your recipe!"
+                : "Finding up your recipe..."
+            }
+          />
+        </div>
       )}
-    </div>
+    </>
   );
 }
 
 SingleRecipePage.getLayout = (page) => {
-  return <UserLayout pageName="Single Recipe">{page}</UserLayout>;
+  return (
+    <UserLayout activePageTitle="Your Recipe" activePageHeading="RE-cipe">
+      {page}
+    </UserLayout>
+  );
 };
 
 export async function getServerSideProps(context) {
