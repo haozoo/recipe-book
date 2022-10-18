@@ -42,16 +42,12 @@ export const handleEmailLogin = async () => {
 };
 
 // Create new account using email/password
-export const createAccount = async () => {
-  const newEmail = email.value;
-  const newPassword = password.value;
-  const newUsername = username.value;
-
+export const createAccount = async (email, username, password) => {
   try {
-    await createUserWithEmailAndPassword(auth, newEmail, newPassword);
+    await createUserWithEmailAndPassword(auth, email, password);
     const user = auth.currentUser;
     if (user) {
-      user.displayName = newUsername;
+      user.displayName = username;
     }
     // add sample recipes for new user
     await addDefaultRecipes();

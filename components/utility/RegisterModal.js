@@ -247,7 +247,7 @@ export default function RegisterModal({ open, setOpen }) {
                           <div className="flex space-x-4 pt-4">
                             <button
                               type="button"
-                              onClick={createAccount}
+                              onClick={() => createAccount(email, username, password)}
                               className="flex w-full justify-center rounded-md border border-transparent bg-chrome-yellow py-2 px-4 text-lg font-medium text-white shadow-sm hover:opacity-75 focus:outline-none focus:ring-2 focus:ring-hazelnut focus:ring-offset-2"
                             >
                               SIGN UP
