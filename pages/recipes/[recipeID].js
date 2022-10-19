@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { HeartIcon as EmptyHeartIcon } from "@heroicons/react/24/outline";
+import React, { useEffect, useState } from 'react';
+import { HeartIcon as EmptyHeartIcon } from '@heroicons/react/24/outline';
 import {
   HeartIcon as FullHeartIcon,
   MinusSmallIcon,
   PencilSquareIcon,
   PlusSmallIcon,
   UserIcon,
-} from "@heroicons/react/24/solid";
-import UserLayout from "../../components/layout/UserLayout";
-import { convertTime } from "../../utils/helpers";
-import { useRecipes } from "../../context/RecipeContext";
-import { useUserAuth } from "../../context/UserAuthContext";
-import _ from "lodash";
-import Tag from "../../components/recipes/Tag";
-import Router from "next/router";
-import { USER_ADD_RECIPE_PATH } from "../../utils/constants";
-import Notification from "../../components/utility/Notification";
-import LoadingIcon from "../../components/utility/LoadingIcon";
+} from '@heroicons/react/24/solid';
+import UserLayout from '../../components/layout/UserLayout';
+import { convertTime } from '../../utils/helpers';
+import { useRecipes } from '../../context/RecipeContext';
+import { useUserAuth } from '../../context/UserAuthContext';
+import _ from 'lodash';
+import Tag from '../../components/recipes/Tag';
+import Router from 'next/router';
+import { USER_ADD_RECIPE_PATH } from '../../utils/constants';
+import Notification from '../../components/utility/Notification';
+import LoadingIcon from '../../components/utility/LoadingIcon';
 
 export default function SingleRecipePage({ recipeID }) {
   const [recipe, setRecipe] = useState({});
@@ -80,9 +80,9 @@ export default function SingleRecipePage({ recipeID }) {
   const handleFavourite = async (rid) => {
     setErrorNotifIsOpen(false);
     const status = await favouriteRecipe(rid);
-    if (status !== "SUCCESS") {
+    if (status !== 'SUCCESS') {
       setError({
-        title: "Favourite Recipe Failed",
+        title: 'Favourite Recipe Failed',
         text: `Unfortunately your recipe could not be favourited at this time, please try again later.`,
         errors: [status],
       });
@@ -233,7 +233,7 @@ export default function SingleRecipePage({ recipeID }) {
                 <h2 className="text-xl font-patrick font-extrabold text-chestnut pb-2">
                   Instructions
                 </h2>
-                <ol style={{ listStyleType: "decimal" }} className="pl-6">
+                <ol style={{ listStyleType: 'decimal' }} className="pl-6">
                   {recipe?.instructions.map((instruction, i) => (
                     <li key={i} className="pl-2 font-nunito text-gray-800">
                       {instruction}
@@ -259,7 +259,7 @@ export default function SingleRecipePage({ recipeID }) {
             message={
               !isLoadingRecipe && !found
                 ? "We can't find your recipe!"
-                : "Finding up your recipe..."
+                : 'Finding up your recipe...'
             }
           />
         </div>
@@ -270,7 +270,7 @@ export default function SingleRecipePage({ recipeID }) {
 
 SingleRecipePage.getLayout = (page) => {
   return (
-    <UserLayout activePageTitle="Your Recipe" activePageHeading="RE-cipe">
+    <UserLayout activePageTitle="Your Recipe" activePageHeading="REcipe">
       {page}
     </UserLayout>
   );
