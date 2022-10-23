@@ -3,11 +3,9 @@
 
 ## About
 
-Recipe book is the capstone project for the Computing and Software Systems major in Bachelor of Science at the University of Melbourne. 
+REcipe is a simple and elegant recipe register for homemade recipes.
 
-The aim of the project is to design an interactive web app for simple and elegant recipe register for homemade recipes.
-
-The project used React.js + Next.js + Tailwind for frontend (client-side) development and Firebase + Next.js for backend (server-side) development.
+The techstack used is comprised of React.js, Next.js and Tailwind for the frontend, and Firebase plus Next.js for the backend.
 
 ## Table of Contents
 - [About](#about)
@@ -17,15 +15,17 @@ The project used React.js + Next.js + Tailwind for frontend (client-side) develo
 ## Installation
 To install and setup in a local environment: 
   1. Clone the respository
-  2. Intsall dependencies using the `npm install` command
+  2. Install dependencies using the `npm install` command
+  4. Add Firebase tokens in a environment file
   3. Run the web app using the `npm run dev` command
+
 
 ## Contributors
 
 | Names        | Student No| Email |GitHub|
 | ------------- |:-------------:| -----:| -----:|
+| Hao Xu    |  1068412  | binghaox@student.unimelb.edu.au  |  haozoo |
 | Lam Cheng Ze      | 1166497| chengzel@student.unimelb.edu.au | CZLam7 |
-| Hao Xiu    |    |   |  |
 |Rebecca Lai |     |     |  |
 |Sumin Baek |  1055647  |suminb@student.unimelb.edu.au | suminbaek99 |
 | Michelle  |      |    | |
