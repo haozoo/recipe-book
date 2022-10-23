@@ -28,4 +28,4 @@ To install and setup in a local environment:
 | Lam Cheng Ze  | 1166497       | chengzel@student.unimelb.edu.au | CZLam7      |
 | Beijia Lai    | 1133768       | beijia@student.unimelb.edu.au   | rebecca0201 |
 | Sumin Baek    | 1055647       | suminb@student.unimelb.edu.au   | suminbaek99 |
-| Michelle      |               |                                 |             |
+| Shuet Yi Lee  | 1085601       | shuetyil@student.unimelb.edu.au | shuetyi-lee |
