@@ -22,10 +22,10 @@ To install and setup in a local environment:
 
 ## Contributors
 
-| Names        | Student No| Email |GitHub|
-| ------------- |:-------------:| -----:| -----:|
-| Hao Xu    |  1068412  | binghaox@student.unimelb.edu.au  |  haozoo |
-| Lam Cheng Ze      | 1166497| chengzel@student.unimelb.edu.au | CZLam7 |
-|Rebecca Lai |     |     |  |
-|Sumin Baek |  1055647  |suminb@student.unimelb.edu.au | suminbaek99 |
-| Michelle  |      |    | |
+| Names         | Student No    | Email                           |GitHub       |
+| ------------- |:-------------:| -------------------------------:| -----------:|
+| Hao Xu        | 1068412       | binghaox@student.unimelb.edu.au | haozoo      |
+| Lam Cheng Ze  | 1166497       | chengzel@student.unimelb.edu.au | CZLam7      |
+| Beijia Lai    | 1133768       | beijia@student.unimelb.edu.au   | rebecca0201 |
+| Sumin Baek    | 1055647       | suminb@student.unimelb.edu.au   | suminbaek99 |
+| Michelle      |               |                                 |             |
