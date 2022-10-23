@@ -27,5 +27,5 @@ To install and setup in a local environment:
 | Lam Cheng Ze      | 1166497| chengzel@student.unimelb.edu.au | CZLam7 |
 | Hao Xiu    |    |   |  |
 |Rebecca Lai |     |     |  |
-|Sumin Baek |      |    | |
+|Sumin Baek |  1055647  | suminb@student.unimelb.edu.au | suminbaek99 |
 | Michelle  |      |    | |
